@@ -7,7 +7,6 @@ import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/app_background.dart';
 import '../../../widgets/app_card.dart';
-import '../../../widgets/premium_lock_overlay.dart';
 import '../../../widgets/section_header.dart';
 import '../controllers/home_controller.dart';
 
@@ -44,9 +43,17 @@ class HomeView extends GetView<HomeController> {
               Container(
                 width: 54,
                 height: 54,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
+                decoration: BoxDecoration(
+                  color: AppColors.shell,
                   shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.line),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: AppColors.shadow,
+                      blurRadius: 12,
+                      offset: Offset(0, 6),
+                    ),
+                  ],
                 ),
                 child: const Icon(Icons.notifications_none_rounded),
               ),
@@ -55,7 +62,7 @@ class HomeView extends GetView<HomeController> {
           const SizedBox(height: AppSpacing.xl),
           AppCard(
             gradient: const LinearGradient(
-              colors: [Color(0xFFF6E7DB), Color(0xFFEFE6DD)],
+              colors: [Color(0xFFF2ECE4), Color(0xFFE8E3D9)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -97,7 +104,7 @@ class HomeView extends GetView<HomeController> {
                 itemCount: controller.quickActions.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
-                  mainAxisExtent: 126,
+                  mainAxisExtent: 132,
                   mainAxisSpacing: AppSpacing.md,
                   crossAxisSpacing: AppSpacing.md,
                 ),
@@ -207,32 +214,92 @@ class _QuickActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        AppCard(
-          onTap: onTap,
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Column(
+    final textTheme = Theme.of(context).textTheme;
+
+    return AppCard(
+      onTap: onTap,
+      color: AppColors.shell.withOpacity(0.94),
+      padding: const EdgeInsets.all(AppSpacing.md),
+      child: Column(
+        children: [
+          Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 44,
-                height: 44,
+                width: 42,
+                height: 42,
                 decoration: BoxDecoration(
-                  color: item.accentColor.withOpacity(0.28),
-                  borderRadius: BorderRadius.circular(16),
+                  color: item.accentColor.withOpacity(0.18),
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                child: Icon(item.icon, color: Colors.black87),
+                child: Icon(item.icon, color: AppColors.ink, size: 21),
               ),
               const Spacer(),
-              Text(item.title, style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: AppSpacing.xxs),
-              Text(item.subtitle, style: Theme.of(context).textTheme.bodySmall),
+              _QuickActionPremiumTag(show: item.premium),
             ],
           ),
-        ),
-        PremiumLockOverlay(show: item.premium),
-      ],
+          const Spacer(),
+          Text(
+            item.title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: textTheme.titleMedium?.copyWith(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            item.subtitle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: textTheme.bodySmall,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _QuickActionPremiumTag extends StatelessWidget {
+  const _QuickActionPremiumTag({required this.show});
+
+  final bool show;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!show) {
+      return const SizedBox(width: 42, height: 24);
+    }
+
+    return Container(
+      height: 24,
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      decoration: BoxDecoration(
+        gradient: AppColors.premiumGradient,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.lock_outline_rounded,
+            size: 11,
+            color: AppColors.ink,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            'Pro',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.ink,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 10,
+                ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -249,8 +316,9 @@ class _MetricPill extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.6),
+          color: Colors.white.withOpacity(0.82),
           borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: AppColors.line.withOpacity(0.6)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

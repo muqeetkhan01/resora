@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../data/mock/mock_content.dart';
 import '../../../data/models/app_models.dart';
@@ -28,7 +29,7 @@ class AffirmationsView extends GetView<AffirmationsController> {
           children: [
             IconButton(
               onPressed: Get.back,
-              icon: const Icon(Icons.arrow_back_ios_new_rounded),
+              icon: const Icon(AppIcons.back),
             ),
             Text('Affirmations', style: textTheme.displayMedium),
             const SizedBox(height: AppSpacing.xs),
@@ -57,8 +58,7 @@ class AffirmationsView extends GetView<AffirmationsController> {
                           color: AppColors.ink,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.play_arrow_rounded,
-                            color: Colors.white),
+                        child: const Icon(AppIcons.play, color: Colors.white),
                       ),
                       const SizedBox(width: AppSpacing.md),
                       Text(hero.duration, style: textTheme.titleMedium),
@@ -125,8 +125,8 @@ class _AffirmationCard extends GetView<AffirmationsController> {
                     onTap: () => controller.toggleSaved(item),
                     child: Icon(
                       isSaved
-                          ? Icons.favorite_rounded
-                          : Icons.favorite_border_rounded,
+                          ? AppIcons.affirmations
+                          : AppIcons.emotionalSupport,
                       color: isSaved ? AppColors.blush : AppColors.muted,
                     ),
                   ),
@@ -137,7 +137,7 @@ class _AffirmationCard extends GetView<AffirmationsController> {
               const SizedBox(height: AppSpacing.md),
               Row(
                 children: [
-                  const Icon(Icons.play_circle_outline_rounded),
+                  const Icon(AppIcons.play),
                   const SizedBox(width: AppSpacing.xs),
                   Text(item.duration,
                       style: Theme.of(context).textTheme.bodySmall),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../widgets/app_background.dart';
 import '../../../widgets/app_button.dart';
@@ -44,20 +45,20 @@ class WelcomeView extends GetView<AuthEntryController> {
                 children: [
                   AppButton(
                     label: 'Continue with Email',
-                    icon: Icons.mail_outline_rounded,
+                    icon: AppIcons.email,
                     onPressed: controller.enterApp,
                   ),
                   const SizedBox(height: AppSpacing.md),
                   AppButton(
                     label: 'Continue with Google',
-                    icon: Icons.g_mobiledata_rounded,
+                    icon: AppIcons.google,
                     style: AppButtonStyle.secondary,
                     onPressed: controller.enterApp,
                   ),
                   const SizedBox(height: AppSpacing.md),
                   AppButton(
                     label: 'Continue with Apple',
-                    icon: Icons.apple_rounded,
+                    icon: AppIcons.apple,
                     style: AppButtonStyle.secondary,
                     onPressed: controller.enterApp,
                   ),

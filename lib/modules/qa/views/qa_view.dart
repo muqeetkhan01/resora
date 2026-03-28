@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
+import '../../../theme/app_colors.dart';
 import '../../../widgets/app_background.dart';
 import '../../../widgets/app_button.dart';
 import '../../../widgets/app_card.dart';
@@ -20,7 +21,7 @@ class QaView extends GetView<QaController> {
     return AppBackground(
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => Get.toNamed(AppRoutes.premium),
-        backgroundColor: Colors.black87,
+        backgroundColor: AppColors.success,
         foregroundColor: Colors.white,
         label: const Text('Ask a question'),
         icon: const Icon(Icons.edit_outlined),

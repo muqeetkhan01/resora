@@ -11,8 +11,8 @@ abstract final class AppTheme {
       brightness: Brightness.light,
       scaffoldBackgroundColor: AppColors.canvas,
       colorScheme: const ColorScheme.light(
-        primary: AppColors.ink,
-        secondary: AppColors.peach,
+        primary: AppColors.success,
+        secondary: AppColors.gold,
         surface: AppColors.shell,
         onSurface: AppColors.ink,
       ),
@@ -38,9 +38,9 @@ abstract final class AppTheme {
       ),
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.cardStrong,
-        selectedColor: AppColors.ink,
+        selectedColor: AppColors.success,
         disabledColor: AppColors.cardStrong,
-        secondarySelectedColor: AppColors.peach,
+        secondarySelectedColor: AppColors.gold,
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(999),

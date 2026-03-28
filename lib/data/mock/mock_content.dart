@@ -1,11 +1,10 @@
-import 'package:flutter/material.dart';
-
+import '../../core/constants/app_icons.dart';
 import '../../routes/app_routes.dart';
 import '../../theme/app_colors.dart';
 import '../models/app_models.dart';
 
 abstract final class MockContent {
-  static const userName = 'Maya';
+  static const userName = 'Amber';
 
   static const onboarding = [
     OnboardingItem(
@@ -13,7 +12,7 @@ abstract final class MockContent {
       subtitle: 'Emotional support that meets you in the middle of real life.',
       caption:
           'Grounding tools, soothing rituals, and calm design made for busy hearts.',
-      icon: Icons.spa_rounded,
+      icon: AppIcons.emotionalSupport,
       accentColor: AppColors.peach,
     ),
     OnboardingItem(
@@ -21,7 +20,7 @@ abstract final class MockContent {
       subtitle: 'Reset your nervous system before the next hard moment.',
       caption:
           'Short reflections, regulation prompts, and parenting support that feels gentle.',
-      icon: Icons.favorite_rounded,
+      icon: AppIcons.parentingCalm,
       accentColor: AppColors.blush,
     ),
     OnboardingItem(
@@ -30,7 +29,7 @@ abstract final class MockContent {
           'An AI companion to help you process, reflect, and feel supported.',
       caption:
           'Ask for clarity, routines, co-regulation tips, or a thoughtful reframe.',
-      icon: Icons.auto_awesome_rounded,
+      icon: AppIcons.aiGuidance,
       accentColor: AppColors.gold,
     ),
     OnboardingItem(
@@ -39,7 +38,7 @@ abstract final class MockContent {
           'Meditations, ASMR, visualizations, journaling, and affirmations.',
       caption:
           'Build a private care space you can return to any time you need steadiness.',
-      icon: Icons.wb_twilight_rounded,
+      icon: AppIcons.wellnessTools,
       accentColor: AppColors.sage,
     ),
   ];
@@ -48,14 +47,14 @@ abstract final class MockContent {
     QuickActionItem(
       title: 'AI Chat',
       subtitle: 'Talk it through',
-      icon: Icons.chat_bubble_outline_rounded,
+      icon: AppIcons.aiChat,
       accentColor: AppColors.blush,
       route: AppRoutes.chat,
     ),
     QuickActionItem(
       title: 'Journal',
       subtitle: 'Write gently',
-      icon: Icons.menu_book_rounded,
+      icon: AppIcons.journal,
       accentColor: AppColors.peach,
       route: AppRoutes.dashboard,
       dashboardIndex: 1,
@@ -63,14 +62,14 @@ abstract final class MockContent {
     QuickActionItem(
       title: 'Affirmations',
       subtitle: 'Daily words',
-      icon: Icons.self_improvement_rounded,
+      icon: AppIcons.affirmations,
       accentColor: AppColors.gold,
       route: AppRoutes.affirmations,
     ),
     QuickActionItem(
       title: 'Meditation',
       subtitle: 'Find stillness',
-      icon: Icons.air_rounded,
+      icon: AppIcons.meditation,
       accentColor: AppColors.sage,
       route: AppRoutes.mindfulness,
       routeArguments: 0,
@@ -78,7 +77,7 @@ abstract final class MockContent {
     QuickActionItem(
       title: 'ASMR',
       subtitle: 'Soothing sound',
-      icon: Icons.graphic_eq_rounded,
+      icon: AppIcons.asmr,
       accentColor: AppColors.peach,
       route: AppRoutes.mindfulness,
       routeArguments: 1,
@@ -87,7 +86,7 @@ abstract final class MockContent {
     QuickActionItem(
       title: 'Visualize',
       subtitle: 'Soft imagery',
-      icon: Icons.visibility_outlined,
+      icon: AppIcons.visualizations,
       accentColor: AppColors.blush,
       route: AppRoutes.mindfulness,
       routeArguments: 2,
@@ -96,14 +95,14 @@ abstract final class MockContent {
     QuickActionItem(
       title: 'Q&A',
       subtitle: 'Expert library',
-      icon: Icons.forum_outlined,
+      icon: AppIcons.questions,
       accentColor: AppColors.sage,
       route: AppRoutes.qa,
     ),
     QuickActionItem(
       title: 'Community',
       subtitle: 'Warm support',
-      icon: Icons.people_alt_outlined,
+      icon: AppIcons.community,
       accentColor: AppColors.gold,
       route: AppRoutes.dashboard,
       dashboardIndex: 2,
@@ -274,15 +273,15 @@ abstract final class MockContent {
   static const profileOptions = [
     ProfileOption(
         label: 'Saved Content',
-        icon: Icons.bookmark_border_rounded,
+        icon: AppIcons.bookmark,
         trailing: '18'),
     ProfileOption(
         label: 'Notifications',
-        icon: Icons.notifications_none_rounded,
+        icon: AppIcons.notification,
         trailing: 'Daily'),
-    ProfileOption(label: 'Privacy', icon: Icons.lock_outline_rounded),
-    ProfileOption(label: 'Help & Support', icon: Icons.help_outline_rounded),
-    ProfileOption(label: 'Logout', icon: Icons.logout_rounded),
+    ProfileOption(label: 'Privacy', icon: AppIcons.privacy),
+    ProfileOption(label: 'Help & Support', icon: AppIcons.help),
+    ProfileOption(label: 'Logout', icon: AppIcons.logout),
   ];
 
   static const premiumPlans = [

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+import '../core/constants/app_icons.dart';
 import '../core/constants/app_spacing.dart';
 import '../theme/app_colors.dart';
 
@@ -21,32 +22,50 @@ class AppBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final content = Align(
+      alignment: Alignment.topCenter,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: AppSpacing.maxContentWidth),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+          child: safeArea ? SafeArea(child: child) : child,
+        ),
+      ),
+    );
+
     final body = Stack(
       children: [
         Container(
             decoration: const BoxDecoration(gradient: AppColors.dawnGradient)),
-        const _GlowOrb(top: -30, left: -20, color: AppColors.peach, size: 200),
-        const _GlowOrb(top: 170, right: -50, color: AppColors.sage, size: 170),
         const _GlowOrb(
-            bottom: -60, left: 40, color: AppColors.blush, size: 220),
-        Align(
-          alignment: Alignment.topCenter,
-          child: ConstrainedBox(
-            constraints:
-                const BoxConstraints(maxWidth: AppSpacing.maxContentWidth),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-              child: child,
-            ),
-          ),
+          top: -90,
+          left: -80,
+          color: AppColors.peach,
+          size: 220,
+          opacity: 0.08,
         ),
+        const _GlowOrb(
+          top: 120,
+          right: -100,
+          color: AppColors.sage,
+          size: 190,
+          opacity: 0.07,
+        ),
+        const _GlowOrb(
+          bottom: -120,
+          left: -20,
+          color: AppColors.blush,
+          size: 250,
+          opacity: 0.08,
+        ),
+        content,
       ],
     );
 
     return Scaffold(
       extendBody: true,
       backgroundColor: Colors.transparent,
-      body: safeArea ? SafeArea(child: body) : body,
+      body: body,
       bottomNavigationBar: bottomNavigationBar,
       floatingActionButton: floatingActionButton,
     );
@@ -72,9 +91,9 @@ class FrostedPill extends StatelessWidget {
         child: Container(
           padding: padding,
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.45),
+            color: Colors.white.withOpacity(0.72),
             borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
-            border: Border.all(color: Colors.white.withOpacity(0.65)),
+            border: Border.all(color: AppColors.line.withOpacity(0.9)),
           ),
           child: child,
         ),
@@ -126,7 +145,7 @@ class ResoraLogo extends StatelessWidget {
                 ),
               ),
               Icon(
-                Icons.auto_awesome_rounded,
+                AppIcons.brand,
                 size: size * 0.34,
                 color: AppColors.ink,
               ),
@@ -156,6 +175,7 @@ class _GlowOrb extends StatelessWidget {
     this.bottom,
     required this.color,
     required this.size,
+    required this.opacity,
   });
 
   final double? top;
@@ -164,6 +184,7 @@ class _GlowOrb extends StatelessWidget {
   final double? bottom;
   final Color color;
   final double size;
+  final double opacity;
 
   @override
   Widget build(BuildContext context) {
@@ -178,10 +199,10 @@ class _GlowOrb extends StatelessWidget {
           height: size,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: color.withOpacity(0.16),
+            color: color.withOpacity(opacity),
           ),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 60, sigmaY: 60),
+            filter: ImageFilter.blur(sigmaX: 85, sigmaY: 85),
             child: const SizedBox.expand(),
           ),
         ),

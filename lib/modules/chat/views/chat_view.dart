@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/app_background.dart';
@@ -24,7 +25,7 @@ class ChatView extends GetView<ChatController> {
               children: [
                 IconButton(
                   onPressed: Get.back,
-                  icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                  icon: const Icon(AppIcons.back),
                 ),
                 Expanded(
                   child: Column(
@@ -38,7 +39,7 @@ class ChatView extends GetView<ChatController> {
                 ),
                 const CircleAvatar(
                   backgroundColor: AppColors.cardStrong,
-                  child: Icon(Icons.auto_awesome_rounded, color: AppColors.ink),
+                  child: Icon(AppIcons.aiGuidance, color: AppColors.ink),
                 ),
               ],
             ),
@@ -157,8 +158,7 @@ class ChatView extends GetView<ChatController> {
                       color: AppColors.ink,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.arrow_upward_rounded,
-                        color: Colors.white),
+                    child: const Icon(AppIcons.send, color: Colors.white),
                   ),
                 ),
               ],

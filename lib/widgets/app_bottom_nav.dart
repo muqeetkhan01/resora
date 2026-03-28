@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../core/constants/app_icons.dart';
 import '../core/constants/app_spacing.dart';
 import '../theme/app_colors.dart';
 
@@ -14,10 +15,10 @@ class AppBottomNav extends StatelessWidget {
   final ValueChanged<int> onTap;
 
   static const _items = [
-    (Icons.home_outlined, Icons.home_rounded, 'Home'),
-    (Icons.menu_book_outlined, Icons.menu_book_rounded, 'Journal'),
-    (Icons.people_outline_rounded, Icons.people_alt_rounded, 'Community'),
-    (Icons.person_outline_rounded, Icons.person_rounded, 'Profile'),
+    (AppIcons.homeOutline, AppIcons.homeFilled, 'Home'),
+    (AppIcons.journalOutline, AppIcons.journalFilled, 'Journal'),
+    (AppIcons.communityOutline, AppIcons.communityFilled, 'Community'),
+    (AppIcons.profileOutline, AppIcons.profileFilled, 'Profile'),
   ];
 
   @override
@@ -27,14 +28,14 @@ class AppBottomNav extends StatelessWidget {
           AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.lg),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.9),
-          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+          color: AppColors.shell.withOpacity(0.98),
+          borderRadius: BorderRadius.circular(28),
           border: Border.all(color: AppColors.line),
           boxShadow: const [
             BoxShadow(
               color: AppColors.shadow,
-              blurRadius: 24,
-              offset: Offset(0, 12),
+              blurRadius: 20,
+              offset: Offset(0, 10),
             ),
           ],
         ),
@@ -52,24 +53,45 @@ class AppBottomNav extends StatelessWidget {
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   curve: Curves.easeOut,
-                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                  padding: const EdgeInsets.symmetric(vertical: 10),
                   decoration: BoxDecoration(
-                    color: selected ? AppColors.ink : Colors.transparent,
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                    color:
+                        selected ? AppColors.cardStrong : Colors.transparent,
+                    border: selected
+                        ? Border.all(color: AppColors.sage)
+                        : null,
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
                         selected ? item.$2 : item.$1,
-                        color: selected ? Colors.white : AppColors.muted,
+                        color: selected ? AppColors.success : AppColors.muted,
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 4),
                       Text(
                         item.$3,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: selected ? Colors.white : AppColors.muted,
+                              color: selected
+                                  ? AppColors.success
+                                  : AppColors.muted,
+                              fontWeight: selected
+                                  ? FontWeight.w700
+                                  : FontWeight.w600,
                             ),
+                      ),
+                      const SizedBox(height: 4),
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        width: selected ? 18 : 6,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: selected
+                              ? AppColors.gold
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(999),
+                        ),
                       ),
                     ],
                   ),

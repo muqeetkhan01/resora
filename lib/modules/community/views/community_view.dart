@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/constants/app_spacing.dart';
+import '../../../theme/app_colors.dart';
 import '../../../widgets/app_card.dart';
 import '../../../widgets/app_chip.dart';
 import '../controllers/community_controller.dart';
@@ -37,7 +38,7 @@ class CommunityView extends GetView<CommunityController> {
                   width: 48,
                   height: 48,
                   decoration: const BoxDecoration(
-                    color: Colors.black87,
+                    color: AppColors.success,
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.add_rounded, color: Colors.white),

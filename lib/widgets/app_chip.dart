@@ -23,9 +23,11 @@ class AppTagChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
           color:
-              selected ? AppColors.ink : Colors.white.withOpacity(0.72),
+              selected ? AppColors.success : AppColors.shell.withOpacity(0.94),
           borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: selected ? AppColors.ink : AppColors.line),
+          border: Border.all(
+            color: selected ? AppColors.success : AppColors.line,
+          ),
         ),
         child: Text(
           label,

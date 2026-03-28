@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
@@ -26,7 +27,7 @@ class MindfulnessView extends GetView<MindfulnessController> {
           children: [
             IconButton(
               onPressed: Get.back,
-              icon: const Icon(Icons.arrow_back_ios_new_rounded),
+              icon: const Icon(AppIcons.back),
             ),
             Text('Mindfulness', style: textTheme.displayMedium),
             const SizedBox(height: AppSpacing.xs),
@@ -76,8 +77,7 @@ class MindfulnessView extends GetView<MindfulnessController> {
                           color: AppColors.ink,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.play_arrow_rounded,
-                            color: Colors.white),
+                        child: const Icon(AppIcons.play, color: Colors.white),
                       ),
                       const SizedBox(width: AppSpacing.md),
                       Text('10 min session', style: textTheme.titleMedium),
@@ -129,7 +129,7 @@ class _SessionCard extends StatelessWidget {
                   color: session.color.withOpacity(0.35),
                   borderRadius: BorderRadius.circular(22),
                 ),
-                child: const Icon(Icons.play_arrow_rounded, size: 30),
+                child: const Icon(AppIcons.play, size: 28),
               ),
               const SizedBox(width: AppSpacing.md),
               Expanded(

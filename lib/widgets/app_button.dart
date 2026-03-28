@@ -30,8 +30,8 @@ class AppButton extends StatelessWidget {
     };
 
     final background = switch (style) {
-      AppButtonStyle.primary => AppColors.ink,
-      AppButtonStyle.secondary => Colors.white.withOpacity(0.8),
+      AppButtonStyle.primary => AppColors.success,
+      AppButtonStyle.secondary => Colors.white.withOpacity(0.92),
       AppButtonStyle.ghost => Colors.transparent,
     };
 
@@ -54,8 +54,8 @@ class AppButton extends StatelessWidget {
             ? const [
                 BoxShadow(
                   color: AppColors.shadow,
-                  blurRadius: 24,
-                  offset: Offset(0, 14),
+                  blurRadius: 18,
+                  offset: Offset(0, 10),
                 ),
               ]
             : null,
