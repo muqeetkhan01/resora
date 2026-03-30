@@ -24,38 +24,38 @@ class AppButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final foreground = switch (style) {
-      AppButtonStyle.primary => Colors.white,
-      AppButtonStyle.secondary => AppColors.ink,
-      AppButtonStyle.ghost => AppColors.ink,
+      AppButtonStyle.primary => AppColors.white,
+      AppButtonStyle.secondary => AppColors.primary,
+      AppButtonStyle.ghost => AppColors.primary,
     };
 
     final background = switch (style) {
-      AppButtonStyle.primary => AppColors.success,
-      AppButtonStyle.secondary => Colors.white.withOpacity(0.92),
+      AppButtonStyle.primary => AppColors.primary,
+      AppButtonStyle.secondary => Colors.transparent,
       AppButtonStyle.ghost => Colors.transparent,
     };
 
     final border = switch (style) {
       AppButtonStyle.primary => Colors.transparent,
-      AppButtonStyle.secondary => AppColors.line,
+      AppButtonStyle.secondary => AppColors.primary,
       AppButtonStyle.ghost => Colors.transparent,
     };
 
     final button = AnimatedContainer(
       duration: const Duration(milliseconds: 220),
-      curve: Curves.easeOut,
-      height: 56,
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+      curve: Curves.easeInOut,
+      height: 52,
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       decoration: BoxDecoration(
         color: background,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
-        border: Border.all(color: border),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: border, width: 1.5),
         boxShadow: style == AppButtonStyle.primary
             ? const [
                 BoxShadow(
                   color: AppColors.shadow,
-                  blurRadius: 18,
-                  offset: Offset(0, 10),
+                  blurRadius: 8,
+                  offset: Offset(0, 2),
                 ),
               ]
             : null,
@@ -70,10 +70,9 @@ class AppButton extends StatelessWidget {
           ],
           Text(
             label,
-            style: Theme.of(context)
-                .textTheme
-                .labelLarge
-                ?.copyWith(color: foreground),
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: foreground,
+                ),
           ),
         ],
       ),

@@ -1,74 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/app_background.dart';
 import '../controllers/splash_controller.dart';
 
-class SplashView extends StatefulWidget {
+class SplashView extends GetView<SplashController> {
   const SplashView({super.key});
 
   @override
-  State<SplashView> createState() => _SplashViewState();
-}
-
-class _SplashViewState extends State<SplashView> {
-  bool _visible = false;
-
-  @override
-  void initState() {
-    super.initState();
-    Get.find<SplashController>();
-    Future<void>.delayed(const Duration(milliseconds: 120), () {
-      if (mounted) {
-        setState(() => _visible = true);
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    controller;
     final textTheme = Theme.of(context).textTheme;
 
     return AppBackground(
       safeArea: false,
       child: Center(
-        child: AnimatedOpacity(
-          duration: const Duration(milliseconds: 900),
-          opacity: _visible ? 1 : 0,
-          curve: Curves.easeOut,
-          child: TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0.92, end: _visible ? 1 : 0.92),
-            duration: const Duration(milliseconds: 1100),
-            curve: Curves.easeOutCubic,
-            builder: (context, value, child) {
-              return Transform.scale(scale: value, child: child);
-            },
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const ResoraLogo(size: 104, showWordmark: false),
-                const SizedBox(height: AppSpacing.xl),
-                Text('Resora', style: textTheme.displayLarge),
-                const SizedBox(height: AppSpacing.sm),
-                Text(
-                  'A premium space for calm parenting and emotional wellness',
-                  style: textTheme.bodyMedium,
-                  textAlign: TextAlign.center,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0.86, end: 1),
+              duration: const Duration(seconds: 3),
+              curve: Curves.easeInOut,
+              builder: (context, value, child) {
+                return Transform.scale(scale: value, child: child);
+              },
+              child: Container(
+                width: 118,
+                height: 118,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.primary.withOpacity(0.06),
                 ),
-                const SizedBox(height: AppSpacing.xxl),
-                const SizedBox(
-                  width: 28,
-                  height: 28,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.2,
-                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.ink),
+                child: const Center(
+                  child: Icon(
+                    AppIcons.brand,
+                    size: 56,
+                    color: AppColors.primary,
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
+            const SizedBox(height: AppSpacing.xxxl),
+            Text('Resora', style: textTheme.displayLarge?.copyWith(fontSize: 30)),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              'for real life moments',
+              style: textTheme.bodySmall?.copyWith(color: AppColors.primary),
+            ),
+          ],
         ),
       ),
     );

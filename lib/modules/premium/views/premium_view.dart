@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../theme/app_colors.dart';
 import '../../../widgets/app_background.dart';
 import '../../../widgets/app_button.dart';
-import '../../../widgets/app_card.dart';
 import '../controllers/premium_controller.dart';
 
 class PremiumView extends GetView<PremiumController> {
@@ -14,35 +15,36 @@ class PremiumView extends GetView<PremiumController> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     const benefits = [
-      'Unlimited AI guidance and deeper reflection flows',
-      'Premium meditations, ASMR sessions, and visualizations',
-      'Expert answer previews and curated care collections',
-      'Saved content, ritual playlists, and personalized pathways',
+      'Unlimited Help Me Now conversations',
+      'Full Quiet the Noise and visualization library',
+      'Unlimited journal entries and guided reflections',
+      'Expanded Q&A, Rehearse the Moment, and premium content updates',
     ];
 
     return AppBackground(
       child: SingleChildScrollView(
-        padding:
-            const EdgeInsets.only(top: AppSpacing.md, bottom: AppSpacing.xxl),
+        padding: const EdgeInsets.only(top: AppSpacing.md, bottom: AppSpacing.xxl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             IconButton(
               onPressed: Get.back,
-              icon: const Icon(Icons.arrow_back_ios_new_rounded),
+              icon: const Icon(AppIcons.back, color: AppColors.primary),
             ),
-            Text('Resora Premium', style: textTheme.displayMedium),
+            Text('unlock everything', style: textTheme.displayMedium),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              'A soft-luxury membership for deeper care, calmer rhythms, and more support.',
+              'Go deeper with full access to every space, every audio session, and unlimited support.',
               style: textTheme.bodyMedium,
             ),
             const SizedBox(height: AppSpacing.xl),
-            AppCard(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFE9D4B1), Color(0xFFC9975D)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(color: AppColors.line),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,15 +53,23 @@ class PremiumView extends GetView<PremiumController> {
                       (benefit) => Padding(
                         padding: const EdgeInsets.only(bottom: AppSpacing.md),
                         child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Icon(Icons.check_circle_rounded,
-                                color: Colors.white),
+                            const Padding(
+                              padding: EdgeInsets.only(top: 4),
+                              child: Icon(
+                                Icons.check_circle_outline_rounded,
+                                color: AppColors.primary,
+                                size: 20,
+                              ),
+                            ),
                             const SizedBox(width: AppSpacing.sm),
                             Expanded(
                               child: Text(
                                 benefit,
-                                style: textTheme.bodyMedium
-                                    ?.copyWith(color: Colors.white),
+                                style: textTheme.bodyMedium?.copyWith(
+                                  color: AppColors.warmDark,
+                                ),
                               ),
                             ),
                           ],
@@ -70,15 +80,31 @@ class PremiumView extends GetView<PremiumController> {
               ),
             ),
             const SizedBox(height: AppSpacing.xl),
-            AppCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: AppColors.line),
+              ),
+              child: Row(
                 children: [
-                  Text('Locked preview', style: textTheme.titleLarge),
-                  const SizedBox(height: AppSpacing.md),
-                  Text(
-                    'Healing series, expert Q&A, sleep sessions, deeper affirmations, and personalized rituals are ready for your future subscription flow.',
-                    style: textTheme.bodyMedium,
+                    Container(
+                      width: 52,
+                      height: 52,
+                      decoration: BoxDecoration(
+                      color: AppColors.white.withOpacity(0.6),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    child: const Icon(AppIcons.premium, color: AppColors.terracotta),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Text(
+                      'Unlock premium visualizations, deeper answers, guided journal, and extended audio sessions.',
+                      style: textTheme.bodyMedium?.copyWith(color: AppColors.warmDark),
+                    ),
                   ),
                 ],
               ),
@@ -89,21 +115,21 @@ class PremiumView extends GetView<PremiumController> {
                 children: List.generate(controller.plans.length, (index) {
                   final plan = controller.plans[index];
                   final selected = controller.selectedPlan.value == index;
+
                   return Padding(
                     padding: const EdgeInsets.only(bottom: AppSpacing.md),
                     child: GestureDetector(
                       onTap: () => controller.selectPlan(index),
                       child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
+                        duration: const Duration(milliseconds: 220),
+                        curve: Curves.easeInOut,
                         padding: const EdgeInsets.all(AppSpacing.lg),
                         decoration: BoxDecoration(
-                          color: selected
-                              ? Colors.black87
-                              : Colors.white.withOpacity(0.8),
-                          borderRadius:
-                              BorderRadius.circular(AppSpacing.radiusMd),
+                          color: selected ? AppColors.surface : AppColors.white,
+                          borderRadius: BorderRadius.circular(18),
                           border: Border.all(
-                            color: selected ? Colors.black87 : Colors.black12,
+                            color: selected ? AppColors.primary : AppColors.line,
+                            width: selected ? 1.4 : 1,
                           ),
                         ),
                         child: Row(
@@ -112,30 +138,39 @@ class PremiumView extends GetView<PremiumController> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    plan.title,
-                                    style: textTheme.titleLarge?.copyWith(
-                                      color: selected
-                                          ? Colors.white
-                                          : Colors.black87,
-                                    ),
+                                  Row(
+                                    children: [
+                                      Text(plan.title, style: textTheme.titleLarge),
+                                      if (plan.highlight) ...[
+                                        const SizedBox(width: AppSpacing.sm),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 5,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.primary.withOpacity(0.08),
+                                            borderRadius: BorderRadius.circular(999),
+                                          ),
+                                          child: Text(
+                                            'best value',
+                                            style: textTheme.bodySmall?.copyWith(
+                                              color: AppColors.primary,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ],
                                   ),
-                                  const SizedBox(height: AppSpacing.xxs),
-                                  Text(
-                                    plan.caption,
-                                    style: textTheme.bodySmall?.copyWith(
-                                      color: selected
-                                          ? Colors.white70
-                                          : Colors.black54,
-                                    ),
-                                  ),
+                                  const SizedBox(height: AppSpacing.xs),
+                                  Text(plan.caption, style: textTheme.bodySmall),
                                 ],
                               ),
                             ),
                             Text(
                               plan.price,
                               style: textTheme.headlineMedium?.copyWith(
-                                color: selected ? Colors.white : Colors.black87,
+                                color: AppColors.primary,
                               ),
                             ),
                           ],
@@ -147,7 +182,7 @@ class PremiumView extends GetView<PremiumController> {
               ),
             ),
             const SizedBox(height: AppSpacing.md),
-            const AppButton(label: 'Start premium trial', onPressed: null),
+            const AppButton(label: 'Start 7-day trial', onPressed: null),
             const SizedBox(height: AppSpacing.md),
             const AppButton(
               label: 'Restore purchases',

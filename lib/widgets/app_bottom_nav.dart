@@ -15,91 +15,76 @@ class AppBottomNav extends StatelessWidget {
   final ValueChanged<int> onTap;
 
   static const _items = [
-    (AppIcons.homeOutline, AppIcons.homeFilled, 'Home'),
-    (AppIcons.journalOutline, AppIcons.journalFilled, 'Journal'),
-    (AppIcons.communityOutline, AppIcons.communityFilled, 'Community'),
-    (AppIcons.profileOutline, AppIcons.profileFilled, 'Profile'),
+    (AppIcons.homeOutline, AppIcons.homeFilled, 'home'),
+    (AppIcons.chatOutline, AppIcons.chatFilled, 'talk'),
+    (AppIcons.spacesOutline, AppIcons.spacesFilled, 'space'),
+    (AppIcons.journalOutline, AppIcons.journalFilled, 'journal'),
   ];
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.white,
+        border: Border(top: BorderSide(color: AppColors.line)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow,
+            blurRadius: 18,
+            offset: Offset(0, -4),
+          ),
+        ],
+      ),
       padding: const EdgeInsets.fromLTRB(
-          AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.lg),
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.shell.withOpacity(0.98),
-          borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: AppColors.line),
-          boxShadow: const [
-            BoxShadow(
-              color: AppColors.shadow,
-              blurRadius: 20,
-              offset: Offset(0, 10),
-            ),
-          ],
-        ),
-        padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.sm, vertical: AppSpacing.sm),
-        child: Row(
-          children: List.generate(_items.length, (index) {
-            final item = _items[index];
-            final selected = currentIndex == index;
+        AppSpacing.md,
+        AppSpacing.xs,
+        AppSpacing.md,
+        AppSpacing.md,
+      ),
+      child: Row(
+        children: List.generate(_items.length, (index) {
+          final item = _items[index];
+          final selected = currentIndex == index;
 
-            return Expanded(
-              child: GestureDetector(
-                onTap: () => onTap(index),
-                behavior: HitTestBehavior.opaque,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeOut,
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(
-                    color:
-                        selected ? AppColors.cardStrong : Colors.transparent,
-                    border: selected
-                        ? Border.all(color: AppColors.sage)
-                        : null,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        selected ? item.$2 : item.$1,
-                        color: selected ? AppColors.success : AppColors.muted,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        item.$3,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: selected
-                                  ? AppColors.success
-                                  : AppColors.muted,
-                              fontWeight: selected
-                                  ? FontWeight.w700
-                                  : FontWeight.w600,
-                            ),
-                      ),
-                      const SizedBox(height: 4),
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        width: selected ? 18 : 6,
-                        height: 6,
-                        decoration: BoxDecoration(
-                          color: selected
-                              ? AppColors.gold
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                      ),
-                    ],
+          return Expanded(
+            child: GestureDetector(
+              onTap: () => onTap(index),
+              behavior: HitTestBehavior.opaque,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeInOut,
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                decoration: BoxDecoration(
+                  border: Border(
+                    top: BorderSide(
+                      color: selected ? AppColors.primary : Colors.transparent,
+                      width: 2,
+                    ),
                   ),
                 ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      selected ? item.$2 : item.$1,
+                      size: 21,
+                      color: selected ? AppColors.primary : AppColors.muted,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      item.$3,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            fontSize: 11,
+                            color:
+                                selected ? AppColors.primary : AppColors.muted,
+                          ),
+                    ),
+                  ],
+                ),
               ),
-            );
-          }),
-        ),
+            ),
+          );
+        }),
       ),
     );
   }

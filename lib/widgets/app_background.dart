@@ -36,27 +36,43 @@ class AppBackground extends StatelessWidget {
     final body = Stack(
       children: [
         Container(
-            decoration: const BoxDecoration(gradient: AppColors.dawnGradient)),
-        const _GlowOrb(
-          top: -90,
-          left: -80,
-          color: AppColors.peach,
-          size: 220,
-          opacity: 0.08,
+          decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
         ),
-        const _GlowOrb(
-          top: 120,
-          right: -100,
-          color: AppColors.sage,
-          size: 190,
-          opacity: 0.07,
+        Positioned(
+          top: -120,
+          right: -40,
+          child: IgnorePointer(
+            child: Container(
+              width: 240,
+              height: 240,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.primary.withOpacity(0.035),
+              ),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+                child: const SizedBox.expand(),
+              ),
+            ),
+          ),
         ),
-        const _GlowOrb(
+        Positioned(
           bottom: -120,
-          left: -20,
-          color: AppColors.blush,
-          size: 250,
-          opacity: 0.08,
+          left: -40,
+          child: IgnorePointer(
+            child: Container(
+              width: 220,
+              height: 220,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.terracotta.withOpacity(0.03),
+              ),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+                child: const SizedBox.expand(),
+              ),
+            ),
+          ),
         ),
         content,
       ],
@@ -91,7 +107,7 @@ class FrostedPill extends StatelessWidget {
         child: Container(
           padding: padding,
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.72),
+            color: AppColors.white.withOpacity(0.72),
             borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
             border: Border.all(color: AppColors.line.withOpacity(0.9)),
           ),
@@ -120,16 +136,17 @@ class ResoraLogo extends StatelessWidget {
           height: size,
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [Color(0xFFF6DEC9), Color(0xFFEBC0BA), Color(0xFFE9D8BE)],
+              colors: [AppColors.white, AppColors.canvas, AppColors.surface],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
+            border: Border.all(color: AppColors.line),
             borderRadius: BorderRadius.circular(size / 3),
             boxShadow: const [
               BoxShadow(
                 color: AppColors.shadow,
-                blurRadius: 40,
-                offset: Offset(0, 18),
+                blurRadius: 24,
+                offset: Offset(0, 10),
               ),
             ],
           ),
@@ -140,14 +157,14 @@ class ResoraLogo extends StatelessWidget {
                 width: size * 0.62,
                 height: size * 0.62,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.45),
+                  color: AppColors.primary.withOpacity(0.06),
                   borderRadius: BorderRadius.circular(size / 4),
                 ),
               ),
               Icon(
                 AppIcons.brand,
                 size: size * 0.34,
-                color: AppColors.ink,
+                color: AppColors.primary,
               ),
             ],
           ),
@@ -157,56 +174,12 @@ class ResoraLogo extends StatelessWidget {
           Text('Resora', style: textTheme.displayMedium),
           const SizedBox(height: AppSpacing.xs),
           Text(
-            'Calm living for tender seasons',
+            'for real life moments',
             style: textTheme.bodyMedium,
             textAlign: TextAlign.center,
           ),
         ],
       ],
-    );
-  }
-}
-
-class _GlowOrb extends StatelessWidget {
-  const _GlowOrb({
-    this.top,
-    this.left,
-    this.right,
-    this.bottom,
-    required this.color,
-    required this.size,
-    required this.opacity,
-  });
-
-  final double? top;
-  final double? left;
-  final double? right;
-  final double? bottom;
-  final Color color;
-  final double size;
-  final double opacity;
-
-  @override
-  Widget build(BuildContext context) {
-    return Positioned(
-      top: top,
-      left: left,
-      right: right,
-      bottom: bottom,
-      child: IgnorePointer(
-        child: Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: color.withOpacity(opacity),
-          ),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 85, sigmaY: 85),
-            child: const SizedBox.expand(),
-          ),
-        ),
-      ),
     );
   }
 }

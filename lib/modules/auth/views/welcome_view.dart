@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../theme/app_colors.dart';
 import '../../../widgets/app_background.dart';
 import '../../../widgets/app_button.dart';
 import '../../../widgets/app_card.dart';
@@ -35,8 +36,8 @@ class WelcomeView extends GetView<AuthEntryController> {
             AppCard(
               gradient: LinearGradient(
                 colors: [
-                  Colors.white.withOpacity(0.88),
-                  const Color(0xFFF2E5DB),
+                  AppColors.white.withOpacity(0.94),
+                  AppColors.surface,
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,

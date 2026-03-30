@@ -55,13 +55,17 @@ class JournalEntry {
     required this.title,
     required this.preview,
     required this.date,
-    required this.moods,
+    this.moods = const [],
+    this.wordCount = 0,
+    this.prompt,
   });
 
   final String title;
   final String preview;
   final String date;
   final List<String> moods;
+  final int wordCount;
+  final String? prompt;
 }
 
 class AffirmationItem {
@@ -156,4 +160,84 @@ class PremiumPlan {
   final String price;
   final String caption;
   final bool highlight;
+}
+
+class GoalOption {
+  const GoalOption({
+    required this.title,
+    required this.subtitle,
+  });
+
+  final String title;
+  final String subtitle;
+}
+
+class ResetOption {
+  const ResetOption({
+    required this.title,
+    required this.subtitle,
+    required this.duration,
+    required this.icon,
+  });
+
+  final String title;
+  final String subtitle;
+  final String duration;
+  final IconData icon;
+}
+
+class AudioTrack {
+  const AudioTrack({
+    required this.title,
+    required this.category,
+    required this.description,
+    required this.duration,
+    this.isPremium = false,
+  });
+
+  final String title;
+  final String category;
+  final String description;
+  final String duration;
+  final bool isPremium;
+}
+
+class RehearsalScenario {
+  const RehearsalScenario({
+    required this.title,
+    required this.category,
+    required this.reframe,
+    required this.script,
+    required this.steps,
+    this.isPremium = false,
+  });
+
+  final String title;
+  final String category;
+  final String reframe;
+  final String script;
+  final List<String> steps;
+  final bool isPremium;
+}
+
+class KeyTermItem {
+  const KeyTermItem({
+    required this.term,
+    required this.definition,
+  });
+
+  final String term;
+  final String definition;
+}
+
+class HomeSnippet {
+  const HomeSnippet({
+    required this.label,
+    required this.title,
+    required this.body,
+  });
+
+  final String label;
+  final String title;
+  final String body;
 }

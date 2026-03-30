@@ -8,302 +8,455 @@ abstract final class MockContent {
 
   static const onboarding = [
     OnboardingItem(
-      title: 'A softer way to hold the day',
-      subtitle: 'Emotional support that meets you in the middle of real life.',
-      caption:
-          'Grounding tools, soothing rituals, and calm design made for busy hearts.',
-      icon: AppIcons.emotionalSupport,
-      accentColor: AppColors.peach,
-    ),
-    OnboardingItem(
-      title: 'Parent with more calm',
-      subtitle: 'Reset your nervous system before the next hard moment.',
-      caption:
-          'Short reflections, regulation prompts, and parenting support that feels gentle.',
-      icon: AppIcons.parentingCalm,
-      accentColor: AppColors.blush,
-    ),
-    OnboardingItem(
-      title: 'Guidance that feels personal',
-      subtitle:
-          'An AI companion to help you process, reflect, and feel supported.',
-      caption:
-          'Ask for clarity, routines, co-regulation tips, or a thoughtful reframe.',
+      title: 'Support for real moments',
+      subtitle: 'Calm, practical guidance when your day gets loud.',
+      caption: 'No noise. No fluff. Just help you can use right away.',
       icon: AppIcons.aiGuidance,
-      accentColor: AppColors.gold,
+      accentColor: AppColors.primary,
     ),
-    OnboardingItem(
-      title: 'Wellness tools for every season',
-      subtitle:
-          'Meditations, ASMR, visualizations, journaling, and affirmations.',
-      caption:
-          'Build a private care space you can return to any time you need steadiness.',
-      icon: AppIcons.wellnessTools,
-      accentColor: AppColors.sage,
+  ];
+
+  static const goals = [
+    GoalOption(
+      title: 'Calm down quickly',
+      subtitle: 'Fast tools for overwhelming moments',
+    ),
+    GoalOption(
+      title: 'Handle parenting stress',
+      subtitle: 'Practical support for hard family moments',
+    ),
+    GoalOption(
+      title: 'Think more clearly',
+      subtitle: 'Reset spiraling thoughts and move forward',
+    ),
+    GoalOption(
+      title: 'Reflect without overthinking',
+      subtitle: 'Simple journaling after the moment passes',
     ),
   ];
 
   static const quickActions = [
     QuickActionItem(
-      title: 'AI Chat',
-      subtitle: 'Talk it through',
-      icon: AppIcons.aiChat,
-      accentColor: AppColors.blush,
-      route: AppRoutes.chat,
+      title: 'Is This Normal?',
+      subtitle: 'Quick reassurance',
+      icon: AppIcons.isNormal,
+      accentColor: AppColors.terracotta,
+      route: AppRoutes.normal,
     ),
     QuickActionItem(
-      title: 'Journal',
-      subtitle: 'Write gently',
-      icon: AppIcons.journal,
-      accentColor: AppColors.peach,
-      route: AppRoutes.dashboard,
-      dashboardIndex: 1,
+      title: 'Gentle Resets',
+      subtitle: 'Regulate first',
+      icon: AppIcons.resets,
+      accentColor: AppColors.primary,
+      route: AppRoutes.resets,
     ),
     QuickActionItem(
-      title: 'Affirmations',
-      subtitle: 'Daily words',
-      icon: AppIcons.affirmations,
-      accentColor: AppColors.gold,
-      route: AppRoutes.affirmations,
+      title: 'Quiet the Noise',
+      subtitle: 'Audio support',
+      icon: AppIcons.noise,
+      accentColor: AppColors.success,
+      route: AppRoutes.noise,
     ),
     QuickActionItem(
-      title: 'Meditation',
-      subtitle: 'Find stillness',
-      icon: AppIcons.meditation,
-      accentColor: AppColors.sage,
-      route: AppRoutes.mindfulness,
-      routeArguments: 0,
-    ),
-    QuickActionItem(
-      title: 'ASMR',
-      subtitle: 'Soothing sound',
-      icon: AppIcons.asmr,
-      accentColor: AppColors.peach,
-      route: AppRoutes.mindfulness,
-      routeArguments: 1,
-      premium: true,
-    ),
-    QuickActionItem(
-      title: 'Visualize',
-      subtitle: 'Soft imagery',
-      icon: AppIcons.visualizations,
-      accentColor: AppColors.blush,
-      route: AppRoutes.mindfulness,
-      routeArguments: 2,
-      premium: true,
-    ),
-    QuickActionItem(
-      title: 'Q&A',
-      subtitle: 'Expert library',
-      icon: AppIcons.questions,
-      accentColor: AppColors.sage,
-      route: AppRoutes.qa,
-    ),
-    QuickActionItem(
-      title: 'Community',
-      subtitle: 'Warm support',
-      icon: AppIcons.community,
-      accentColor: AppColors.gold,
-      route: AppRoutes.dashboard,
-      dashboardIndex: 2,
+      title: 'Rehearse the Moment',
+      subtitle: 'Practice the script',
+      icon: AppIcons.rehearse,
+      accentColor: AppColors.surface,
+      route: AppRoutes.rehearse,
     ),
   ];
 
+  static const spaces = [
+    QuickActionItem(
+      title: 'Is This Normal?',
+      subtitle: 'Short, reassuring answers',
+      icon: AppIcons.isNormal,
+      accentColor: AppColors.terracotta,
+      route: AppRoutes.normal,
+    ),
+    QuickActionItem(
+      title: 'Gentle Resets',
+      subtitle: 'Breath, grounding, step away',
+      icon: AppIcons.resets,
+      accentColor: AppColors.primary,
+      route: AppRoutes.resets,
+    ),
+    QuickActionItem(
+      title: 'Quiet the Noise',
+      subtitle: 'Ambient audio and guided calm',
+      icon: AppIcons.noise,
+      accentColor: AppColors.success,
+      route: AppRoutes.noise,
+    ),
+    QuickActionItem(
+      title: 'Rehearse the Moment',
+      subtitle: 'Scripts for the hard part',
+      icon: AppIcons.rehearse,
+      accentColor: AppColors.terracotta,
+      route: AppRoutes.rehearse,
+    ),
+    QuickActionItem(
+      title: 'Journal',
+      subtitle: 'Reflect after you reset',
+      icon: AppIcons.journal,
+      accentColor: AppColors.surface,
+      route: AppRoutes.dashboard,
+      dashboardIndex: 3,
+    ),
+    QuickActionItem(
+      title: 'Q&A',
+      subtitle: 'Expert-written answers',
+      icon: AppIcons.questions,
+      accentColor: AppColors.terracotta,
+      route: AppRoutes.qa,
+    ),
+    QuickActionItem(
+      title: 'Key Terms',
+      subtitle: 'Plain-language definitions',
+      icon: AppIcons.terms,
+      accentColor: AppColors.success,
+      route: AppRoutes.terms,
+    ),
+  ];
+
+  static const dailyAffirmation =
+      'Calm is a practice, not a personality trait.';
+
+  static const homePrimary = HomeSnippet(
+    label: 'Help Me Now',
+    title: 'Let’s slow this down.',
+    body:
+        'Start with one clear next step. Talk to Resora, open a reset, or rehearse what to say.',
+  );
+
+  static const recentJournal = JournalEntry(
+    title: 'After the bedtime scramble',
+    preview:
+        'I lowered my voice first. That changed the room faster than another explanation would have.',
+    date: 'Yesterday',
+    wordCount: 64,
+    prompt: 'What helped more than I expected today?',
+  );
+
   static const suggestedPrompts = [
-    'How do I reset after a hard parenting moment?',
-    'Give me a 2-minute calming ritual.',
-    'Help me reframe today with more compassion.',
+    'I am close to snapping. What do I do right now?',
+    'Give me a 2-minute reset.',
+    'Help me script a hard conversation.',
   ];
 
   static const chatMessages = [
     ChatMessageModel(
-      text:
-          'I felt overstimulated after school pickup and snapped too quickly.',
+      text: 'I am getting flooded and I do not want to make this worse.',
       isUser: true,
-      time: '6:12 PM',
+      time: '',
     ),
     ChatMessageModel(
       text:
-          'You are noticing it with care, and that matters. Want a tiny repair script plus a 60-second reset for your body?',
+          'That is a normal response to an overwhelming moment. Here is what to do right now: put both feet down, drop your shoulders, and take one slow exhale.',
       isUser: false,
-      time: '6:13 PM',
+      time: '',
     ),
     ChatMessageModel(
-      text: 'Yes, something short that I can actually do tonight.',
+      text: 'Okay. What do I say next?',
       isUser: true,
-      time: '6:13 PM',
+      time: '',
     ),
     ChatMessageModel(
       text:
-          'Try this: hand to heart, one slow exhale, then say “I was overwhelmed, and I want to begin again with you.”',
+          'Try this: “I need ten seconds to reset, then I’m coming back.” If you want, I can also walk you into a Gentle Reset.',
       isUser: false,
-      time: '6:14 PM',
+      time: '',
     ),
   ];
 
   static const journalPrompts = [
-    'What felt tender today, and what did I need most in that moment?',
-    'Where did calm show up, even briefly?',
-    'What can I release before tonight?',
+    'What helped?',
+    'What do I need next?',
+    'What felt heavier than it looked?',
   ];
 
   static const journalEntries = [
     JournalEntry(
-      title: 'A softer bedtime reset',
-      preview: 'Tonight felt less rushed when I lowered my own voice first...',
+      title: 'After school pickup',
+      preview:
+          'I needed less talking and more space. The reset worked once I stopped trying to fix everything at once.',
       date: 'Today',
-      moods: ['Calm', 'Present'],
+      wordCount: 91,
+      prompt: 'What helped?',
     ),
     JournalEntry(
-      title: 'After the morning rush',
+      title: 'The text I almost sent',
       preview:
-          'I noticed how much tension I carry before 8 AM and how it shapes the room...',
+          'I drafted the message, waited ten minutes, and said less. That helped more than explaining every feeling.',
       date: 'Yesterday',
-      moods: ['Overwhelmed', 'Hopeful'],
+      wordCount: 57,
+      prompt: 'What do I need next?',
     ),
     JournalEntry(
-      title: 'What repair looked like',
+      title: 'Before bedtime',
       preview:
-          'I came back after the hard moment. Not perfectly, but honestly...',
+          'The room settled faster when I changed my tone instead of repeating the instruction.',
       date: 'Tuesday',
-      moods: ['Reflective', 'Connected'],
+      wordCount: 73,
+      prompt: 'What felt heavier than it looked?',
+    ),
+  ];
+
+  static const resetOptions = [
+    ResetOption(
+      title: 'Breath reset',
+      subtitle: 'A guided inhale and exhale loop',
+      duration: '2 min',
+      icon: AppIcons.resets,
+    ),
+    ResetOption(
+      title: 'Sensory grounding',
+      subtitle: 'One prompt at a time',
+      duration: '3 min',
+      icon: AppIcons.isNormal,
+    ),
+    ResetOption(
+      title: 'Step away',
+      subtitle: 'A timed pause with permission',
+      duration: '5 min',
+      icon: AppIcons.close,
+    ),
+    ResetOption(
+      title: 'Reset tone',
+      subtitle: 'A short audio anchor',
+      duration: '90 sec',
+      icon: AppIcons.play,
+    ),
+  ];
+
+  static const audioTracks = [
+    AudioTrack(
+      title: 'Soft rain on leaves',
+      category: 'Nature',
+      description: 'Steady sound for nervous-system downshift',
+      duration: '18 min',
+    ),
+    AudioTrack(
+      title: 'Brown noise for the background',
+      category: 'Brown Noise',
+      description: 'Mask the noise and quiet the edges',
+      duration: '45 min',
+    ),
+    AudioTrack(
+      title: 'Five-minute guided exhale',
+      category: 'Guided Meditation',
+      description: 'Voice-led support for the first few minutes',
+      duration: '5 min',
+    ),
+    AudioTrack(
+      title: 'Parenting calm visualization',
+      category: 'Visualizations',
+      description: 'Future-focused calm before the next hard moment',
+      duration: '9 min',
+      isPremium: true,
+    ),
+  ];
+
+  static const normalTopics = [
+    QaItem(
+      question: 'Is it normal to feel angry right before bedtime?',
+      answer:
+          'Yes. End-of-day overload is common, especially when you have been making decisions for everyone else all day. Start with regulation, then decide what actually needs to happen tonight.',
+      category: 'Evening Stress',
+    ),
+    QaItem(
+      question: 'Is it normal to want to leave the room when everyone needs me?',
+      answer:
+          'Yes. Stepping away for a minute can be the regulated move, not the selfish one. A short pause can prevent a much messier moment.',
+      category: 'Overwhelm',
+    ),
+    QaItem(
+      question: 'Why do small things feel huge when I am already tired?',
+      answer:
+          'Because tired systems lose flexibility first. When your bandwidth is low, ordinary friction feels bigger. Reduce the task, then return to the deeper issue later.',
+      category: 'Regulation',
     ),
   ];
 
   static const affirmations = [
     AffirmationItem(
-      category: 'For Mothers',
-      text: 'I can lead with gentleness and still hold strong boundaries.',
-      duration: '3 min listen',
+      category: 'Push Only',
+      text: dailyAffirmation,
+      duration: 'Notification',
       isSaved: true,
     ),
-    AffirmationItem(
-      category: 'Nervous System',
-      text: 'Safety can be built in small moments, one breath at a time.',
-      duration: '2 min listen',
+  ];
+
+  static const mindfulnessTabs = ['Nature', 'Noise', 'Guided'];
+
+  static const mindfulnessSessions = [
+    MindfulnessSession(
+      title: 'Soft rain on leaves',
+      subtitle: 'Nature audio for immediate downshift',
+      length: '18 min',
+      type: 'Nature',
+      color: AppColors.success,
     ),
-    AffirmationItem(
-      category: 'Healing',
-      text: 'I do not need to rush my restoration to deserve rest.',
-      duration: '4 min listen',
+    MindfulnessSession(
+      title: 'Brown noise for the background',
+      subtitle: 'Frequency-based masking for focus and calm',
+      length: '45 min',
+      type: 'Noise',
+      color: AppColors.surface,
+    ),
+    MindfulnessSession(
+      title: 'Five-minute guided exhale',
+      subtitle: 'A short guided audio-led reset',
+      length: '5 min',
+      type: 'Guided',
+      color: AppColors.terracotta,
+    ),
+    MindfulnessSession(
+      title: 'Parenting calm visualization',
+      subtitle: 'A future-focused guided audio session',
+      length: '9 min',
+      type: 'Guided',
+      color: AppColors.primary,
       isPremium: true,
     ),
   ];
 
-  static const mindfulnessTabs = ['Meditation', 'ASMR', 'Visualizations'];
-
-  static const mindfulnessSessions = [
-    MindfulnessSession(
-      title: 'Morning exhale',
-      subtitle: 'A light guided reset before the day begins',
-      length: '8 min',
-      type: 'Meditation',
-      color: AppColors.sage,
+  static const rehearsalScenarios = [
+    RehearsalScenario(
+      title: 'Talking to my partner after a hard night',
+      category: 'Relationships',
+      reframe:
+          'You do not need a perfect explanation. You need a clear sentence.',
+      script:
+          '“I was overloaded and I do not want to keep talking at that level. Can we try this again more calmly tonight?”',
+      steps: [
+        'Start with one sentence, not the whole story.',
+        'Name what you need next.',
+        'Stop after the ask is clear.',
+      ],
     ),
-    MindfulnessSession(
-      title: 'Soft rain for regulation',
-      subtitle: 'Low-stimulation sound to settle the nervous system',
-      length: '22 min',
-      type: 'ASMR',
-      color: AppColors.peach,
+    RehearsalScenario(
+      title: 'Holding a boundary with my child',
+      category: 'Parenting',
+      reframe: 'Calm and firm can happen at the same time.',
+      script:
+          '“I am not changing the limit. I am staying with you while you are upset.”',
+      steps: [
+        'Lower your pace before you speak.',
+        'Say the limit once.',
+        'Repeat only the key line.',
+      ],
+    ),
+    RehearsalScenario(
+      title: 'Saying no without over-explaining',
+      category: 'Work Stress',
+      reframe: 'A short no is still a complete answer.',
+      script:
+          '“I can’t take that on this week, but I can revisit it next Tuesday.”',
+      steps: [
+        'Lead with the answer.',
+        'Offer one alternative if you want to.',
+        'Do not keep negotiating after the first clear line.',
+      ],
       isPremium: true,
-    ),
-    MindfulnessSession(
-      title: 'Safe home visualization',
-      subtitle: 'Imagine warmth, steadiness, and spacious breath',
-      length: '12 min',
-      type: 'Visualizations',
-      color: AppColors.blush,
-      isPremium: true,
-    ),
-    MindfulnessSession(
-      title: 'Between tasks pause',
-      subtitle: 'A tiny pause to reconnect with yourself',
-      length: '5 min',
-      type: 'Meditation',
-      color: AppColors.gold,
     ),
   ];
 
   static const qas = [
     QaItem(
-      question: 'How can I stay calm when my child escalates?',
+      question: 'What do I do when I feel myself escalating with my child?',
       answer:
-          'Begin with your own body first: soften your jaw, lengthen your exhale, then lower the pace of your voice. Calm is contagious when it is embodied.',
-      category: 'Parenting Calm',
+          'Slow your body first. Unclench your jaw. Lower your voice. Shorten what you say. Regulation works better than more explanation in that moment.',
+      category: 'Parenting',
     ),
     QaItem(
-      question: 'What if I keep feeling guilty after hard moments?',
+      question: 'How do I handle work stress that follows me home?',
       answer:
-          'Guilt can become useful when it leads to repair, reflection, and more support for you. It does not need to become your identity.',
-      category: 'Emotional Healing',
+          'Create a transition on purpose. Before you shift roles, do one clear closing action: close the laptop, exhale, and name the next task for tomorrow.',
+      category: 'Work Stress',
     ),
     QaItem(
-      question: 'Can I ask an expert for a more personalized answer?',
+      question: 'How do I stop over-explaining myself in conflict?',
       answer:
-          'Premium members will be able to unlock deeper expert-guided answers and curated care plans.',
-      category: 'Expert Answers',
+          'Lead with the point, not the backstory. Most conflict gets worse when you keep adding detail after the message is already clear.',
+      category: 'Relationships',
+    ),
+    QaItem(
+      question: 'Can I get a custom answer for my exact situation?',
+      answer:
+          'Premium unlocks expanded Q&A and custom AI-guided support when the pre-written library is not enough.',
+      category: 'Premium',
       isPremium: true,
     ),
   ];
 
-  static const communityPosts = [
-    CommunityPost(
-      author: 'Layla R.',
-      role: 'Mother of two',
-      title: 'A bedtime phrase that changed our evenings',
-      preview:
-          'I started saying “we can do bedtime softly” and the whole room shifted. It felt small, but it helped me stay regulated too.',
-      category: 'Daily Wins',
-      likes: 124,
-      comments: 19,
+  static const keyTerms = [
+    KeyTermItem(
+      term: 'Regulation',
+      definition: 'Getting your body and mind back into a steadier state.',
     ),
-    CommunityPost(
-      author: 'Nadia K.',
-      role: 'Healing after burnout',
-      title: 'How I use 5-minute pauses now',
-      preview:
-          'Instead of waiting for a perfect hour, I’ve been stacking tiny rituals through the day. It feels more realistic and kind.',
-      category: 'Mindfulness',
-      likes: 86,
-      comments: 12,
+    KeyTermItem(
+      term: 'Emotional flooding',
+      definition:
+          'The moment your system gets overwhelmed and clear thinking drops.',
+    ),
+    KeyTermItem(
+      term: 'Co-regulation',
+      definition:
+          'Borrowing calm from another person’s steady tone, pace, or presence.',
+    ),
+    KeyTermItem(
+      term: 'Sensory overload',
+      definition:
+          'When sound, touch, light, or activity stacks up faster than your system can process it.',
+    ),
+    KeyTermItem(
+      term: 'Window of tolerance',
+      definition:
+          'The zone where you can think clearly enough to respond instead of react.',
     ),
   ];
 
+  static const communityPosts = <CommunityPost>[];
+
   static const profileOptions = [
     ProfileOption(
-        label: 'Saved Content',
-        icon: AppIcons.bookmark,
-        trailing: '18'),
+      label: 'Affirmation timing',
+      icon: AppIcons.notification,
+      trailing: 'Morning',
+    ),
     ProfileOption(
-        label: 'Notifications',
-        icon: AppIcons.notification,
-        trailing: 'Daily'),
-    ProfileOption(label: 'Privacy', icon: AppIcons.privacy),
-    ProfileOption(label: 'Help & Support', icon: AppIcons.help),
+      label: 'Journal lock',
+      icon: AppIcons.privacy,
+      trailing: 'Off',
+    ),
+    ProfileOption(label: 'Subscription', icon: AppIcons.premium),
+    ProfileOption(label: 'Privacy policy', icon: AppIcons.privacy),
+    ProfileOption(label: 'Help & support', icon: AppIcons.help),
     ProfileOption(label: 'Logout', icon: AppIcons.logout),
   ];
 
   static const premiumPlans = [
     PremiumPlan(
       title: 'Monthly',
-      price: '\$12',
-      caption: 'Flexible support, billed monthly',
+      price: '\$11.99',
+      caption: 'Flexible access to every space and unlimited chat',
       highlight: false,
     ),
     PremiumPlan(
       title: 'Yearly',
-      price: '\$89',
-      caption: 'Best value, includes premium rituals and expert answers',
+      price: '\$84.99',
+      caption: 'Best value with a 7-day trial and full premium access',
       highlight: true,
     ),
   ];
 
   static const categories = [
     'All',
-    'Parenting Calm',
-    'Emotional Healing',
-    'Sleep',
-    'Mindfulness',
+    'Parenting',
+    'Emotions',
+    'Relationships',
+    'Work Stress',
+    'Body / Regulation',
   ];
 }

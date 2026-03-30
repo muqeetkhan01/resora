@@ -1,16 +1,41 @@
-# resora
 
-A new Flutter project.
+Milestone 1: App Foundation & Onboarding
+	•	Project setup (Flutter + GetX architecture)
+	•	Theme system (colors, typography, dark mode)
+	•	Reusable UI components
+	•	Lottie splash (breathing animation)
+	•	Onboarding flow (welcome, name, goals, notifications)
+	•	Authentication
+	•	Navigation structure (max 4 tabs)
+	•	Basic Home screen UI
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+Milestone 2: Core Features (User Experience)
+	•	AI Chat (UI + OpenAI integration + history + limits)
+	•	Spaces Hub (main feature entry)
+	•	Gentle Resets (breathing, grounding, timer, tones)
+	•	Is This Normal (list + detail + search)
+	•	Rehearse the Moment (input + AI response)
+	•	Journal (create, edit, history, autosave)
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Milestone 3: Content & Media System
+	•	Quiet the Noise (audio library)
+	•	Audio player (background play + mini player)
+	•	Visualizations (guided sessions + player)
+	•	Q&A section (list + detail + search)
+	•	Key Terms (glossary + detail)
+	•	Affirmations (push notification system)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+⸻
+
+Milestone 4: Backend, Premium & Finalization
+	•	Firebase integration (Auth, Firestore, Cloud Functions)
+	•	Data models + syncing (chat, journal, content)
+	•	Freemium system (limits + gated content)
+	•	Subscription flow (paywall, plans, restore)
+	•	Profile & settings (notifications, privacy, account)
+	•	Performance optimization + polish
+	•	Testing + bug fixing
+	•	Production-ready build (iOS + Android)
+

@@ -27,6 +27,11 @@ class MindfulnessController extends GetxController {
   }
 
   void openSession(MindfulnessSession session) {
-    Get.toNamed(AppRoutes.mindfulnessDetail, arguments: session);
+    if (session.isPremium) {
+      Get.toNamed(AppRoutes.premium);
+      return;
+    }
+
+    Get.toNamed(AppRoutes.noise);
   }
 }

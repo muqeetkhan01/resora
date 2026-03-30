@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../../../routes/app_routes.dart';
+
 class DashboardController extends GetxController {
   final selectedIndex = 0.obs;
 
@@ -14,5 +16,9 @@ class DashboardController extends GetxController {
 
   void switchTab(int index) {
     selectedIndex.value = index;
+  }
+
+  void openProfile() {
+    Get.toNamed(AppRoutes.profile);
   }
 }

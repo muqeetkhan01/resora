@@ -3,165 +3,194 @@ import 'package:get/get.dart';
 
 import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
-import '../../../widgets/app_background.dart';
-import '../../../widgets/app_card.dart';
 import '../../../widgets/app_chip.dart';
 import '../controllers/chat_controller.dart';
 
 class ChatView extends GetView<ChatController> {
-  const ChatView({super.key});
+  const ChatView({super.key, this.rootTab = false});
+
+  final bool rootTab;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return AppBackground(
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-            child: Row(
-              children: [
-                IconButton(
-                  onPressed: Get.back,
-                  icon: const Icon(AppIcons.back),
-                ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      Text('Calm AI Guide', style: textTheme.titleLarge),
-                      const SizedBox(height: 2),
-                      Text('Private reflection companion',
-                          style: textTheme.bodySmall),
-                    ],
-                  ),
-                ),
-                const CircleAvatar(
-                  backgroundColor: AppColors.cardStrong,
-                  child: Icon(AppIcons.aiGuidance, color: AppColors.ink),
-                ),
-              ],
-            ),
-          ),
-          AppCard(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Try a prompt', style: textTheme.titleMedium),
-                const SizedBox(height: AppSpacing.sm),
-                Wrap(
-                  spacing: AppSpacing.sm,
-                  runSpacing: AppSpacing.sm,
-                  children: controller.suggestions
-                      .map(
-                        (prompt) => AppTagChip(
-                          label: prompt,
-                          onTap: () => controller.sendMessage(prompt),
-                        ),
-                      )
-                      .toList(),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Expanded(
-            child: Obx(
-              () => ListView.separated(
-                padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                itemCount: controller.messages.length,
-                separatorBuilder: (_, __) =>
-                    const SizedBox(height: AppSpacing.md),
-                itemBuilder: (context, index) {
-                  final message = controller.messages[index];
-                  return Align(
-                    alignment: message.isUser
-                        ? Alignment.centerRight
-                        : Alignment.centerLeft,
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 340),
-                      child: Container(
-                        padding: const EdgeInsets.all(AppSpacing.md),
-                        decoration: BoxDecoration(
-                          color: message.isUser
-                              ? AppColors.ink
-                              : Colors.white.withOpacity(0.82),
-                          borderRadius:
-                              BorderRadius.circular(AppSpacing.radiusMd),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: message.isUser
-                              ? CrossAxisAlignment.end
-                              : CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              message.text,
-                              style: textTheme.bodyLarge?.copyWith(
-                                color: message.isUser
-                                    ? Colors.white
-                                    : AppColors.ink,
-                              ),
-                            ),
-                            const SizedBox(height: AppSpacing.xs),
-                            Text(
-                              message.time,
-                              style: textTheme.bodySmall?.copyWith(
-                                color: message.isUser
-                                    ? Colors.white.withOpacity(0.7)
-                                    : AppColors.muted,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.only(
-                bottom: AppSpacing.lg, top: AppSpacing.sm),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: controller.inputController,
-                    minLines: 1,
-                    maxLines: 4,
-                    decoration: InputDecoration(
-                      hintText: 'Share what feels heavy or tender today...',
-                      filled: true,
-                      fillColor: Colors.white.withOpacity(0.82),
-                      border: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.circular(AppSpacing.radiusLg),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.lg,
-                        vertical: AppSpacing.md,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.sm),
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: AppSpacing.lg),
+          child: Row(
+            children: [
+              if (!rootTab)
                 GestureDetector(
-                  onTap: controller.sendMessage,
-                  child: Container(
-                    width: 54,
-                    height: 54,
-                    decoration: const BoxDecoration(
-                      color: AppColors.ink,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(AppIcons.send, color: Colors.white),
+                  onTap: Get.back,
+                  child: const Padding(
+                    padding: EdgeInsets.only(right: AppSpacing.md),
+                    child: Icon(AppIcons.back, color: AppColors.primary),
                   ),
                 ),
-              ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment:
+                      rootTab ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'talk to resora',
+                      style: textTheme.titleLarge?.copyWith(
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'a calm place for in the moment support',
+                      style: textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.line),
+                ),
+                child: const Icon(
+                  AppIcons.brand,
+                  size: 18,
+                  color: AppColors.primary,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        const Divider(height: 1),
+        const SizedBox(height: AppSpacing.sm),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text('start here', style: textTheme.labelLarge),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: controller.suggestions
+                .map(
+                  (prompt) => Padding(
+                    padding: const EdgeInsets.only(right: AppSpacing.sm),
+                    child: AppTagChip(
+                      label: prompt,
+                      onTap: () => controller.sendMessage(prompt),
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        const Divider(height: 1),
+        Expanded(
+          child: Obx(
+            () => ListView.builder(
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+              itemCount: controller.messages.length,
+              itemBuilder: (context, index) {
+                final message = controller.messages[index];
+
+                return _MessageBubble(message: message);
+              },
+            ),
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.only(top: AppSpacing.sm, bottom: AppSpacing.lg),
+          decoration: const BoxDecoration(
+            border: Border(top: BorderSide(color: AppColors.line)),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: controller.inputController,
+                  minLines: 1,
+                  maxLines: 4,
+                  decoration: const InputDecoration(
+                    hintText: 'Share your thoughts...',
+                  ),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              GestureDetector(
+                onTap: controller.sendMessage,
+                child: Container(
+                  width: 46,
+                  height: 46,
+                  decoration: const BoxDecoration(
+                    color: AppColors.primary,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    AppIcons.send,
+                    size: 18,
+                    color: AppColors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MessageBubble extends StatelessWidget {
+  const _MessageBubble({required this.message});
+
+  final ChatMessageModel message;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final isUser = message.isUser;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+      child: Column(
+        crossAxisAlignment:
+            isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Text(
+            isUser ? 'You' : 'Resora',
+            style: textTheme.bodySmall?.copyWith(
+              color: isUser ? AppColors.muted : AppColors.primary,
+            ),
+          ),
+          const SizedBox(height: 6),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 320),
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: 14,
+              ),
+              decoration: BoxDecoration(
+                color: isUser ? AppColors.primary : AppColors.surface,
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(
+                  color: isUser ? AppColors.primary : AppColors.line,
+                ),
+              ),
+              child: Text(
+                message.text,
+                style: textTheme.bodyLarge?.copyWith(
+                  color: isUser ? AppColors.white : AppColors.warmDark,
+                ),
+              ),
             ),
           ),
         ],

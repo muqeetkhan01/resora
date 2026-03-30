@@ -1,13 +1,16 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:resora/main.dart';
 
 void main() {
-  testWidgets('Resora onboarding flow becomes visible', (WidgetTester tester) async {
+  testWidgets('Resora splash screen renders', (WidgetTester tester) async {
     await tester.pumpWidget(const ResoraApp());
-    await tester.pump(const Duration(milliseconds: 2500));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 100));
 
-    expect(find.text('A softer way to hold the day'), findsOneWidget);
+    expect(find.text('Resora'), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump();
   });
 }

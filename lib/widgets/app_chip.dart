@@ -19,20 +19,19 @@ class AppTagChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
+        duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          color:
-              selected ? AppColors.success : AppColors.shell.withOpacity(0.94),
+          color: selected ? AppColors.primary.withOpacity(0.1) : AppColors.white,
           borderRadius: BorderRadius.circular(999),
           border: Border.all(
-            color: selected ? AppColors.success : AppColors.line,
+            color: selected ? AppColors.primary : AppColors.line,
           ),
         ),
         child: Text(
           label,
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                color: selected ? Colors.white : AppColors.ink,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: selected ? AppColors.primary : AppColors.text,
               ),
         ),
       ),

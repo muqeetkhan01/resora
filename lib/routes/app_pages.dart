@@ -1,28 +1,34 @@
 import 'package:get/get.dart';
 
-import '../modules/affirmations/controllers/affirmations_controller.dart';
-import '../modules/affirmations/views/affirmations_view.dart';
-import '../modules/auth/controllers/auth_entry_controller.dart';
-import '../modules/auth/views/welcome_view.dart';
 import '../modules/chat/controllers/chat_controller.dart';
 import '../modules/chat/views/chat_view.dart';
-import '../modules/community/controllers/community_controller.dart';
 import '../modules/dashboard/controllers/dashboard_controller.dart';
 import '../modules/dashboard/views/dashboard_view.dart';
 import '../modules/home/controllers/home_controller.dart';
 import '../modules/journal/controllers/journal_controller.dart';
-import '../modules/mindfulness/controllers/mindfulness_controller.dart';
-import '../modules/mindfulness/views/mindfulness_detail_view.dart';
-import '../modules/mindfulness/views/mindfulness_view.dart';
+import '../modules/journal/views/journal_view.dart';
+import '../modules/noise/controllers/noise_controller.dart';
+import '../modules/noise/views/noise_view.dart';
+import '../modules/normal/controllers/normal_controller.dart';
+import '../modules/normal/views/normal_view.dart';
 import '../modules/onboarding/controllers/onboarding_controller.dart';
 import '../modules/onboarding/views/onboarding_view.dart';
 import '../modules/premium/controllers/premium_controller.dart';
 import '../modules/premium/views/premium_view.dart';
 import '../modules/profile/controllers/profile_controller.dart';
+import '../modules/profile/views/profile_view.dart';
 import '../modules/qa/controllers/qa_controller.dart';
 import '../modules/qa/views/qa_view.dart';
+import '../modules/rehearse/controllers/rehearse_controller.dart';
+import '../modules/rehearse/views/rehearse_view.dart';
+import '../modules/resets/controllers/resets_controller.dart';
+import '../modules/resets/views/resets_view.dart';
+import '../modules/spaces/controllers/spaces_controller.dart';
+import '../modules/spaces/views/spaces_view.dart';
 import '../modules/splash/controllers/splash_controller.dart';
 import '../modules/splash/views/splash_view.dart';
+import '../modules/terms/controllers/terms_controller.dart';
+import '../modules/terms/views/terms_view.dart';
 import 'app_routes.dart';
 
 abstract final class AppPages {
@@ -42,21 +48,21 @@ abstract final class AppPages {
       }),
     ),
     GetPage(
-      name: AppRoutes.welcome,
-      page: WelcomeView.new,
-      binding: BindingsBuilder(() {
-        Get.lazyPut(AuthEntryController.new);
-      }),
-    ),
-    GetPage(
       name: AppRoutes.dashboard,
       page: DashboardView.new,
       binding: BindingsBuilder(() {
         Get.put(DashboardController());
         Get.put(HomeController());
+        Get.put(ChatController());
+        Get.put(SpacesController());
         Get.put(JournalController());
-        Get.put(CommunityController());
-        Get.put(ProfileController());
+      }),
+    ),
+    GetPage(
+      name: AppRoutes.journal,
+      page: JournalView.new,
+      binding: BindingsBuilder(() {
+        Get.lazyPut(JournalController.new);
       }),
     ),
     GetPage(
@@ -67,28 +73,59 @@ abstract final class AppPages {
       }),
     ),
     GetPage(
-      name: AppRoutes.affirmations,
-      page: AffirmationsView.new,
+      name: AppRoutes.spaces,
+      page: SpacesView.new,
       binding: BindingsBuilder(() {
-        Get.lazyPut(AffirmationsController.new);
+        Get.lazyPut(SpacesController.new);
       }),
     ),
     GetPage(
-      name: AppRoutes.mindfulness,
-      page: MindfulnessView.new,
+      name: AppRoutes.normal,
+      page: NormalView.new,
       binding: BindingsBuilder(() {
-        Get.lazyPut(MindfulnessController.new);
+        Get.lazyPut(NormalController.new);
       }),
     ),
     GetPage(
-      name: AppRoutes.mindfulnessDetail,
-      page: MindfulnessDetailView.new,
+      name: AppRoutes.resets,
+      page: ResetsView.new,
+      binding: BindingsBuilder(() {
+        Get.lazyPut(ResetsController.new);
+      }),
+    ),
+    GetPage(
+      name: AppRoutes.noise,
+      page: NoiseView.new,
+      binding: BindingsBuilder(() {
+        Get.lazyPut(NoiseController.new);
+      }),
+    ),
+    GetPage(
+      name: AppRoutes.rehearse,
+      page: RehearseView.new,
+      binding: BindingsBuilder(() {
+        Get.lazyPut(RehearseController.new);
+      }),
+    ),
+    GetPage(
+      name: AppRoutes.terms,
+      page: TermsView.new,
+      binding: BindingsBuilder(() {
+        Get.lazyPut(TermsController.new);
+      }),
     ),
     GetPage(
       name: AppRoutes.qa,
       page: QaView.new,
       binding: BindingsBuilder(() {
         Get.lazyPut(QaController.new);
+      }),
+    ),
+    GetPage(
+      name: AppRoutes.profile,
+      page: ProfileView.new,
+      binding: BindingsBuilder(() {
+        Get.lazyPut(ProfileController.new);
       }),
     ),
     GetPage(
