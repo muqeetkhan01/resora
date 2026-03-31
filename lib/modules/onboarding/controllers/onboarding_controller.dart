@@ -24,7 +24,7 @@ class OnboardingController extends GetxController {
   }
 
   void finish() {
-    Get.offAllNamed(AppRoutes.dashboard);
+    Get.offAllNamed(AppRoutes.welcome);
   }
 
   void skip() {

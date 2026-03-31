@@ -32,6 +32,17 @@ class MindfulnessController extends GetxController {
       return;
     }
 
-    Get.toNamed(AppRoutes.noise);
+    Get.toNamed(AppRoutes.mindfulnessDetail, arguments: session);
+  }
+
+  void playSession(MindfulnessSession session) {
+    final track = AudioTrack(
+      title: session.title,
+      category: session.type,
+      description: session.subtitle,
+      duration: session.length,
+      isPremium: session.isPremium,
+    );
+    Get.toNamed(AppRoutes.audioPlayer, arguments: track);
   }
 }

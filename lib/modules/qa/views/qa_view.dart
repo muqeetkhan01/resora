@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
-import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/app_button.dart';
 import '../../../widgets/app_chip.dart';
@@ -87,7 +86,7 @@ class QaView extends GetView<QaController> {
                     const SizedBox(width: AppSpacing.md),
                     AppButton(
                       label: 'Open chat',
-                      onPressed: () => Get.toNamed(AppRoutes.chat),
+                      onPressed: controller.openChat,
                       expanded: false,
                     ),
                   ],
@@ -97,7 +96,7 @@ class QaView extends GetView<QaController> {
               Obx(() {
                 if (controller.filtered.isEmpty) {
                   return _EmptyQaState(
-                    onTap: () => Get.toNamed(AppRoutes.chat),
+                    onTap: controller.openChat,
                   );
                 }
 
@@ -125,7 +124,7 @@ class QaView extends GetView<QaController> {
   }
 }
 
-class _QaCard extends StatelessWidget {
+class _QaCard extends GetView<QaController> {
   const _QaCard({
     required this.item,
     required this.expanded,
@@ -175,16 +174,16 @@ class _QaCard extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.md),
               if (item.isPremium)
-                const AppButton(
+                AppButton(
                   label: 'Unlock expert answers',
-                  onPressed: null,
+                  onPressed: controller.openPremium,
                   expanded: false,
                 )
               else
-                const AppButton(
+                AppButton(
                   label: 'Related space',
                   style: AppButtonStyle.secondary,
-                  onPressed: null,
+                  onPressed: () => controller.openRelatedSpace(item),
                   expanded: false,
                 ),
             ],

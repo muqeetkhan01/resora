@@ -141,11 +141,13 @@ class ProfileOption {
     required this.label,
     required this.icon,
     this.trailing,
+    this.route,
   });
 
   final String label;
   final IconData icon;
   final String? trailing;
+  final String? route;
 }
 
 class PremiumPlan {
@@ -240,4 +242,16 @@ class HomeSnippet {
   final String label;
   final String title;
   final String body;
+}
+
+class SupportCardItem {
+  const SupportCardItem({
+    required this.category,
+    required this.title,
+    required this.footer,
+  });
+
+  final String category;
+  final String title;
+  final String footer;
 }

@@ -63,7 +63,7 @@ class NormalView extends GetView<NormalController> {
   }
 }
 
-class _NormalTopicCard extends StatelessWidget {
+class _NormalTopicCard extends GetView<NormalController> {
   const _NormalTopicCard({required this.topic});
 
   final QaItem topic;
@@ -90,19 +90,19 @@ class _NormalTopicCard extends StatelessWidget {
             style: textTheme.bodyLarge?.copyWith(color: AppColors.warmDark),
           ),
           const SizedBox(height: AppSpacing.md),
-          const Row(
+          Row(
             children: [
               AppButton(
                 label: 'Related reset',
                 style: AppButtonStyle.secondary,
-                onPressed: null,
+                onPressed: controller.openRelatedReset,
                 expanded: false,
               ),
-              SizedBox(width: AppSpacing.sm),
+              const SizedBox(width: AppSpacing.sm),
               AppButton(
                 label: 'Explore in journal',
                 style: AppButtonStyle.ghost,
-                onPressed: null,
+                onPressed: controller.openJournal,
                 expanded: false,
               ),
             ],

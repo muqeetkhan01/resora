@@ -2,9 +2,11 @@ import 'package:get/get.dart';
 
 import '../../../data/mock/mock_content.dart';
 import '../../../data/models/app_models.dart';
+import '../../../routes/app_routes.dart';
 import '../../dashboard/controllers/dashboard_controller.dart';
 
 class HomeController extends GetxController {
+  String get userName => MockContent.userName;
   List<QuickActionItem> get quickActions => MockContent.quickActions;
   HomeSnippet get primary => MockContent.homePrimary;
   String get affirmation => MockContent.dailyAffirmation;
@@ -36,5 +38,13 @@ class HomeController extends GetxController {
 
   void openProfile() {
     Get.find<DashboardController>().openProfile();
+  }
+
+  void openInfo() {
+    Get.toNamed(AppRoutes.terms);
+  }
+
+  void openPremium() {
+    Get.toNamed(AppRoutes.premium);
   }
 }

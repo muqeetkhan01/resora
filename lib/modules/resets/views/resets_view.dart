@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/app_button.dart';
 import '../controllers/resets_controller.dart';
@@ -13,6 +14,7 @@ class ResetsView extends GetView<ResetsController> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final featured = controller.options.first;
 
     return Scaffold(
       backgroundColor: AppColors.canvas,
@@ -28,47 +30,44 @@ class ResetsView extends GetView<ResetsController> {
               ),
               Text('gentle resets', style: textTheme.displayMedium),
               const SizedBox(height: AppSpacing.xs),
-              Text('Regulation before reflection.', style: textTheme.bodyMedium),
+              Text(
+                'Regulate first. Reflect later.',
+                style: textTheme.bodyMedium,
+              ),
               const SizedBox(height: AppSpacing.xl),
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(AppSpacing.xl),
                 decoration: BoxDecoration(
                   color: AppColors.white,
-                  borderRadius: BorderRadius.circular(22),
+                  borderRadius: BorderRadius.circular(24),
                   border: Border.all(color: AppColors.line),
                 ),
                 child: Column(
                   children: [
                     const _BreathingCircle(),
                     const SizedBox(height: AppSpacing.lg),
-                    Text(
-                      'Breathe in. Hold. Breathe out.',
-                      style: textTheme.titleLarge?.copyWith(fontSize: 20),
-                    ),
+                    Text(featured.title, style: textTheme.headlineMedium),
                     const SizedBox(height: AppSpacing.sm),
                     Text(
-                      'Start here when the moment is moving faster than you are.',
+                      'Under three taps from Home. One instruction at a time.',
                       textAlign: TextAlign.center,
                       style: textTheme.bodyMedium,
                     ),
                     const SizedBox(height: AppSpacing.lg),
-                    const Wrap(
-                      spacing: AppSpacing.sm,
-                      runSpacing: AppSpacing.sm,
-                      alignment: WrapAlignment.center,
+                    const Row(
                       children: [
-                        _DurationPill(label: '2 min', selected: true),
-                        _DurationPill(label: '5 min'),
-                        _DurationPill(label: 'custom'),
+                        Expanded(child: _DurationPill(label: '2 min', selected: true)),
+                        SizedBox(width: AppSpacing.sm),
+                        Expanded(child: _DurationPill(label: '5 min')),
+                        SizedBox(width: AppSpacing.sm),
+                        Expanded(child: _DurationPill(label: 'custom')),
                       ],
                     ),
                     const SizedBox(height: AppSpacing.lg),
-                    const AppButton(
+                    AppButton(
                       label: 'Start breath reset',
-                      icon: AppIcons.play,
-                      onPressed: null,
-                      expanded: false,
+                      onPressed: () => controller.openReset(featured),
                     ),
                   ],
                 ),
@@ -77,55 +76,73 @@ class ResetsView extends GetView<ResetsController> {
               ...controller.options.map(
                 (option) => Padding(
                   padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                  child: Container(
-                    padding: const EdgeInsets.all(AppSpacing.lg),
-                    decoration: BoxDecoration(
-                      color: AppColors.white,
-                      borderRadius: BorderRadius.circular(18),
-                      border: Border.all(color: AppColors.line),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 46,
-                          height: 46,
-                          decoration: BoxDecoration(
-                            color: AppColors.surface,
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          child: Icon(option.icon, color: AppColors.primary, size: 20),
-                        ),
-                        const SizedBox(width: AppSpacing.md),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(option.title, style: textTheme.titleLarge),
-                              const SizedBox(height: 4),
-                              Text(option.subtitle, style: textTheme.bodySmall),
-                            ],
-                          ),
-                        ),
-                        Text(option.duration, style: textTheme.bodySmall),
-                      ],
-                    ),
+                  child: _ResetCard(
+                    option: option,
+                    onTap: () => controller.openReset(option),
                   ),
-                ),
-              ),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                child: Text(
-                  'After any reset, the next step can be journal, home, or one more round.',
-                  style: textTheme.bodyMedium?.copyWith(color: AppColors.warmDark),
                 ),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ResetCard extends StatelessWidget {
+  const _ResetCard({
+    required this.option,
+    required this.onTap,
+  });
+
+  final ResetOption option;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: AppColors.line),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(option.icon, color: AppColors.primary),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(option.title, style: textTheme.titleLarge),
+                  const SizedBox(height: 4),
+                  Text(option.subtitle, style: textTheme.bodySmall),
+                ],
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(option.duration, style: textTheme.bodySmall),
+                const SizedBox(height: 8),
+                const Icon(Icons.chevron_right_rounded, color: AppColors.primary),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -145,17 +162,17 @@ class _BreathingCircle extends StatelessWidget {
         return Transform.scale(scale: value, child: child);
       },
       child: Container(
-        width: 154,
-        height: 154,
+        width: 164,
+        height: 164,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: AppColors.primary.withOpacity(0.06),
-          border: Border.all(color: AppColors.primary.withOpacity(0.16), width: 1.6),
+          color: AppColors.primary.withOpacity(0.05),
+          border: Border.all(color: AppColors.primary.withOpacity(0.16), width: 1.5),
         ),
         child: Center(
           child: Container(
-            width: 92,
-            height: 92,
+            width: 100,
+            height: 100,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: AppColors.primary.withOpacity(0.08),
@@ -180,10 +197,11 @@ class _DurationPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      alignment: Alignment.center,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: selected ? AppColors.primary : AppColors.white,
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
         border: Border.all(color: selected ? AppColors.primary : AppColors.line),
       ),
       child: Text(

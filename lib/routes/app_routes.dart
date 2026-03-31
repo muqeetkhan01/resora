@@ -1,16 +1,26 @@
 abstract final class AppRoutes {
   static const splash = '/';
   static const onboarding = '/onboarding';
+  static const welcome = '/welcome';
+  static const emailAuth = '/email-auth';
   static const dashboard = '/dashboard';
   static const journal = '/journal';
+  static const journalEditor = '/journal-editor';
   static const chat = '/chat';
   static const spaces = '/spaces';
   static const normal = '/normal';
   static const resets = '/resets';
+  static const resetSession = '/reset-session';
   static const noise = '/noise';
+  static const audioPlayer = '/audio-player';
+  static const affirmations = '/affirmations';
+  static const mindfulness = '/mindfulness';
+  static const mindfulnessDetail = '/mindfulness-detail';
   static const rehearse = '/rehearse';
   static const terms = '/terms';
   static const profile = '/profile';
+  static const editProfile = '/edit-profile';
   static const qa = '/qa';
+  static const community = '/community';
   static const premium = '/premium';
 }

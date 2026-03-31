@@ -48,7 +48,7 @@ class RehearseView extends GetView<RehearseController> {
   }
 }
 
-class _ScenarioCard extends StatelessWidget {
+class _ScenarioCard extends GetView<RehearseController> {
   const _ScenarioCard({required this.scenario});
 
   final RehearsalScenario scenario;
@@ -121,19 +121,19 @@ class _ScenarioCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.md),
-          const Row(
+          Row(
             children: [
               AppButton(
                 label: 'Save to journal',
                 style: AppButtonStyle.secondary,
-                onPressed: null,
+                onPressed: () => controller.saveToJournal(scenario),
                 expanded: false,
               ),
-              SizedBox(width: AppSpacing.sm),
+              const SizedBox(width: AppSpacing.sm),
               AppButton(
                 label: 'Practice again',
                 style: AppButtonStyle.ghost,
-                onPressed: null,
+                onPressed: () => controller.practiceAgain(scenario),
                 expanded: false,
               ),
             ],

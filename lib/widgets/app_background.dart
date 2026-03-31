@@ -36,43 +36,7 @@ class AppBackground extends StatelessWidget {
     final body = Stack(
       children: [
         Container(
-          decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
-        ),
-        Positioned(
-          top: -120,
-          right: -40,
-          child: IgnorePointer(
-            child: Container(
-              width: 240,
-              height: 240,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.primary.withOpacity(0.035),
-              ),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
-                child: const SizedBox.expand(),
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          bottom: -120,
-          left: -40,
-          child: IgnorePointer(
-            child: Container(
-              width: 220,
-              height: 220,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.terracotta.withOpacity(0.03),
-              ),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
-                child: const SizedBox.expand(),
-              ),
-            ),
-          ),
+          color: AppColors.white,
         ),
         content,
       ],

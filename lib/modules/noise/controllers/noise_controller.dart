@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 
 import '../../../data/mock/mock_content.dart';
 import '../../../data/models/app_models.dart';
+import '../../../routes/app_routes.dart';
 
 class NoiseController extends GetxController {
   final selectedCategory = 'All'.obs;
@@ -24,5 +25,9 @@ class NoiseController extends GetxController {
 
   void selectCategory(String category) {
     selectedCategory.value = category;
+  }
+
+  void openTrack(AudioTrack track) {
+    Get.toNamed(AppRoutes.audioPlayer, arguments: track);
   }
 }

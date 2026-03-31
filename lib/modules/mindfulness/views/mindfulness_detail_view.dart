@@ -3,11 +3,13 @@ import 'package:get/get.dart';
 
 import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
+import '../../../theme/app_colors.dart';
 import '../../../widgets/app_background.dart';
 import '../../../widgets/app_button.dart';
 import '../../../widgets/app_card.dart';
+import '../controllers/mindfulness_controller.dart';
 
-class MindfulnessDetailView extends StatelessWidget {
+class MindfulnessDetailView extends GetView<MindfulnessController> {
   const MindfulnessDetailView({super.key});
 
   @override
@@ -24,7 +26,10 @@ class MindfulnessDetailView extends StatelessWidget {
           children: [
             IconButton(
               onPressed: Get.back,
-              icon: const Icon(Icons.arrow_back_ios_new_rounded),
+              icon: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: AppColors.primary,
+              ),
             ),
             AppCard(
               gradient: LinearGradient(
@@ -61,10 +66,11 @@ class MindfulnessDetailView extends StatelessWidget {
                     style: textTheme.bodyMedium,
                   ),
                   const SizedBox(height: AppSpacing.lg),
-                  const AppButton(
-                      label: 'Play session',
-                      icon: Icons.play_arrow_rounded,
-                      onPressed: null),
+                  AppButton(
+                    label: 'Play session',
+                    icon: Icons.play_arrow_rounded,
+                    onPressed: () => controller.playSession(session),
+                  ),
                 ],
               ),
             ),

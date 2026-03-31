@@ -182,12 +182,12 @@ class PremiumView extends GetView<PremiumController> {
               ),
             ),
             const SizedBox(height: AppSpacing.md),
-            const AppButton(label: 'Start 7-day trial', onPressed: null),
+            AppButton(label: 'Start 7-day trial', onPressed: controller.startTrial),
             const SizedBox(height: AppSpacing.md),
-            const AppButton(
+            AppButton(
               label: 'Restore purchases',
               style: AppButtonStyle.ghost,
-              onPressed: null,
+              onPressed: controller.restorePurchases,
             ),
           ],
         ),

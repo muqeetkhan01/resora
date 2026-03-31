@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/app_background.dart';
 import '../../../widgets/app_button.dart';
-import '../../../widgets/app_card.dart';
 import '../controllers/auth_entry_controller.dart';
 
 class WelcomeView extends GetView<AuthEntryController> {
@@ -18,65 +18,69 @@ class WelcomeView extends GetView<AuthEntryController> {
 
     return AppBackground(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+        padding: const EdgeInsets.only(top: AppSpacing.lg, bottom: AppSpacing.xxl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: AppSpacing.md),
-            const ResoraLogo(size: 92),
+            const ResoraLogo(size: 74, showWordmark: false),
             const SizedBox(height: AppSpacing.xxxl),
-            Text('Feel held, guided, and quietly supported.',
-                style: textTheme.displayMedium),
-            const SizedBox(height: AppSpacing.md),
             Text(
-              'A calm, premium space for parenting, healing, mindful rituals, and support that fits into real life.',
-              style: textTheme.bodyMedium,
+              'Support that meets you quickly.',
+              style: textTheme.displayLarge?.copyWith(fontSize: 30),
             ),
-            const SizedBox(height: AppSpacing.xxl),
-            AppCard(
-              gradient: LinearGradient(
-                colors: [
-                  AppColors.white.withOpacity(0.94),
-                  AppColors.surface,
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              'Step in with email, Google, or Apple. You can connect the real auth flow later without changing the screen structure.',
+              style: textTheme.bodyLarge?.copyWith(
+                color: AppColors.primary.withOpacity(0.6),
               ),
-              child: Column(
-                children: [
-                  AppButton(
-                    label: 'Continue with Email',
-                    icon: AppIcons.email,
-                    onPressed: controller.enterApp,
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  AppButton(
-                    label: 'Continue with Google',
-                    icon: AppIcons.google,
-                    style: AppButtonStyle.secondary,
-                    onPressed: controller.enterApp,
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  AppButton(
-                    label: 'Continue with Apple',
-                    icon: AppIcons.apple,
-                    style: AppButtonStyle.secondary,
-                    onPressed: controller.enterApp,
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  AppButton(
-                    label: 'Sign In',
-                    style: AppButtonStyle.ghost,
-                    onPressed: controller.enterApp,
-                  ),
-                ],
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: Image.asset(
+                AppAssets.curtainLight,
+                width: double.infinity,
+                height: 248,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            AppButton(
+              label: 'Continue with Email',
+              icon: AppIcons.email,
+              onPressed: controller.continueWithEmail,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            AppButton(
+              label: 'Continue with Google',
+              icon: AppIcons.google,
+              style: AppButtonStyle.secondary,
+              onPressed: controller.continueWithGoogle,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            AppButton(
+              label: 'Continue with Apple',
+              icon: AppIcons.apple,
+              style: AppButtonStyle.secondary,
+              onPressed: controller.continueWithApple,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Center(
+              child: AppButton(
+                label: 'Sign In',
+                style: AppButtonStyle.ghost,
+                expanded: false,
+                onPressed: controller.signIn,
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
             Text(
-              'By continuing, you agree to a private, thoughtful experience designed to protect your data and respect your pace.',
-              style: textTheme.bodySmall,
-              textAlign: TextAlign.center,
+              'Private by design. No backend is connected yet in this UI build.',
+              style: textTheme.bodySmall?.copyWith(
+                color: AppColors.muted,
+                height: 1.5,
+              ),
             ),
           ],
         ),

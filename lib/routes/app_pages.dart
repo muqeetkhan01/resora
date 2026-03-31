@@ -1,13 +1,26 @@
 import 'package:get/get.dart';
 
+import '../modules/affirmations/controllers/affirmations_controller.dart';
+import '../modules/affirmations/views/affirmations_view.dart';
+import '../modules/auth/controllers/auth_entry_controller.dart';
+import '../modules/auth/controllers/email_auth_controller.dart';
+import '../modules/auth/views/email_auth_view.dart';
+import '../modules/auth/views/welcome_view.dart';
 import '../modules/chat/controllers/chat_controller.dart';
 import '../modules/chat/views/chat_view.dart';
+import '../modules/community/controllers/community_controller.dart';
+import '../modules/community/views/community_view.dart';
 import '../modules/dashboard/controllers/dashboard_controller.dart';
 import '../modules/dashboard/views/dashboard_view.dart';
 import '../modules/home/controllers/home_controller.dart';
 import '../modules/journal/controllers/journal_controller.dart';
+import '../modules/journal/views/journal_editor_view.dart';
 import '../modules/journal/views/journal_view.dart';
+import '../modules/mindfulness/controllers/mindfulness_controller.dart';
+import '../modules/mindfulness/views/mindfulness_detail_view.dart';
+import '../modules/mindfulness/views/mindfulness_view.dart';
 import '../modules/noise/controllers/noise_controller.dart';
+import '../modules/noise/views/audio_player_view.dart';
 import '../modules/noise/views/noise_view.dart';
 import '../modules/normal/controllers/normal_controller.dart';
 import '../modules/normal/views/normal_view.dart';
@@ -15,13 +28,16 @@ import '../modules/onboarding/controllers/onboarding_controller.dart';
 import '../modules/onboarding/views/onboarding_view.dart';
 import '../modules/premium/controllers/premium_controller.dart';
 import '../modules/premium/views/premium_view.dart';
+import '../modules/profile/controllers/edit_profile_controller.dart';
 import '../modules/profile/controllers/profile_controller.dart';
+import '../modules/profile/views/edit_profile_view.dart';
 import '../modules/profile/views/profile_view.dart';
 import '../modules/qa/controllers/qa_controller.dart';
 import '../modules/qa/views/qa_view.dart';
 import '../modules/rehearse/controllers/rehearse_controller.dart';
 import '../modules/rehearse/views/rehearse_view.dart';
 import '../modules/resets/controllers/resets_controller.dart';
+import '../modules/resets/views/reset_session_view.dart';
 import '../modules/resets/views/resets_view.dart';
 import '../modules/spaces/controllers/spaces_controller.dart';
 import '../modules/spaces/views/spaces_view.dart';
@@ -48,6 +64,20 @@ abstract final class AppPages {
       }),
     ),
     GetPage(
+      name: AppRoutes.welcome,
+      page: WelcomeView.new,
+      binding: BindingsBuilder(() {
+        Get.lazyPut(AuthEntryController.new);
+      }),
+    ),
+    GetPage(
+      name: AppRoutes.emailAuth,
+      page: EmailAuthView.new,
+      binding: BindingsBuilder(() {
+        Get.lazyPut(EmailAuthController.new);
+      }),
+    ),
+    GetPage(
       name: AppRoutes.dashboard,
       page: DashboardView.new,
       binding: BindingsBuilder(() {
@@ -64,6 +94,10 @@ abstract final class AppPages {
       binding: BindingsBuilder(() {
         Get.lazyPut(JournalController.new);
       }),
+    ),
+    GetPage(
+      name: AppRoutes.journalEditor,
+      page: JournalEditorView.new,
     ),
     GetPage(
       name: AppRoutes.chat,
@@ -94,11 +128,37 @@ abstract final class AppPages {
       }),
     ),
     GetPage(
+      name: AppRoutes.resetSession,
+      page: ResetSessionView.new,
+    ),
+    GetPage(
       name: AppRoutes.noise,
       page: NoiseView.new,
       binding: BindingsBuilder(() {
         Get.lazyPut(NoiseController.new);
       }),
+    ),
+    GetPage(
+      name: AppRoutes.audioPlayer,
+      page: AudioPlayerView.new,
+    ),
+    GetPage(
+      name: AppRoutes.affirmations,
+      page: AffirmationsView.new,
+      binding: BindingsBuilder(() {
+        Get.lazyPut(AffirmationsController.new);
+      }),
+    ),
+    GetPage(
+      name: AppRoutes.mindfulness,
+      page: MindfulnessView.new,
+      binding: BindingsBuilder(() {
+        Get.lazyPut(MindfulnessController.new);
+      }),
+    ),
+    GetPage(
+      name: AppRoutes.mindfulnessDetail,
+      page: MindfulnessDetailView.new,
     ),
     GetPage(
       name: AppRoutes.rehearse,
@@ -122,10 +182,24 @@ abstract final class AppPages {
       }),
     ),
     GetPage(
+      name: AppRoutes.community,
+      page: CommunityView.new,
+      binding: BindingsBuilder(() {
+        Get.lazyPut(CommunityController.new);
+      }),
+    ),
+    GetPage(
       name: AppRoutes.profile,
       page: ProfileView.new,
       binding: BindingsBuilder(() {
         Get.lazyPut(ProfileController.new);
+      }),
+    ),
+    GetPage(
+      name: AppRoutes.editProfile,
+      page: EditProfileView.new,
+      binding: BindingsBuilder(() {
+        Get.lazyPut(EditProfileController.new);
       }),
     ),
     GetPage(

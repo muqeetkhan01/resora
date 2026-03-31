@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../data/mock/mock_content.dart';
 import '../../../data/models/app_models.dart';
+import '../../../routes/app_routes.dart';
 
 class QaController extends GetxController {
   final selectedCategory = 'All'.obs;
@@ -33,6 +34,31 @@ class QaController extends GetxController {
 
   void toggleExpanded(int index) {
     expandedIndex.value = expandedIndex.value == index ? -1 : index;
+  }
+
+  void openChat() {
+    Get.toNamed(AppRoutes.chat);
+  }
+
+  void openPremium() {
+    Get.toNamed(AppRoutes.premium);
+  }
+
+  void openRelatedSpace(QaItem item) {
+    switch (item.category) {
+      case 'Parenting':
+        Get.toNamed(AppRoutes.rehearse);
+        break;
+      case 'Work Stress':
+      case 'Body / Regulation':
+        Get.toNamed(AppRoutes.resets);
+        break;
+      case 'Relationships':
+        Get.toNamed(AppRoutes.chat);
+        break;
+      default:
+        Get.toNamed(AppRoutes.spaces);
+    }
   }
 
   @override

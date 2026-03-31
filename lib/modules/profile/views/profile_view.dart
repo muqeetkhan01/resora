@@ -66,6 +66,12 @@ class ProfileView extends GetView<ProfileController> {
                         ],
                       ),
                     ),
+                    AppButton(
+                      label: 'Edit',
+                      style: AppButtonStyle.secondary,
+                      expanded: false,
+                      onPressed: controller.openEditProfile,
+                    ),
                   ],
                 ),
               ),
@@ -137,11 +143,37 @@ class ProfileView extends GetView<ProfileController> {
                   children: controller.options.map((option) {
                     return Column(
                       children: [
-                        _OptionRow(option: option),
+                        _OptionRow(
+                          option: option,
+                          onTap: () => controller.openOption(option),
+                        ),
                         if (option != controller.options.last) const Divider(height: 1),
                       ],
                     );
                   }).toList(),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              _SettingsCard(
+                title: 'explore',
+                child: Column(
+                  children: [
+                    _OptionRow(
+                      option: const ProfileOption(
+                        label: 'Mindfulness library',
+                        icon: AppIcons.play,
+                      ),
+                      onTap: controller.openMindfulness,
+                    ),
+                    const Divider(height: 1),
+                    _OptionRow(
+                      option: const ProfileOption(
+                        label: 'Community preview',
+                        icon: AppIcons.questions,
+                      ),
+                      onTap: controller.openCommunity,
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -210,13 +242,18 @@ class _SwitchRow extends StatelessWidget {
 }
 
 class _OptionRow extends StatelessWidget {
-  const _OptionRow({required this.option});
+  const _OptionRow({
+    required this.option,
+    required this.onTap,
+  });
 
   final ProfileOption option;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      onTap: onTap,
       contentPadding: EdgeInsets.zero,
       leading: Icon(option.icon, color: AppColors.primary, size: 20),
       title: Text(option.label, style: Theme.of(context).textTheme.titleMedium),

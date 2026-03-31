@@ -14,6 +14,10 @@ class ProfileController extends GetxController {
     Get.toNamed(AppRoutes.premium);
   }
 
+  void openEditProfile() {
+    Get.toNamed(AppRoutes.editProfile);
+  }
+
   void toggleAffirmations(bool value) {
     affirmationsEnabled.value = value;
   }
@@ -24,5 +28,23 @@ class ProfileController extends GetxController {
 
   void toggleJournalLock(bool value) {
     journalLockEnabled.value = value;
+  }
+
+  void openOption(ProfileOption option) {
+    if (option.route != null) {
+      if (option.route == AppRoutes.welcome) {
+        Get.offAllNamed(option.route!);
+        return;
+      }
+      Get.toNamed(option.route!);
+    }
+  }
+
+  void openMindfulness() {
+    Get.toNamed(AppRoutes.mindfulness);
+  }
+
+  void openCommunity() {
+    Get.toNamed(AppRoutes.community);
   }
 }

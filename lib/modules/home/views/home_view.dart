@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
-import '../../../data/mock/mock_content.dart';
-import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/app_button.dart';
-import '../../../widgets/section_header.dart';
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
@@ -15,345 +13,170 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
     return SingleChildScrollView(
-      padding: const EdgeInsets.only(top: AppSpacing.lg, bottom: 96),
+      padding: const EdgeInsets.only(top: AppSpacing.lg, bottom: 112),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Text(
-                'resora',
-                style: textTheme.labelLarge?.copyWith(
-                  letterSpacing: 0.2,
-                ),
+              _HeaderIcon(
+                icon: AppIcons.help,
+                onTap: controller.openInfo,
               ),
               const Spacer(),
-              _IconCircleButton(
-                icon: AppIcons.profileOutline,
+              _HeaderIcon(
+                icon: AppIcons.profileFilled,
                 onTap: controller.openProfile,
               ),
             ],
           ),
-          const SizedBox(height: AppSpacing.xl),
+          const SizedBox(height: AppSpacing.lg),
+          const _SectionIntro(
+            title: 'Support Starts Here',
+            subtitle: 'Calm guidance in the moments that matter',
+          ),
+          const SizedBox(height: AppSpacing.md),
+          _EditorialFeature(
+            title: null,
+            subtitle: null,
+            imagePath: AppAssets.curtainLight,
+            primaryLabel: 'Talk to Resora',
+            onPrimaryTap: controller.openHelpNow,
+          ),
+          const SizedBox(height: AppSpacing.xxxl),
+          const _SectionIntro(
+            title: 'Journal',
+            subtitle: 'A quiet space to reflect and reset',
+          ),
+          const SizedBox(height: AppSpacing.md),
+          _EditorialFeature(
+            title: null,
+            subtitle: null,
+            imagePath: AppAssets.journalBed,
+            primaryLabel: 'Open Journal',
+            onPrimaryTap: controller.openJournal,
+          ),
+          const SizedBox(height: AppSpacing.xxxl),
+          const _SectionIntro(
+            title: 'Is this normal',
+            subtitle: 'Support and perspective for life’s uncertain moments.',
+          ),
+          const SizedBox(height: AppSpacing.md),
+          _EditorialFeature(
+            title: null,
+            subtitle: null,
+            imagePath: AppAssets.archway,
+            primaryLabel: 'Open Is This Normal',
+            onPrimaryTap: () => controller.openQuickAction(controller.quickActions.first),
+          ),
+          const SizedBox(height: AppSpacing.xxxl),
+          const _SectionIntro(
+            title: 'Coming Soon',
+            subtitle: 'Track patterns, progress, and growth',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EditorialFeature extends StatelessWidget {
+  const _EditorialFeature({
+    required this.title,
+    required this.subtitle,
+    required this.imagePath,
+    required this.primaryLabel,
+    required this.onPrimaryTap,
+  });
+
+  final String? title;
+  final String? subtitle;
+  final String imagePath;
+  final String primaryLabel;
+  final VoidCallback onPrimaryTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: Image.asset(
+            imagePath,
+            width: double.infinity,
+            height: 280,
+            fit: BoxFit.cover,
+          ),
+        ),
+        if (title != null) ...[
+          const SizedBox(height: AppSpacing.md),
           Text(
-            '${controller.greeting}, ${MockContent.userName}',
-            style: textTheme.displayMedium?.copyWith(
-              color: AppColors.warmDark,
-              height: 1.18,
+            title!,
+            style: textTheme.headlineMedium?.copyWith(
+              color: AppColors.primary,
             ),
           ),
+        ],
+        if (subtitle != null) ...[
           const SizedBox(height: AppSpacing.xs),
           Text(
-            'Support for the moment you are in.',
-            style: textTheme.bodyMedium?.copyWith(color: AppColors.muted),
-          ),
-          const SizedBox(height: AppSpacing.xl),
-          _PrimarySupportCard(
-            snippet: controller.primary,
-            onTalkTap: controller.openHelpNow,
-            onResetTap: () => controller.openQuickAction(controller.quickActions[1]),
-          ),
-          const SizedBox(height: AppSpacing.xxl),
-          const SectionHeader(
-            title: 'spaces',
-            subtitle: 'Start with one clear next step',
-          ),
-          const SizedBox(height: AppSpacing.md),
-          SizedBox(
-            height: 142,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: controller.quickActions.length,
-              separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.md),
-              itemBuilder: (context, index) {
-                final item = controller.quickActions[index];
-
-                return SizedBox(
-                  width: 164,
-                  child: _QuickAccessCard(
-                    number: (index + 1).toString().padLeft(2, '0'),
-                    item: item,
-                    onTap: () => controller.openQuickAction(item),
-                  ),
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: AppSpacing.xxl),
-          const SectionHeader(title: 'today'),
-          const SizedBox(height: AppSpacing.md),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.line),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 10,
-                  height: 10,
-                  margin: const EdgeInsets.only(top: 7),
-                  decoration: const BoxDecoration(
-                    color: AppColors.terracotta,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: Text(
-                    controller.affirmation,
-                    style: textTheme.headlineMedium?.copyWith(
-                      color: AppColors.primary,
-                      height: 1.45,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: AppSpacing.xxl),
-          SectionHeader(
-            title: 'recent journal',
-            subtitle: 'Pick up where you left off',
-            actionLabel: 'open',
-            onAction: controller.openJournal,
-          ),
-          const SizedBox(height: AppSpacing.md),
-          _RecentJournalCard(
-            entry: controller.recentJournal,
-            onTap: controller.openJournal,
-          ),
-          const SizedBox(height: AppSpacing.xxl),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: AppColors.line),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'premium',
-                        style: textTheme.labelLarge?.copyWith(
-                          color: AppColors.terracotta,
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.xs),
-                      Text(
-                        'Unlock unlimited talk support, full audio, and guided reflection.',
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: AppColors.warmDark,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                const Icon(
-                  AppIcons.premium,
-                  color: AppColors.terracotta,
-                  size: 20,
-                ),
-              ],
+            subtitle!,
+            style: textTheme.bodyMedium?.copyWith(
+              color: AppColors.primary.withOpacity(0.55),
             ),
           ),
         ],
-      ),
+        const SizedBox(height: AppSpacing.md),
+        SizedBox(
+          width: double.infinity,
+          child: AppButton(
+            label: primaryLabel,
+            onPressed: onPrimaryTap,
+          ),
+        ),
+      ],
     );
   }
 }
 
-class _PrimarySupportCard extends StatelessWidget {
-  const _PrimarySupportCard({
-    required this.snippet,
-    required this.onTalkTap,
-    required this.onResetTap,
+class _SectionIntro extends StatelessWidget {
+  const _SectionIntro({
+    required this.title,
+    required this.subtitle,
   });
 
-  final HomeSnippet snippet;
-  final VoidCallback onTalkTap;
-  final VoidCallback onResetTap;
+  final String title;
+  final String subtitle;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.line),
-        boxShadow: const [
-          BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 14,
-            offset: Offset(0, 6),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: textTheme.displayMedium?.copyWith(fontSize: 28),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Text(
+          subtitle,
+          style: textTheme.bodyMedium?.copyWith(
+            color: AppColors.primary.withOpacity(0.55),
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(snippet.label.toLowerCase(), style: textTheme.labelLarge),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            snippet.title,
-            style: textTheme.displayMedium?.copyWith(
-              color: AppColors.primary,
-              fontSize: 26,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            snippet.body,
-            style: textTheme.bodyLarge?.copyWith(color: AppColors.warmDark),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          Row(
-            children: [
-              AppButton(
-                label: 'talk to resora',
-                icon: AppIcons.chatOutline,
-                onPressed: onTalkTap,
-                expanded: false,
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              AppButton(
-                label: 'open a reset',
-                style: AppButtonStyle.secondary,
-                onPressed: onResetTap,
-                expanded: false,
-              ),
-            ],
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
 
-class _QuickAccessCard extends StatelessWidget {
-  const _QuickAccessCard({
-    required this.number,
-    required this.item,
-    required this.onTap,
-  });
-
-  final String number;
-  final QuickActionItem item;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: AppColors.line),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(number, style: textTheme.bodySmall?.copyWith(color: AppColors.primary)),
-                const Spacer(),
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: item.accentColor.withOpacity(0.35),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(item.icon, size: 18, color: AppColors.primary),
-                ),
-              ],
-            ),
-            const Spacer(),
-            Text(
-              item.title,
-              style: textTheme.titleLarge?.copyWith(height: 1.22),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              item.subtitle,
-              style: textTheme.bodySmall?.copyWith(color: AppColors.muted),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _RecentJournalCard extends StatelessWidget {
-  const _RecentJournalCard({
-    required this.entry,
-    required this.onTap,
-  });
-
-  final JournalEntry entry;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: AppColors.line),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(entry.title, style: textTheme.titleLarge),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              entry.preview,
-              style: textTheme.bodyMedium?.copyWith(color: AppColors.warmDark),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            Text(
-              '${entry.date} • ${entry.wordCount} words',
-              style: textTheme.bodySmall,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _IconCircleButton extends StatelessWidget {
-  const _IconCircleButton({
+class _HeaderIcon extends StatelessWidget {
+  const _HeaderIcon({
     required this.icon,
     required this.onTap,
   });
@@ -365,15 +188,15 @@ class _IconCircleButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        width: 44,
-        height: 44,
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          shape: BoxShape.circle,
-          border: Border.all(color: AppColors.line),
+      behavior: HitTestBehavior.opaque,
+      child: SizedBox(
+        width: 36,
+        height: 36,
+        child: Icon(
+          icon,
+          size: 24,
+          color: AppColors.primary,
         ),
-        child: Icon(icon, size: 20, color: AppColors.primary),
       ),
     );
   }

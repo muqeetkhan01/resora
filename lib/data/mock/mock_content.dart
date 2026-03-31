@@ -119,6 +119,39 @@ abstract final class MockContent {
     ),
   ];
 
+  static const supportCards = [
+    SupportCardItem(
+      category: 'Transitions',
+      title: 'My child melts down every time we leave the playground.',
+      footer: 'families relate',
+    ),
+    SupportCardItem(
+      category: 'Sleep',
+      title: 'My child refuses bedtime every night.',
+      footer: 'families relate',
+    ),
+    SupportCardItem(
+      category: 'Aggression',
+      title: 'My child hits their sibling when upset.',
+      footer: 'families relate',
+    ),
+    SupportCardItem(
+      category: 'Routines',
+      title: 'My child refuses to brush their teeth.',
+      footer: 'families relate',
+    ),
+    SupportCardItem(
+      category: 'Separation',
+      title: 'My child hides when it is time to go.',
+      footer: 'families relate',
+    ),
+    SupportCardItem(
+      category: 'School',
+      title: 'My child shuts down when I ask about the day.',
+      footer: 'families relate',
+    ),
+  ];
+
   static const dailyAffirmation =
       'Calm is a practice, not a personality trait.';
 
@@ -144,30 +177,7 @@ abstract final class MockContent {
     'Help me script a hard conversation.',
   ];
 
-  static const chatMessages = [
-    ChatMessageModel(
-      text: 'I am getting flooded and I do not want to make this worse.',
-      isUser: true,
-      time: '',
-    ),
-    ChatMessageModel(
-      text:
-          'That is a normal response to an overwhelming moment. Here is what to do right now: put both feet down, drop your shoulders, and take one slow exhale.',
-      isUser: false,
-      time: '',
-    ),
-    ChatMessageModel(
-      text: 'Okay. What do I say next?',
-      isUser: true,
-      time: '',
-    ),
-    ChatMessageModel(
-      text:
-          'Try this: “I need ten seconds to reset, then I’m coming back.” If you want, I can also walk you into a Gentle Reset.',
-      isUser: false,
-      time: '',
-    ),
-  ];
+  static const chatMessages = <ChatMessageModel>[];
 
   static const journalPrompts = [
     'What helped?',
@@ -265,7 +275,8 @@ abstract final class MockContent {
       category: 'Evening Stress',
     ),
     QaItem(
-      question: 'Is it normal to want to leave the room when everyone needs me?',
+      question:
+          'Is it normal to want to leave the room when everyone needs me?',
       answer:
           'Yes. Stepping away for a minute can be the regulated move, not the selfish one. A short pause can prevent a much messier moment.',
       category: 'Overwhelm',
@@ -280,10 +291,21 @@ abstract final class MockContent {
 
   static const affirmations = [
     AffirmationItem(
-      category: 'Push Only',
+      category: 'Daily',
       text: dailyAffirmation,
-      duration: 'Notification',
+      duration: 'Morning reminder',
       isSaved: true,
+    ),
+    AffirmationItem(
+      category: 'Parenting Calm',
+      text: 'You do not need to match the chaos to lead the moment.',
+      duration: 'Midday reminder',
+    ),
+    AffirmationItem(
+      category: 'Evening Reset',
+      text: 'Less pressure. One clear next step.',
+      duration: 'Evening reminder',
+      isPremium: true,
     ),
   ];
 
@@ -417,23 +439,67 @@ abstract final class MockContent {
     ),
   ];
 
-  static const communityPosts = <CommunityPost>[];
+  static const communityPosts = [
+    CommunityPost(
+      author: 'Maya',
+      role: 'Parent of two',
+      title: 'I kept the limit and lowered my voice.',
+      preview:
+          'That changed the whole bedtime tone faster than another explanation would have.',
+      category: 'Daily Wins',
+      likes: 18,
+      comments: 4,
+    ),
+    CommunityPost(
+      author: 'Elena',
+      role: 'Working mom',
+      title: 'A two-minute pause helped more than pushing through.',
+      preview:
+          'I stepped away before answering and came back much clearer.',
+      category: 'Mindfulness',
+      likes: 11,
+      comments: 3,
+    ),
+    CommunityPost(
+      author: 'Nora',
+      role: 'Parenting through transitions',
+      title: 'What do you say when pickup turns into a meltdown?',
+      preview:
+          'I want one line I can repeat without escalating the moment.',
+      category: 'Questions',
+      likes: 9,
+      comments: 6,
+    ),
+  ];
 
   static const profileOptions = [
     ProfileOption(
       label: 'Affirmation timing',
       icon: AppIcons.notification,
       trailing: 'Morning',
+      route: AppRoutes.affirmations,
     ),
     ProfileOption(
       label: 'Journal lock',
       icon: AppIcons.privacy,
       trailing: 'Off',
     ),
-    ProfileOption(label: 'Subscription', icon: AppIcons.premium),
+    ProfileOption(
+      label: 'Subscription',
+      icon: AppIcons.premium,
+      route: AppRoutes.premium,
+    ),
     ProfileOption(label: 'Privacy policy', icon: AppIcons.privacy),
-    ProfileOption(label: 'Help & support', icon: AppIcons.help),
-    ProfileOption(label: 'Logout', icon: AppIcons.logout),
+    ProfileOption(
+      label: 'Help & support',
+      icon: AppIcons.help,
+      route: AppRoutes.chat,
+    ),
+    ProfileOption(
+      label: 'Logout',
+      icon: AppIcons.logout,
+      route: AppRoutes.welcome,
+    ),
   ];
 
   static const premiumPlans = [

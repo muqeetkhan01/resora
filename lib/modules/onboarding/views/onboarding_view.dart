@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
+import 'package:resora/core/constants/app_assets.dart';
 
-import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../data/mock/mock_content.dart';
 import '../../../theme/app_colors.dart';
@@ -19,7 +20,8 @@ class OnboardingView extends GetView<OnboardingController> {
     return AppBackground(
       child: Obx(
         () => SingleChildScrollView(
-          padding: const EdgeInsets.only(top: AppSpacing.lg, bottom: AppSpacing.xxl),
+          padding:
+              const EdgeInsets.only(top: AppSpacing.lg, bottom: AppSpacing.xxl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -27,7 +29,8 @@ class OnboardingView extends GetView<OnboardingController> {
                 children: [
                   Text(
                     '${controller.currentStep.value + 1} of ${controller.totalSteps}',
-                    style: textTheme.bodySmall?.copyWith(color: AppColors.primary),
+                    style:
+                        textTheme.bodySmall?.copyWith(color: AppColors.primary),
                   ),
                   const Spacer(),
                   TextButton(
@@ -94,7 +97,15 @@ class _WelcomeStep extends StatelessWidget {
             borderRadius: BorderRadius.circular(22),
             border: Border.all(color: AppColors.line),
           ),
-          child: const Icon(AppIcons.brand, color: AppColors.primary, size: 34),
+          child: SizedBox(
+            width: 100,
+            height: 100,
+            child: Lottie.asset(
+              AppAssets.lottieBreath,
+              fit: BoxFit.contain,
+              repeat: true,
+            ),
+          ),
         ),
         const SizedBox(height: AppSpacing.xxl),
         Text('Resora', style: textTheme.displayLarge),
