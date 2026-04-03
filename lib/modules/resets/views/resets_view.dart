@@ -5,7 +5,8 @@ import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
-import '../../../widgets/app_button.dart';
+import '../../../widgets/link_action_row.dart';
+import '../../../widgets/snap_feed_indicator.dart';
 import '../controllers/resets_controller.dart';
 
 class ResetsView extends GetView<ResetsController> {
@@ -14,72 +15,101 @@ class ResetsView extends GetView<ResetsController> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final featured = controller.options.first;
 
     return Scaffold(
       backgroundColor: AppColors.canvas,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               IconButton(
                 onPressed: Get.back,
-                icon: const Icon(AppIcons.close, color: AppColors.primary),
+                icon: const Icon(AppIcons.back, color: AppColors.primary),
               ),
-              Text('gentle resets', style: textTheme.displayMedium),
+              const SizedBox(height: AppSpacing.sm),
+              Text('gentle reset', style: textTheme.displayMedium),
               const SizedBox(height: AppSpacing.xs),
               Text(
                 'Regulate first. Reflect later.',
-                style: textTheme.bodyMedium,
+                style: textTheme.bodyMedium?.copyWith(color: AppColors.primary),
               ),
-              const SizedBox(height: AppSpacing.xl),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(AppSpacing.xl),
-                decoration: BoxDecoration(
-                  color: AppColors.white,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: AppColors.line),
+              const SizedBox(height: AppSpacing.lg),
+              SizedBox(
+                height: 36,
+                child: Obx(
+                  () {
+                    final selectedCategory = controller.selectedCategory.value;
+
+                    return ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: controller.categories.length,
+                      separatorBuilder: (_, __) =>
+                          const SizedBox(width: AppSpacing.md),
+                      itemBuilder: (context, index) {
+                        final category = controller.categories[index];
+                        final selected = selectedCategory == category;
+
+                        return TextButton(
+                          onPressed: () => controller.selectCategory(category),
+                          child: Text(
+                            category,
+                            style: textTheme.bodySmall?.copyWith(
+                              color:
+                                  selected ? AppColors.primary : AppColors.muted,
+                              decoration: selected
+                                  ? TextDecoration.underline
+                                  : TextDecoration.none,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
                 ),
-                child: Column(
-                  children: [
-                    const _BreathingCircle(),
-                    const SizedBox(height: AppSpacing.lg),
-                    Text(featured.title, style: textTheme.headlineMedium),
-                    const SizedBox(height: AppSpacing.sm),
-                    Text(
-                      'Under three taps from Home. One instruction at a time.',
-                      textAlign: TextAlign.center,
-                      style: textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    const Row(
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              Expanded(
+                child: Obx(
+                  () {
+                    final options = controller.filteredOptions;
+
+                    return Stack(
                       children: [
-                        Expanded(child: _DurationPill(label: '2 min', selected: true)),
-                        SizedBox(width: AppSpacing.sm),
-                        Expanded(child: _DurationPill(label: '5 min')),
-                        SizedBox(width: AppSpacing.sm),
-                        Expanded(child: _DurationPill(label: 'custom')),
+                        PageView.builder(
+                          scrollDirection: Axis.vertical,
+                          onPageChanged: controller.setCurrentPage,
+                          itemCount: options.length,
+                          itemBuilder: (context, index) {
+                            final option = options[index];
+                            return _ResetPage(
+                              option: option,
+                              index: index + 1,
+                              count: options.length,
+                              onTap: () => controller.openReset(option),
+                            );
+                          },
+                        ),
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          bottom: 0,
+                          child: Center(
+                            child: SnapFeedIndicator(
+                              count: options.length,
+                              currentIndex: controller.currentPage.value,
+                            ),
+                          ),
+                        ),
                       ],
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    AppButton(
-                      label: 'Start breath reset',
-                      onPressed: () => controller.openReset(featured),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: AppSpacing.xl),
-              ...controller.options.map(
-                (option) => Padding(
-                  padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                  child: _ResetCard(
-                    option: option,
-                    onTap: () => controller.openReset(option),
-                  ),
+                    );
+                  },
                 ),
               ),
             ],
@@ -90,126 +120,40 @@ class ResetsView extends GetView<ResetsController> {
   }
 }
 
-class _ResetCard extends StatelessWidget {
-  const _ResetCard({
+class _ResetPage extends StatelessWidget {
+  const _ResetPage({
     required this.option,
+    required this.index,
+    required this.count,
     required this.onTap,
   });
 
   final ResetOption option;
+  final int index;
+  final int count;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: AppColors.line),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: AppSpacing.xl),
+        Text(option.title, style: textTheme.headlineLarge),
+        const SizedBox(height: AppSpacing.md),
+        Text(
+          option.subtitle,
+          style: textTheme.bodyLarge?.copyWith(color: AppColors.primary),
         ),
-        child: Row(
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Icon(option.icon, color: AppColors.primary),
-            ),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(option.title, style: textTheme.titleLarge),
-                  const SizedBox(height: 4),
-                  Text(option.subtitle, style: textTheme.bodySmall),
-                ],
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(option.duration, style: textTheme.bodySmall),
-                const SizedBox(height: 8),
-                const Icon(Icons.chevron_right_rounded, color: AppColors.primary),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _BreathingCircle extends StatelessWidget {
-  const _BreathingCircle();
-
-  @override
-  Widget build(BuildContext context) {
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0.84, end: 1),
-      duration: const Duration(seconds: 4),
-      curve: Curves.easeInOut,
-      builder: (context, value, child) {
-        return Transform.scale(scale: value, child: child);
-      },
-      child: Container(
-        width: 164,
-        height: 164,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: AppColors.primary.withOpacity(0.05),
-          border: Border.all(color: AppColors.primary.withOpacity(0.16), width: 1.5),
-        ),
-        child: Center(
-          child: Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.primary.withOpacity(0.08),
-              border: Border.all(color: AppColors.primary.withOpacity(0.22)),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _DurationPill extends StatelessWidget {
-  const _DurationPill({
-    required this.label,
-    this.selected = false,
-  });
-
-  final String label;
-  final bool selected;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: selected ? AppColors.primary : AppColors.white,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
-        border: Border.all(color: selected ? AppColors.primary : AppColors.line),
-      ),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: selected ? AppColors.white : AppColors.primary,
-            ),
-      ),
+        const SizedBox(height: AppSpacing.lg),
+        Text(option.duration, style: textTheme.bodySmall),
+        const Spacer(),
+        Text('$index / $count', style: textTheme.bodySmall),
+        const SizedBox(height: AppSpacing.md),
+        LinkActionRow(label: 'start', onTap: onTap),
+      ],
     );
   }
 }

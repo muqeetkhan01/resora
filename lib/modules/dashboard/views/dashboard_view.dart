@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../widgets/app_background.dart';
 import '../../../widgets/app_bottom_nav.dart';
 import '../../chat/views/chat_view.dart';
 import '../../home/views/home_view.dart';
-import '../../journal/views/journal_view.dart';
 import '../../spaces/views/spaces_view.dart';
 import '../controllers/dashboard_controller.dart';
 
@@ -18,18 +16,17 @@ class DashboardView extends GetView<DashboardController> {
       HomeView(),
       ChatView(rootTab: true),
       SpacesView(),
-      JournalView(),
     ];
 
     return Obx(
-      () => AppBackground(
+      () => Scaffold(
+        body: IndexedStack(
+          index: controller.selectedIndex.value,
+          children: pages,
+        ),
         bottomNavigationBar: AppBottomNav(
           currentIndex: controller.selectedIndex.value,
           onTap: controller.switchTab,
-        ),
-        child: IndexedStack(
-          index: controller.selectedIndex.value,
-          children: pages,
         ),
       ),
     );

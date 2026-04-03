@@ -35,6 +35,7 @@ import '../modules/profile/views/profile_view.dart';
 import '../modules/qa/controllers/qa_controller.dart';
 import '../modules/qa/views/qa_view.dart';
 import '../modules/rehearse/controllers/rehearse_controller.dart';
+import '../modules/rehearse/views/rehearse_detail_view.dart';
 import '../modules/rehearse/views/rehearse_view.dart';
 import '../modules/resets/controllers/resets_controller.dart';
 import '../modules/resets/views/reset_session_view.dart';
@@ -45,6 +46,7 @@ import '../modules/splash/controllers/splash_controller.dart';
 import '../modules/splash/views/splash_view.dart';
 import '../modules/terms/controllers/terms_controller.dart';
 import '../modules/terms/views/terms_view.dart';
+import '../modules/that_mattered/views/that_mattered_view.dart';
 import 'app_routes.dart';
 
 abstract final class AppPages {
@@ -168,6 +170,10 @@ abstract final class AppPages {
       }),
     ),
     GetPage(
+      name: AppRoutes.rehearseDetail,
+      page: RehearseDetailView.new,
+    ),
+    GetPage(
       name: AppRoutes.terms,
       page: TermsView.new,
       binding: BindingsBuilder(() {
@@ -208,6 +214,10 @@ abstract final class AppPages {
       binding: BindingsBuilder(() {
         Get.lazyPut(PremiumController.new);
       }),
+    ),
+    GetPage(
+      name: AppRoutes.thatMattered,
+      page: ThatMatteredView.new,
     ),
   ];
 }

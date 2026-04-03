@@ -10,7 +10,7 @@ class DashboardController extends GetxController {
     super.onInit();
     final initialIndex = Get.arguments;
     if (initialIndex is int) {
-      selectedIndex.value = initialIndex.clamp(0, 3);
+      selectedIndex.value = initialIndex.clamp(0, 2);
     }
   }
 

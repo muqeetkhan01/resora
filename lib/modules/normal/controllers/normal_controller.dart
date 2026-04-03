@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 import '../../../data/mock/mock_content.dart';
@@ -6,21 +5,33 @@ import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 
 class NormalController extends GetxController {
-  final searchController = TextEditingController();
-  final query = ''.obs;
+  final selectedCategory = 'All'.obs;
+  final currentPage = 0.obs;
+
+  List<String> get categories => const [
+        'All',
+        'Evening Stress',
+        'Overwhelm',
+        'Regulation',
+      ];
 
   List<QaItem> get topics {
-    final normalized = query.value.trim().toLowerCase();
-    if (normalized.isEmpty) return MockContent.normalTopics;
+    if (selectedCategory.value == 'All') {
+      return MockContent.normalTopics;
+    }
 
-    return MockContent.normalTopics.where((topic) {
-      return topic.question.toLowerCase().contains(normalized) ||
-          topic.answer.toLowerCase().contains(normalized);
-    }).toList();
+    return MockContent.normalTopics
+        .where((topic) => topic.category == selectedCategory.value)
+        .toList();
   }
 
-  void onSearch(String value) {
-    query.value = value;
+  void selectCategory(String value) {
+    selectedCategory.value = value;
+    currentPage.value = 0;
+  }
+
+  void setCurrentPage(int value) {
+    currentPage.value = value;
   }
 
   void openRelatedReset() {
@@ -29,11 +40,5 @@ class NormalController extends GetxController {
 
   void openJournal() {
     Get.toNamed(AppRoutes.journalEditor);
-  }
-
-  @override
-  void onClose() {
-    searchController.dispose();
-    super.onClose();
   }
 }

@@ -5,7 +5,8 @@ import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
-import '../../../widgets/app_button.dart';
+import '../../../widgets/link_action_row.dart';
+import '../../../widgets/snap_feed_indicator.dart';
 import '../controllers/normal_controller.dart';
 
 class NormalView extends GetView<NormalController> {
@@ -18,41 +19,97 @@ class NormalView extends GetView<NormalController> {
     return Scaffold(
       backgroundColor: AppColors.canvas,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               IconButton(
                 onPressed: Get.back,
-                icon: const Icon(AppIcons.close, color: AppColors.primary),
+                icon: const Icon(AppIcons.back, color: AppColors.primary),
               ),
-              Text('is this normal?', style: textTheme.displayMedium),
+              const SizedBox(height: AppSpacing.sm),
+              Text('is this normal', style: textTheme.displayMedium),
               const SizedBox(height: AppSpacing.xs),
               Text(
                 'Short, steady answers for the thing you are trying to make sense of.',
-                style: textTheme.bodyMedium,
+                style: textTheme.bodyMedium?.copyWith(color: AppColors.primary),
               ),
               const SizedBox(height: AppSpacing.lg),
-              TextField(
-                controller: controller.searchController,
-                onChanged: controller.onSearch,
-                decoration: const InputDecoration(
-                  hintText: 'Search a question',
-                  prefixIcon: Icon(AppIcons.search),
+              SizedBox(
+                height: 36,
+                child: Obx(
+                  () {
+                    final selectedCategory = controller.selectedCategory.value;
+
+                    return ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: controller.categories.length,
+                      separatorBuilder: (_, __) =>
+                          const SizedBox(width: AppSpacing.md),
+                      itemBuilder: (context, index) {
+                        final category = controller.categories[index];
+                        final selected = selectedCategory == category;
+
+                        return TextButton(
+                          onPressed: () => controller.selectCategory(category),
+                          child: Text(
+                            category.toLowerCase(),
+                            style: textTheme.bodySmall?.copyWith(
+                              color:
+                                  selected ? AppColors.primary : AppColors.muted,
+                              decoration: selected
+                                  ? TextDecoration.underline
+                                  : TextDecoration.none,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
                 ),
               ),
-              const SizedBox(height: AppSpacing.xl),
-              Obx(
-                () => Column(
-                  children: controller.topics
-                      .map(
-                        (topic) => Padding(
-                          padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                          child: _NormalTopicCard(topic: topic),
+              const SizedBox(height: AppSpacing.lg),
+              Expanded(
+                child: Obx(
+                  () {
+                    final topics = controller.topics;
+
+                    return Stack(
+                      children: [
+                        PageView.builder(
+                          scrollDirection: Axis.vertical,
+                          onPageChanged: controller.setCurrentPage,
+                          itemCount: topics.length,
+                          itemBuilder: (context, index) {
+                            final topic = topics[index];
+                            return _NormalTopicPage(
+                              topic: topic,
+                              controller: controller,
+                              index: index + 1,
+                              count: topics.length,
+                            );
+                          },
                         ),
-                      )
-                      .toList(),
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          bottom: 0,
+                          child: Center(
+                            child: SnapFeedIndicator(
+                              count: topics.length,
+                              currentIndex: controller.currentPage.value,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ],
@@ -63,50 +120,43 @@ class NormalView extends GetView<NormalController> {
   }
 }
 
-class _NormalTopicCard extends GetView<NormalController> {
-  const _NormalTopicCard({required this.topic});
+class _NormalTopicPage extends StatelessWidget {
+  const _NormalTopicPage({
+    required this.topic,
+    required this.controller,
+    required this.index,
+    required this.count,
+  });
 
   final QaItem topic;
+  final NormalController controller;
+  final int index;
+  final int count;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.line),
-      ),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.xl),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(topic.question, style: textTheme.titleLarge),
-          const SizedBox(height: AppSpacing.sm),
+          const SizedBox(height: AppSpacing.xl),
+          Text(topic.question, style: textTheme.headlineLarge),
+          const SizedBox(height: AppSpacing.lg),
           Text(
             topic.answer,
-            style: textTheme.bodyLarge?.copyWith(color: AppColors.warmDark),
+            style: textTheme.bodyLarge?.copyWith(color: AppColors.primary),
           ),
+          const Spacer(),
+          Text('$index / $count', style: textTheme.bodySmall),
           const SizedBox(height: AppSpacing.md),
-          Row(
-            children: [
-              AppButton(
-                label: 'Related reset',
-                style: AppButtonStyle.secondary,
-                onPressed: controller.openRelatedReset,
-                expanded: false,
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              AppButton(
-                label: 'Explore in journal',
-                style: AppButtonStyle.ghost,
-                onPressed: controller.openJournal,
-                expanded: false,
-              ),
-            ],
-          ),
+          LinkActionRow(
+              label: 'related reset', onTap: controller.openRelatedReset),
+          const SizedBox(height: AppSpacing.xs),
+          LinkActionRow(
+              label: 'explore in journal', onTap: controller.openJournal),
         ],
       ),
     );

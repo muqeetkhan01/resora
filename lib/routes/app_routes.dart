@@ -23,4 +23,6 @@ abstract final class AppRoutes {
   static const qa = '/qa';
   static const community = '/community';
   static const premium = '/premium';
+  static const rehearseDetail = '/rehearse-detail';
+  static const thatMattered = '/that-mattered';
 }

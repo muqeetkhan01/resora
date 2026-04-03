@@ -4,9 +4,9 @@ import 'package:get/get.dart';
 import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
+import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/app_background.dart';
-import '../../../widgets/app_button.dart';
 
 class JournalEditorView extends StatefulWidget {
   const JournalEditorView({super.key});
@@ -17,8 +17,7 @@ class JournalEditorView extends StatefulWidget {
 
 class _JournalEditorViewState extends State<JournalEditorView> {
   late final TextEditingController _controller;
-  late final String _title;
-  late final String _subtitle;
+  late final String _prompt;
 
   @override
   void initState() {
@@ -26,12 +25,13 @@ class _JournalEditorViewState extends State<JournalEditorView> {
     final argument = Get.arguments;
 
     if (argument is JournalEntry) {
-      _title = argument.title;
-      _subtitle = '${argument.date} • ${argument.wordCount} words';
+      _prompt = argument.prompt ?? 'What helped more than you expected today?';
       _controller = TextEditingController(text: argument.preview);
+    } else if (argument is String) {
+      _prompt = argument;
+      _controller = TextEditingController();
     } else {
-      _title = 'New entry';
-      _subtitle = 'Auto-save on';
+      _prompt = 'What helped more than you expected today?';
       _controller = TextEditingController();
     }
   }
@@ -50,95 +50,48 @@ class _JournalEditorViewState extends State<JournalEditorView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: AppSpacing.md),
-            child: Row(
-              children: [
-                IconButton(
-                  onPressed: Get.back,
-                  icon: const Icon(AppIcons.close, color: AppColors.primary),
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(_title, style: textTheme.displayMedium),
-                      const SizedBox(height: 2),
-                      Text(_subtitle, style: textTheme.bodySmall),
-                    ],
-                  ),
-                ),
-                Text(
-                  '${_controller.text.trim().split(RegExp(r'\s+')).where((word) => word.isNotEmpty).length} words',
-                  style: textTheme.bodySmall,
-                ),
-              ],
-            ),
-          ),
           const SizedBox(height: AppSpacing.md),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: AppSpacing.sm,
-            ),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.line),
-            ),
-            child: Text(
-              'Prompt: What helped more than I expected today?',
-              style: textTheme.bodyMedium?.copyWith(color: AppColors.primary),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              decoration: BoxDecoration(
-                color: AppColors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.line),
-              ),
-              child: TextField(
-                controller: _controller,
-                autofocus: true,
-                maxLines: null,
-                expands: true,
-                style: textTheme.bodyLarge,
-                decoration: const InputDecoration(
-                  hintText: 'Write what is true right now.',
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  fillColor: Colors.transparent,
-                  filled: false,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
           Row(
             children: [
-              Expanded(
-                child: AppButton(
-                  label: 'Done',
-                  onPressed: Get.back,
-                ),
+              IconButton(
+                onPressed: Get.back,
+                icon: const Icon(AppIcons.back, color: AppColors.primary),
               ),
-              const SizedBox(width: AppSpacing.md),
-              Expanded(
-                child: AppButton(
-                  label: 'AI reflection',
-                  style: AppButtonStyle.secondary,
-                  onPressed: () {},
+              const Spacer(),
+              TextButton(
+                onPressed: () => Get.offNamed(AppRoutes.thatMattered),
+                child: Text(
+                  'done',
+                  style:
+                      textTheme.bodyMedium?.copyWith(color: AppColors.primary),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: AppSpacing.lg),
+          const SizedBox(height: AppSpacing.xl),
+          Text(
+            _prompt,
+            style: textTheme.headlineLarge?.copyWith(
+              color: AppColors.primary.withOpacity(0.26),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xl),
+          Expanded(
+            child: TextField(
+              controller: _controller,
+              autofocus: true,
+              maxLines: null,
+              expands: true,
+              style: textTheme.bodyLarge?.copyWith(color: AppColors.primary),
+              textAlignVertical: TextAlignVertical.top,
+              decoration: const InputDecoration(
+                hintText: 'start here',
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+              ),
+            ),
+          ),
         ],
       ),
     );

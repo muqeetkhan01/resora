@@ -5,8 +5,8 @@ import 'app_colors.dart';
 
 abstract final class AppTheme {
   static ThemeData get lightTheme {
-    final serif = GoogleFonts.merriweatherTextTheme();
-    final sans = GoogleFonts.dmSansTextTheme();
+    final heading = GoogleFonts.cormorantGaramondTextTheme();
+    final body = GoogleFonts.merriweatherTextTheme();
 
     return ThemeData(
       useMaterial3: true,
@@ -20,68 +20,68 @@ abstract final class AppTheme {
         error: AppColors.error,
       ),
       textTheme: TextTheme(
-        displayLarge: serif.displayLarge?.copyWith(
+        displayLarge: heading.displayLarge?.copyWith(
           fontSize: 32,
           fontWeight: FontWeight.w700,
-          height: 1.2,
+          height: 1.05,
           letterSpacing: 0.2,
           color: AppColors.primary,
         ),
-        displayMedium: serif.displayMedium?.copyWith(
-          fontSize: 28,
+        displayMedium: heading.displayMedium?.copyWith(
+          fontSize: 26,
           fontWeight: FontWeight.w700,
-          height: 1.2,
+          height: 1.08,
           letterSpacing: 0.2,
           color: AppColors.primary,
         ),
-        headlineLarge: serif.headlineLarge?.copyWith(
+        headlineLarge: heading.headlineLarge?.copyWith(
           fontSize: 24,
           fontWeight: FontWeight.w600,
-          height: 1.25,
+          height: 1.12,
           letterSpacing: 0.2,
           color: AppColors.primary,
         ),
-        headlineMedium: serif.headlineMedium?.copyWith(
+        headlineMedium: heading.headlineMedium?.copyWith(
           fontSize: 20,
-          fontWeight: FontWeight.w400,
-          height: 1.25,
+          fontWeight: FontWeight.w600,
+          height: 1.15,
           color: AppColors.primary,
         ),
-        titleLarge: serif.titleLarge?.copyWith(
+        titleLarge: heading.titleLarge?.copyWith(
           fontSize: 18,
-          fontWeight: FontWeight.w400,
-          height: 1.25,
+          fontWeight: FontWeight.w600,
+          height: 1.15,
           color: AppColors.primary,
         ),
-        titleMedium: sans.titleMedium?.copyWith(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-          color: AppColors.text,
-        ),
-        bodyLarge: sans.bodyLarge?.copyWith(
+        titleMedium: body.titleMedium?.copyWith(
           fontSize: 16,
           fontWeight: FontWeight.w400,
-          height: 1.55,
           color: AppColors.text,
         ),
-        bodyMedium: sans.bodyMedium?.copyWith(
+        bodyLarge: body.bodyLarge?.copyWith(
           fontSize: 15,
           fontWeight: FontWeight.w400,
-          height: 1.55,
+          height: 1.7,
+          color: AppColors.text,
+        ),
+        bodyMedium: body.bodyMedium?.copyWith(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          height: 1.7,
           color: AppColors.muted,
         ),
-        bodySmall: sans.bodySmall?.copyWith(
+        bodySmall: body.bodySmall?.copyWith(
           fontSize: 12,
           fontWeight: FontWeight.w400,
-          height: 1.5,
+          height: 1.6,
           color: AppColors.muted,
         ),
-        labelLarge: sans.labelLarge?.copyWith(
-          fontSize: 15,
+        labelLarge: body.labelLarge?.copyWith(
+          fontSize: 14,
           fontWeight: FontWeight.w500,
           color: AppColors.primary,
         ),
-        labelMedium: sans.labelMedium?.copyWith(
+        labelMedium: body.labelMedium?.copyWith(
           fontSize: 11,
           fontWeight: FontWeight.w400,
           color: AppColors.muted,
@@ -97,23 +97,23 @@ abstract final class AppTheme {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           side: const BorderSide(color: AppColors.line),
         ),
         shadowColor: AppColors.shadow,
       ),
       inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: AppColors.surface,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        hintStyle: sans.bodyMedium?.copyWith(color: AppColors.placeholder),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.line),
+        filled: false,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 12),
+        hintStyle: body.bodyMedium?.copyWith(color: AppColors.placeholder),
+        enabledBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: AppColors.line),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.primary),
+        focusedBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: AppColors.primary),
+        ),
+        border: const UnderlineInputBorder(
+          borderSide: BorderSide(color: AppColors.line),
         ),
       ),
       dividerTheme: const DividerThemeData(color: AppColors.line),

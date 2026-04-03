@@ -1,10 +1,12 @@
 import 'package:get/get.dart';
 
+import '../../../core/controllers/app_session_controller.dart';
 import '../../../data/mock/mock_content.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 
 class ProfileController extends GetxController {
+  final _session = Get.find<AppSessionController>();
   List<ProfileOption> get options => MockContent.profileOptions;
   final affirmationsEnabled = true.obs;
   final darkModeEnabled = false.obs;
@@ -33,7 +35,7 @@ class ProfileController extends GetxController {
   void openOption(ProfileOption option) {
     if (option.route != null) {
       if (option.route == AppRoutes.welcome) {
-        Get.offAllNamed(option.route!);
+        _session.signOut();
         return;
       }
       Get.toNamed(option.route!);

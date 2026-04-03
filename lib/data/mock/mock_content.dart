@@ -100,8 +100,7 @@ abstract final class MockContent {
       subtitle: 'Reflect after you reset',
       icon: AppIcons.journal,
       accentColor: AppColors.surface,
-      route: AppRoutes.dashboard,
-      dashboardIndex: 3,
+      route: AppRoutes.journal,
     ),
     QuickActionItem(
       title: 'Q&A',
@@ -454,8 +453,7 @@ abstract final class MockContent {
       author: 'Elena',
       role: 'Working mom',
       title: 'A two-minute pause helped more than pushing through.',
-      preview:
-          'I stepped away before answering and came back much clearer.',
+      preview: 'I stepped away before answering and came back much clearer.',
       category: 'Mindfulness',
       likes: 11,
       comments: 3,
@@ -464,8 +462,7 @@ abstract final class MockContent {
       author: 'Nora',
       role: 'Parenting through transitions',
       title: 'What do you say when pickup turns into a meltdown?',
-      preview:
-          'I want one line I can repeat without escalating the moment.',
+      preview: 'I want one line I can repeat without escalating the moment.',
       category: 'Questions',
       likes: 9,
       comments: 6,

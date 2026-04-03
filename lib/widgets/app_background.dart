@@ -13,12 +13,14 @@ class AppBackground extends StatelessWidget {
     this.bottomNavigationBar,
     this.floatingActionButton,
     this.safeArea = true,
+    this.backgroundColor = AppColors.canvas,
   });
 
   final Widget child;
   final Widget? bottomNavigationBar;
   final Widget? floatingActionButton;
   final bool safeArea;
+  final Color backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +38,7 @@ class AppBackground extends StatelessWidget {
     final body = Stack(
       children: [
         Container(
-          color: AppColors.white,
+          color: backgroundColor,
         ),
         content,
       ],
@@ -95,47 +97,14 @@ class ResoraLogo extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [AppColors.white, AppColors.canvas, AppColors.surface],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            border: Border.all(color: AppColors.line),
-            borderRadius: BorderRadius.circular(size / 3),
-            boxShadow: const [
-              BoxShadow(
-                color: AppColors.shadow,
-                blurRadius: 24,
-                offset: Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Container(
-                width: size * 0.62,
-                height: size * 0.62,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.06),
-                  borderRadius: BorderRadius.circular(size / 4),
-                ),
-              ),
-              Icon(
-                AppIcons.brand,
-                size: size * 0.34,
-                color: AppColors.primary,
-              ),
-            ],
-          ),
+        Icon(
+          AppIcons.brand,
+          size: size * 0.48,
+          color: AppColors.primary,
         ),
         if (showWordmark) ...[
           const SizedBox(height: AppSpacing.md),
-          Text('Resora', style: textTheme.displayMedium),
+          Text('resora', style: textTheme.displayLarge),
           const SizedBox(height: AppSpacing.xs),
           Text(
             'for real life moments',

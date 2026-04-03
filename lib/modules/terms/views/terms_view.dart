@@ -18,53 +18,44 @@ class TermsView extends GetView<TermsController> {
       backgroundColor: AppColors.canvas,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.xl,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               IconButton(
                 onPressed: Get.back,
-                icon: const Icon(AppIcons.close, color: AppColors.primary),
+                icon: const Icon(AppIcons.back, color: AppColors.primary),
               ),
+              const SizedBox(height: AppSpacing.sm),
               Text('key terms', style: textTheme.displayMedium),
               const SizedBox(height: AppSpacing.xs),
               Text(
                 'Plain-language definitions for the concepts that keep coming up.',
-                style: textTheme.bodyMedium,
+                style: textTheme.bodyMedium?.copyWith(color: AppColors.primary),
               ),
               const SizedBox(height: AppSpacing.lg),
               TextField(
                 controller: controller.searchController,
                 onChanged: controller.onSearch,
-                decoration: const InputDecoration(
-                  hintText: 'Search key terms',
-                  prefixIcon: Icon(AppIcons.search),
-                ),
+                decoration: const InputDecoration(hintText: 'Search key terms'),
               ),
-              const SizedBox(height: AppSpacing.md),
+              const SizedBox(height: AppSpacing.lg),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: alphabet
                       .map(
                         (letter) => Padding(
-                          padding: const EdgeInsets.only(right: AppSpacing.sm),
-                          child: Container(
-                            width: 34,
-                            height: 34,
-                            decoration: BoxDecoration(
-                              color: AppColors.white,
-                              shape: BoxShape.circle,
-                              border: Border.all(color: AppColors.line),
-                            ),
-                            child: Center(
-                              child: Text(
-                                letter,
-                                style: textTheme.bodySmall?.copyWith(
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                            ),
+                          padding: const EdgeInsets.only(right: AppSpacing.md),
+                          child: Text(
+                            letter,
+                            style: textTheme.bodySmall
+                                ?.copyWith(color: AppColors.muted),
                           ),
                         ),
                       )
@@ -77,28 +68,20 @@ class TermsView extends GetView<TermsController> {
                   children: controller.terms
                       .map(
                         (term) => Padding(
-                          padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                          child: Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(AppSpacing.lg),
-                            decoration: BoxDecoration(
-                              color: AppColors.white,
-                              borderRadius: BorderRadius.circular(18),
-                              border: Border.all(color: AppColors.line),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(term.term, style: textTheme.titleLarge),
-                                const SizedBox(height: AppSpacing.sm),
-                                Text(
-                                  term.definition,
-                                  style: textTheme.bodyLarge?.copyWith(
-                                    color: AppColors.warmDark,
-                                  ),
-                                ),
-                              ],
-                            ),
+                          padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(term.term, style: textTheme.titleLarge),
+                              const SizedBox(height: AppSpacing.xs),
+                              Text(
+                                term.definition,
+                                style: textTheme.bodyLarge
+                                    ?.copyWith(color: AppColors.primary),
+                              ),
+                              const SizedBox(height: AppSpacing.md),
+                              const Divider(height: 1),
+                            ],
                           ),
                         ),
                       )

@@ -8,7 +8,7 @@ void main() {
     await tester.pumpWidget(const ResoraApp());
     await tester.pump(const Duration(milliseconds: 100));
 
-    expect(find.text('Resora'), findsOneWidget);
+    expect(find.text('resora'), findsOneWidget);
 
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump();

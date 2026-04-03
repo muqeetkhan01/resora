@@ -18,7 +18,6 @@ class AppBottomNav extends StatelessWidget {
     (AppIcons.homeOutline, AppIcons.homeFilled, 'home'),
     (AppIcons.chatOutline, AppIcons.chatFilled, 'talk'),
     (AppIcons.spacesOutline, AppIcons.spacesFilled, 'space'),
-    (AppIcons.journalOutline, AppIcons.journalFilled, 'journal'),
   ];
 
   @override
@@ -27,13 +26,6 @@ class AppBottomNav extends StatelessWidget {
       decoration: const BoxDecoration(
         color: AppColors.white,
         border: Border(top: BorderSide(color: AppColors.line)),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 18,
-            offset: Offset(0, -4),
-          ),
-        ],
       ),
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.md,

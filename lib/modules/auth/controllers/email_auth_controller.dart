@@ -1,9 +1,10 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
-import '../../../routes/app_routes.dart';
+import '../../../core/controllers/app_session_controller.dart';
 
 class EmailAuthController extends GetxController {
+  final _session = Get.find<AppSessionController>();
   final isSignIn = false.obs;
   final nameController = TextEditingController();
   final emailController = TextEditingController();
@@ -32,7 +33,7 @@ class EmailAuthController extends GetxController {
   }
 
   void submit() {
-    Get.offAllNamed(AppRoutes.dashboard);
+    _session.completeAuth();
   }
 
   void forgotPassword() {

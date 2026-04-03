@@ -5,7 +5,6 @@ import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
-import '../../../widgets/app_background.dart';
 import '../../../widgets/app_button.dart';
 import '../controllers/chat_controller.dart';
 
@@ -18,11 +17,15 @@ class ChatView extends GetView<ChatController> {
   Widget build(BuildContext context) {
     final content = _ChatContent(rootTab: rootTab);
 
-    if (rootTab) {
-      return content;
-    }
-
-    return AppBackground(child: content);
+    return Scaffold(
+      backgroundColor: AppColors.canvas,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+          child: content,
+        ),
+      ),
+    );
   }
 }
 
@@ -72,7 +75,7 @@ class _ChatContent extends GetView<ChatController> {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(color: AppColors.line),
           ),
           child: Obx(
@@ -85,14 +88,15 @@ class _ChatContent extends GetView<ChatController> {
         const SizedBox(height: AppSpacing.lg),
         Expanded(
           child: Obx(() {
-            final showEmpty = controller.messages.isEmpty && !controller.isTyping.value;
+            final showEmpty =
+                controller.messages.isEmpty && !controller.isTyping.value;
 
             if (showEmpty) {
               return _EmptyState(suggestions: controller.suggestions);
             }
 
-            final totalCount =
-                controller.messages.length + (controller.isTyping.value ? 1 : 0);
+            final totalCount = controller.messages.length +
+                (controller.isTyping.value ? 1 : 0);
 
             return ListView.builder(
               padding: const EdgeInsets.only(bottom: AppSpacing.md),
@@ -124,12 +128,15 @@ class _ChatContent extends GetView<ChatController> {
                             ),
                             decoration: BoxDecoration(
                               color: AppColors.white,
-                              borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
+                              borderRadius: BorderRadius.circular(16),
                               border: Border.all(color: AppColors.line),
                             ),
                             child: Text(
                               prompt,
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
                                     color: AppColors.primary,
                                   ),
                             ),
@@ -157,11 +164,11 @@ class _ChatContent extends GetView<ChatController> {
                   filled: true,
                   fillColor: AppColors.surface,
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(18),
+                    borderRadius: BorderRadius.circular(20),
                     borderSide: const BorderSide(color: AppColors.line),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(18),
+                    borderRadius: BorderRadius.circular(20),
                     borderSide: const BorderSide(color: AppColors.primary),
                   ),
                 ),
@@ -209,10 +216,12 @@ class _EmptyState extends StatelessWidget {
               shape: BoxShape.circle,
               border: Border.all(color: AppColors.line),
             ),
-            child: const Icon(AppIcons.chatFilled, color: AppColors.primary, size: 30),
+            child: const Icon(AppIcons.chatFilled,
+                color: AppColors.primary, size: 30),
           ),
           const SizedBox(height: AppSpacing.lg),
-          Text('Start with one clear sentence.', style: textTheme.headlineMedium),
+          Text('Start with one clear sentence.',
+              style: textTheme.headlineMedium),
           const SizedBox(height: AppSpacing.sm),
           Text(
             'Resora will respond with a steadier next step, not a long lecture.',
@@ -257,7 +266,8 @@ class _MessageBubble extends StatelessWidget {
                 color: AppColors.surface,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(AppIcons.chatOutline, size: 16, color: AppColors.primary),
+              child: const Icon(AppIcons.chatOutline,
+                  size: 16, color: AppColors.primary),
             ),
             const SizedBox(width: AppSpacing.xs),
           ],
@@ -270,7 +280,7 @@ class _MessageBubble extends StatelessWidget {
               ),
               decoration: BoxDecoration(
                 color: isUser ? AppColors.primary : AppColors.surface,
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
                 message.text,
@@ -302,7 +312,8 @@ class _TypingBubble extends StatelessWidget {
               color: AppColors.surface,
               shape: BoxShape.circle,
             ),
-            child: const Icon(AppIcons.chatOutline, size: 16, color: AppColors.primary),
+            child: const Icon(AppIcons.chatOutline,
+                size: 16, color: AppColors.primary),
           ),
           const SizedBox(width: AppSpacing.xs),
           Container(
@@ -312,7 +323,7 @@ class _TypingBubble extends StatelessWidget {
             ),
             decoration: BoxDecoration(
               color: AppColors.surface,
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: const Row(
               mainAxisSize: MainAxisSize.min,

@@ -1,18 +1,21 @@
 import 'package:get/get.dart';
 
+import '../../../core/controllers/app_session_controller.dart';
 import '../../../routes/app_routes.dart';
 
 class AuthEntryController extends GetxController {
+  final _session = Get.find<AppSessionController>();
+
   void continueWithEmail() {
     Get.toNamed(AppRoutes.emailAuth, arguments: 'signup');
   }
 
   void continueWithGoogle() {
-    enterApp();
+    _session.completeAuth();
   }
 
   void continueWithApple() {
-    enterApp();
+    _session.completeAuth();
   }
 
   void signIn() {
@@ -20,6 +23,6 @@ class AuthEntryController extends GetxController {
   }
 
   void enterApp() {
-    Get.offAllNamed(AppRoutes.dashboard);
+    _session.completeAuth();
   }
 }

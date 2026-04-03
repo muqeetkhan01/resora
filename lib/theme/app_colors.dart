@@ -2,19 +2,20 @@ import 'package:flutter/material.dart';
 
 abstract final class AppColors {
   static const Color primary = Color(0xFF145C4F);
-  static const Color canvas = Color(0xFFFAFBF9);
-  static const Color surface = Color(0xFFF1F4F8);
-  static const Color warmDark = Color(0xFF4A342B);
-  static const Color terracotta = Color(0xFFC4735A);
+  static const Color canvas = Color(0xFFFAFAF9);
+  static const Color surface = Color(0xFFF5F4EF);
+  static const Color warmDark = Color(0xFF38564E);
+  static const Color terracotta = Color(0xFFC47A5A);
 
-  static const Color text = Color(0xFF2D2D2D);
-  static const Color muted = Color(0xFF8A8A8A);
-  static const Color line = Color(0xFFE0E4E0);
-  static const Color white = Color(0xFFFFFFFF);
-  static const Color placeholder = Color(0xFFAAAAAA);
+  static const Color text = primary;
+  static const Color muted = Color(0xFF6F837D);
+  static const Color line = Color(0x1A145C4F);
+  static const Color white = Color(0xFFFAFAF9);
+  static const Color placeholder = Color(0x806F837D);
   static const Color success = Color(0xFF3A7D6F);
   static const Color error = Color(0xFFB85C5C);
-  static const Color shadow = Color(0x0F000000);
+  static const Color shadow = Color(0x12000000);
+  static const Color forest = primary;
 
   static const Color darkBackground = Color(0xFF2B1F1A);
   static const Color darkSurface = Color(0xFF3B2D27);
@@ -32,7 +33,7 @@ abstract final class AppColors {
   static const Color premium = terracotta;
 
   static const LinearGradient backgroundGradient = LinearGradient(
-    colors: [white, canvas, surface],
+    colors: [canvas, canvas],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
@@ -44,7 +45,7 @@ abstract final class AppColors {
     end: Alignment.bottomRight,
   );
   static const LinearGradient calmGradient = LinearGradient(
-    colors: [canvas, white],
+    colors: [canvas, surface],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );

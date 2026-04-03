@@ -6,8 +6,7 @@ import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
-import '../../../widgets/app_background.dart';
-import '../../../widgets/app_button.dart';
+import '../../../widgets/minimal_audio_bar.dart';
 
 class ResetSessionView extends StatelessWidget {
   const ResetSessionView({super.key});
@@ -23,99 +22,61 @@ class ResetSessionView extends StatelessWidget {
         );
     final textTheme = Theme.of(context).textTheme;
 
-    return AppBackground(
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: AppSpacing.md),
-            child: Row(
-              children: [
-                IconButton(
-                  onPressed: Get.back,
-                  icon: const Icon(AppIcons.close, color: AppColors.primary),
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(option.title, style: textTheme.displayMedium),
-                      const SizedBox(height: 2),
-                      Text(option.duration, style: textTheme.bodySmall),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+    return Scaffold(
+      backgroundColor: AppColors.canvas,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.xl,
           ),
-          const Spacer(),
-          TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0.82, end: 1),
-            duration: const Duration(seconds: 4),
-            curve: Curves.easeInOut,
-            builder: (context, value, child) {
-              return Transform.scale(scale: value, child: child);
-            },
-            child: Container(
-              width: 230,
-              height: 230,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.primary.withOpacity(0.05),
-                border: Border.all(
-                  color: AppColors.primary.withOpacity(0.18),
-                  width: 1.5,
-                ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              IconButton(
+                onPressed: Get.back,
+                icon: const Icon(AppIcons.back, color: AppColors.primary),
               ),
-              child: Center(
-                child: Container(
-                  width: 142,
-                  height: 142,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.primary.withOpacity(0.08),
-                    border: Border.all(
-                      color: AppColors.primary.withOpacity(0.24),
+              const SizedBox(height: AppSpacing.sm),
+              Text(option.title, style: textTheme.displayMedium),
+              const SizedBox(height: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Spacer(),
+                    Text(
+                      'Breathe in.\nHold.\nBreathe out.',
+                      style: textTheme.displayMedium,
                     ),
-                  ),
+                    const SizedBox(height: AppSpacing.lg),
+                    Text(
+                      'Stay with one instruction at a time. You do not need to solve the whole moment from here.',
+                      style: textTheme.bodyLarge
+                          ?.copyWith(color: AppColors.primary),
+                    ),
+                    const Spacer(),
+                  ],
                 ),
               ),
-            ),
+              MinimalAudioBar(
+                primaryLabel: option.duration,
+                secondaryLabel: 'guided audio',
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              TextButton(
+                onPressed: () => Get.offNamed(AppRoutes.thatMattered),
+                child: Text(
+                  'continue',
+                  style:
+                      textTheme.bodyMedium?.copyWith(color: AppColors.primary),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: AppSpacing.xl),
-          Text(
-            'Breathe in. Hold. Breathe out.',
-            style: textTheme.headlineMedium,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            'Stay with one instruction at a time. You do not need to solve the whole moment from here.',
-            style: textTheme.bodyMedium,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppSpacing.xl),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
-            child: const LinearProgressIndicator(
-              value: 0.42,
-              minHeight: 4,
-              backgroundColor: AppColors.line,
-              valueColor: AlwaysStoppedAnimation(AppColors.primary),
-            ),
-          ),
-          const Spacer(),
-          AppButton(
-            label: 'Open journal',
-            onPressed: () => Get.toNamed(AppRoutes.journalEditor),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          AppButton(
-            label: 'Return home',
-            style: AppButtonStyle.secondary,
-            onPressed: () => Get.offAllNamed(AppRoutes.dashboard),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-        ],
+        ),
       ),
     );
   }

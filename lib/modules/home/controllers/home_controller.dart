@@ -1,16 +1,15 @@
 import 'package:get/get.dart';
 
+import '../../../core/controllers/app_session_controller.dart';
 import '../../../data/mock/mock_content.dart';
-import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 import '../../dashboard/controllers/dashboard_controller.dart';
 
 class HomeController extends GetxController {
-  String get userName => MockContent.userName;
-  List<QuickActionItem> get quickActions => MockContent.quickActions;
-  HomeSnippet get primary => MockContent.homePrimary;
+  final _session = Get.find<AppSessionController>();
+
+  String get userName => _session.displayName;
   String get affirmation => MockContent.dailyAffirmation;
-  JournalEntry get recentJournal => MockContent.recentJournal;
 
   String get greeting {
     final hour = DateTime.now().hour;
@@ -23,17 +22,24 @@ class HomeController extends GetxController {
     Get.find<DashboardController>().switchTab(1);
   }
 
-  void openJournal() {
-    Get.find<DashboardController>().switchTab(3);
+  void openTalk() {
+    Get.find<DashboardController>().switchTab(1);
   }
 
-  void openQuickAction(QuickActionItem item) {
-    if (item.dashboardIndex != null) {
-      Get.find<DashboardController>().switchTab(item.dashboardIndex!);
-      return;
-    }
+  void openJournal() {
+    Get.toNamed(AppRoutes.journal);
+  }
 
-    Get.toNamed(item.route, arguments: item.routeArguments);
+  void openNoise() {
+    Get.toNamed(AppRoutes.noise);
+  }
+
+  void openRehearse() {
+    Get.toNamed(AppRoutes.rehearse);
+  }
+
+  void openSpaces() {
+    Get.find<DashboardController>().switchTab(2);
   }
 
   void openProfile() {

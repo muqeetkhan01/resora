@@ -30,13 +30,13 @@ class AppButton extends StatelessWidget {
     };
 
     final background = switch (style) {
-      AppButtonStyle.primary => AppColors.primary,
+      AppButtonStyle.primary => AppColors.terracotta,
       AppButtonStyle.secondary => Colors.transparent,
       AppButtonStyle.ghost => Colors.transparent,
     };
 
     final border = switch (style) {
-      AppButtonStyle.primary => Colors.transparent,
+      AppButtonStyle.primary => AppColors.terracotta,
       AppButtonStyle.secondary => AppColors.primary,
       AppButtonStyle.ghost => Colors.transparent,
     };
@@ -44,18 +44,18 @@ class AppButton extends StatelessWidget {
     final button = AnimatedContainer(
       duration: const Duration(milliseconds: 220),
       curve: Curves.easeInOut,
-      height: 52,
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      height: 46,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         color: background,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: border, width: 1.5),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: border, width: 1),
         boxShadow: style == AppButtonStyle.primary
             ? const [
                 BoxShadow(
                   color: AppColors.shadow,
-                  blurRadius: 8,
-                  offset: Offset(0, 2),
+                  blurRadius: 10,
+                  offset: Offset(0, 3),
                 ),
               ]
             : null,

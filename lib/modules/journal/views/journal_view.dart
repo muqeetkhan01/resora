@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/constants/app_assets.dart';
+import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
-import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
-import '../../../widgets/app_button.dart';
-import '../../../widgets/app_chip.dart';
+import '../../../widgets/link_action_row.dart';
+import '../../../widgets/snap_feed_indicator.dart';
 import '../controllers/journal_controller.dart';
 
 class JournalView extends GetView<JournalController> {
@@ -16,160 +15,142 @@ class JournalView extends GetView<JournalController> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.only(top: AppSpacing.lg, bottom: 110),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Journal', style: textTheme.displayMedium),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            'Reflect after the moment passes.',
-            style: textTheme.bodyMedium?.copyWith(
-              color: AppColors.primary.withOpacity(0.55),
-            ),
+    return Scaffold(
+      backgroundColor: AppColors.canvas,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg,
           ),
-          const SizedBox(height: AppSpacing.lg),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(22),
-            child: Image.asset(
-              AppAssets.journalBed,
-              width: double.infinity,
-              height: 210,
-              fit: BoxFit.cover,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: AppButton(
-                  label: 'New entry',
-                  onPressed: () => controller.openEditor(),
+              IconButton(
+                onPressed: Get.back,
+                icon: const Icon(AppIcons.back, color: AppColors.primary),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              SizedBox(
+                height: 34,
+                child: Obx(
+                  () {
+                    final selectedMode = controller.selectedMode.value;
+
+                    return ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: controller.modes.length,
+                      separatorBuilder: (_, __) =>
+                          const SizedBox(width: AppSpacing.md),
+                      itemBuilder: (context, index) {
+                        final selected = selectedMode == index;
+
+                        return TextButton(
+                          onPressed: () => controller.selectMode(index),
+                          child: Text(
+                            controller.modes[index],
+                            style: textTheme.bodySmall?.copyWith(
+                              color:
+                                  selected ? AppColors.primary : AppColors.muted,
+                              decoration: selected
+                                  ? TextDecoration.underline
+                                  : TextDecoration.none,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
                 ),
               ),
-              const SizedBox(width: AppSpacing.md),
+              const SizedBox(height: AppSpacing.lg),
               Expanded(
-                child: AppButton(
-                  label: 'Free write',
-                  style: AppButtonStyle.secondary,
-                  onPressed: () => controller.openEditor(),
+                child: Stack(
+                  children: [
+                    PageView.builder(
+                      scrollDirection: Axis.vertical,
+                      onPageChanged: controller.setCurrentPage,
+                      itemCount: controller.prompts.length,
+                      itemBuilder: (context, index) {
+                        final prompt = controller.prompts[index];
+
+                        return _PromptPage(
+                          prompt: prompt,
+                          index: index + 1,
+                          count: controller.prompts.length,
+                          onWriteOwn: () => controller.openEditor(prompt: prompt),
+                          onStartWriting: () =>
+                              controller.openEditor(prompt: prompt),
+                        );
+                      },
+                    ),
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      bottom: 0,
+                      child: Center(
+                        child: Obx(
+                          () => SnapFeedIndicator(
+                            count: controller.prompts.length,
+                            currentIndex: controller.currentPage.value,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: AppSpacing.xl),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: AppColors.line),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Prompt of the day', style: textTheme.labelLarge),
-                const SizedBox(height: AppSpacing.sm),
-                Text(
-                  controller.promptOfTheDay,
-                  style: textTheme.headlineMedium?.copyWith(
-                    color: AppColors.primary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          Obx(
-            () => Wrap(
-              spacing: AppSpacing.sm,
-              runSpacing: AppSpacing.sm,
-              children: List.generate(
-                controller.modes.length,
-                (index) => AppTagChip(
-                  label: controller.modes[index].toLowerCase(),
-                  selected: controller.selectedMode.value == index,
-                  onTap: () => controller.selectMode(index),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.xl),
-          Text('Recent entries', style: textTheme.headlineMedium),
-          const SizedBox(height: AppSpacing.md),
-          ...controller.entries.map(
-            (entry) => Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.md),
-              child: _EntryCard(
-                entry: entry,
-                onTap: () => controller.openEditor(entry: entry),
-              ),
-            ),
-          ),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: AppColors.line),
-            ),
-            child: Text(
-              'Guided journal reflection, search, and export are ready for Premium later.',
-              style: textTheme.bodyMedium?.copyWith(color: AppColors.warmDark),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 }
 
-class _EntryCard extends StatelessWidget {
-  const _EntryCard({
-    required this.entry,
-    required this.onTap,
+class _PromptPage extends StatelessWidget {
+  const _PromptPage({
+    required this.prompt,
+    required this.index,
+    required this.count,
+    required this.onWriteOwn,
+    required this.onStartWriting,
   });
 
-  final JournalEntry entry;
-  final VoidCallback onTap;
+  final String prompt;
+  final int index;
+  final int count;
+  final VoidCallback onWriteOwn;
+  final VoidCallback onStartWriting;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: AppColors.line),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const Spacer(),
+        Text(
+          prompt,
+          style: textTheme.headlineLarge,
+          textAlign: TextAlign.center,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(entry.date, style: textTheme.bodySmall),
-                const Spacer(),
-                Text('${entry.wordCount} words', style: textTheme.bodySmall),
-              ],
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(entry.title, style: textTheme.titleLarge),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              entry.preview,
-              style: textTheme.bodyMedium?.copyWith(color: AppColors.warmDark),
-            ),
-          ],
+        const SizedBox(height: AppSpacing.xxxl),
+        LinkActionRow(
+            label: 'write your own', alignStart: false, onTap: onWriteOwn),
+        const SizedBox(height: AppSpacing.xs),
+        LinkActionRow(
+            label: 'start writing', alignStart: false, onTap: onStartWriting),
+        const SizedBox(height: AppSpacing.xl),
+        Text(
+          '$index / $count',
+          style: textTheme.bodySmall?.copyWith(color: AppColors.muted),
         ),
-      ),
+        const Spacer(),
+      ],
     );
   }
 }
