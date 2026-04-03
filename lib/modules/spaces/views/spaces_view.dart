@@ -51,6 +51,61 @@ class _SpacesListView extends GetView<SpacesController> {
               color: AppColors.primary.withOpacity(0.55),
             ),
           ),
+          const SizedBox(height: AppSpacing.lg),
+          Text(
+            'How are you feeling today?',
+            style: textTheme.bodySmall?.copyWith(
+              color: AppColors.primary.withOpacity(0.5),
+              fontSize: 13,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Obx(
+            () => SizedBox(
+              width: 180,
+              child: DropdownButtonFormField<String>(
+                value: controller.selectedCheckIn.value,
+                items: controller.checkInOptions
+                    .map(
+                      (option) => DropdownMenuItem<String>(
+                        value: option,
+                        child: Text(
+                          option,
+                          style: textTheme.bodySmall?.copyWith(
+                            color: option == 'Select...'
+                                ? AppColors.muted
+                                : AppColors.primary,
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
+                onChanged: controller.selectCheckIn,
+                icon: const Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  color: AppColors.muted,
+                ),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: AppColors.white,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.line),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.primary),
+                  ),
+                ),
+                dropdownColor: AppColors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
           const SizedBox(height: AppSpacing.xl),
           ...List.generate(controller.spaces.length, (index) {
             final item = controller.spaces[index];

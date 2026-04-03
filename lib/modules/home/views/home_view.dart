@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/app_button.dart';
 import '../controllers/home_controller.dart';
@@ -13,6 +14,8 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.only(top: AppSpacing.lg, bottom: 112),
       child: Column(
@@ -32,6 +35,14 @@ class HomeView extends GetView<HomeController> {
             ],
           ),
           const SizedBox(height: AppSpacing.lg),
+          Text(
+            '${controller.greeting}, ${controller.userName}',
+            style: textTheme.bodySmall?.copyWith(
+              color: AppColors.primary.withOpacity(0.5),
+              fontSize: 13,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
           const _SectionIntro(
             title: 'Support Starts Here',
             subtitle: 'Calm guidance in the moments that matter',
@@ -41,8 +52,44 @@ class HomeView extends GetView<HomeController> {
             title: null,
             subtitle: null,
             imagePath: AppAssets.curtainLight,
-            primaryLabel: 'Talk to Resora',
+            primaryLabel: 'Help Me Now',
             onPrimaryTap: controller.openHelpNow,
+          ),
+          const SizedBox(height: AppSpacing.xl),
+          // const _MiniSectionTitle(title: 'Quick access'),
+          // const SizedBox(height: AppSpacing.sm),
+          // SizedBox(
+          //   height: 118,
+          //   child: ListView.separated(
+          //     scrollDirection: Axis.horizontal,
+          //     itemCount: controller.quickActions.length,
+          //     separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.md),
+          //     itemBuilder: (context, index) {
+          //       final item = controller.quickActions[index];
+          //       return _QuickAccessCard(
+          //         item: item,
+          //         onTap: () => controller.openQuickAction(item),
+          //       );
+          //     },
+          //   ),
+          // ),
+          // const SizedBox(height: AppSpacing.xl),
+          const _MiniSectionTitle(title: 'Daily affirmation'),
+          const SizedBox(height: AppSpacing.sm),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.line),
+            ),
+            child: Text(
+              controller.affirmation,
+              style: textTheme.headlineMedium?.copyWith(
+                color: AppColors.primary,
+              ),
+            ),
           ),
           const SizedBox(height: AppSpacing.xxxl),
           const _SectionIntro(
@@ -57,6 +104,13 @@ class HomeView extends GetView<HomeController> {
             primaryLabel: 'Open Journal',
             onPrimaryTap: controller.openJournal,
           ),
+          const SizedBox(height: AppSpacing.xl),
+          const _MiniSectionTitle(title: 'Recent journal'),
+          const SizedBox(height: AppSpacing.sm),
+          _RecentJournalCard(
+            entry: controller.recentJournal,
+            onTap: controller.openJournal,
+          ),
           const SizedBox(height: AppSpacing.xxxl),
           const _SectionIntro(
             title: 'Is this normal',
@@ -68,7 +122,53 @@ class HomeView extends GetView<HomeController> {
             subtitle: null,
             imagePath: AppAssets.archway,
             primaryLabel: 'Open Is This Normal',
-            onPrimaryTap: () => controller.openQuickAction(controller.quickActions.first),
+            onPrimaryTap: () =>
+                controller.openQuickAction(controller.quickActions.first),
+          ),
+          const SizedBox(height: AppSpacing.xxxl),
+          GestureDetector(
+            onTap: controller.openPremium,
+            behavior: HitTestBehavior.opaque,
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.line),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Premium',
+                          style: textTheme.labelLarge?.copyWith(
+                            color: AppColors.terracotta,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.xs),
+                        Text(
+                          'Unlock full audio, unlimited support, and deeper journal tools.',
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: AppColors.warmDark,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Text(
+                    'See plans',
+                    style: textTheme.labelLarge?.copyWith(
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
           const SizedBox(height: AppSpacing.xxxl),
           const _SectionIntro(
@@ -76,6 +176,65 @@ class HomeView extends GetView<HomeController> {
             subtitle: 'Track patterns, progress, and growth',
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _QuickAccessCard extends StatelessWidget {
+  const _QuickAccessCard({
+    required this.item,
+    required this.onTap,
+  });
+
+  final QuickActionItem item;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        width: 148,
+        padding: const EdgeInsets.all(AppSpacing.md),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.line),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: item.accentColor.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                item.icon,
+                size: 18,
+                color: AppColors.primary,
+              ),
+            ),
+            const Spacer(),
+            Text(
+              item.title,
+              style: textTheme.titleLarge?.copyWith(fontSize: 16),
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              item.subtitle,
+              style: textTheme.bodySmall?.copyWith(
+                color: AppColors.primary.withOpacity(0.45),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -139,6 +298,73 @@ class _EditorialFeature extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _RecentJournalCard extends StatelessWidget {
+  const _RecentJournalCard({
+    required this.entry,
+    required this.onTap,
+  });
+
+  final JournalEntry entry;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.line),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(entry.date, style: textTheme.bodySmall),
+                const Spacer(),
+                Text('${entry.wordCount} words', style: textTheme.bodySmall),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(entry.title, style: textTheme.titleLarge),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              entry.preview,
+              style: textTheme.bodyMedium?.copyWith(
+                color: AppColors.warmDark,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MiniSectionTitle extends StatelessWidget {
+  const _MiniSectionTitle({required this.title});
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title,
+      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: AppColors.primary.withOpacity(0.5),
+            fontSize: 13,
+          ),
     );
   }
 }

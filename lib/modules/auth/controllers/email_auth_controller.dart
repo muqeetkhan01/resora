@@ -36,11 +36,11 @@ class EmailAuthController extends GetxController {
   }
 
   void forgotPassword() {
-    Get.snackbar(
-      'Reset link',
-      'Password reset UI placeholder. Connect your real auth flow later.',
-      snackPosition: SnackPosition.BOTTOM,
-    );
+    // Get.snackbar(
+    //   'Reset link',
+    //   'Password reset UI placeholder. Connect your real auth flow later.',
+    //   snackPosition: SnackPosition.BOTTOM,
+    // );
   }
 
   @override

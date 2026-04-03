@@ -20,8 +20,7 @@ class SplashView extends GetView<SplashController> {
       safeArea: false,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final lottieSize =
-              (constraints.maxWidth * 0.58).clamp(160.0, 320.0);
+          final lottieSize = (constraints.maxWidth * 0.98).clamp(160.0, 320.0);
 
           return Center(
             child: Column(
@@ -47,7 +46,8 @@ class SplashView extends GetView<SplashController> {
                 const SizedBox(height: AppSpacing.xs),
                 Text(
                   'for real life moments',
-                  style: textTheme.bodySmall?.copyWith(color: AppColors.primary),
+                  style:
+                      textTheme.bodySmall?.copyWith(color: AppColors.primary),
                 ),
               ],
             ),
