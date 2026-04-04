@@ -9,8 +9,8 @@ abstract final class AppIcons {
 
   static const homeOutline = Icons.home_outlined;
   static const homeFilled = Icons.home_rounded;
-  static const chatOutline = Icons.chat_bubble_outline_rounded;
-  static const chatFilled = Icons.chat_bubble_rounded;
+  static const chatOutline = Icons.mode_comment_outlined;
+  static const chatFilled = Icons.mode_comment_rounded;
   static const spacesOutline = Icons.grid_view_rounded;
   static const spacesFilled = Icons.grid_view_rounded;
   static const journalOutline = Icons.edit_note_outlined;

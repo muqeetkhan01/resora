@@ -18,7 +18,7 @@ class SplashView extends GetView<SplashController> {
         child: Text(
           'resora',
           style: TextStyle(
-            fontSize: 34,
+            fontSize: 40,
             fontWeight: FontWeight.w600,
             color: AppColors.primary,
           ),

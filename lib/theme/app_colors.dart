@@ -12,7 +12,6 @@ abstract final class AppColors {
   static const Color line = Color(0x1A145C4F);
   static const Color white = Color(0xFFFAFAF9);
   static const Color placeholder = Color(0x806F837D);
-  static const Color success = Color(0xFF3A7D6F);
   static const Color error = Color(0xFFB85C5C);
   static const Color shadow = Color(0x12000000);
   static const Color forest = primary;

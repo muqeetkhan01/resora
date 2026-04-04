@@ -46,20 +46,20 @@ class AppBottomNav extends StatelessWidget {
                 duration: const Duration(milliseconds: 220),
                 curve: Curves.easeInOut,
                 padding: const EdgeInsets.symmetric(vertical: 6),
-                decoration: BoxDecoration(
-                  border: Border(
-                    top: BorderSide(
-                      color: selected ? AppColors.primary : Colors.transparent,
-                      width: 2,
+                decoration: const BoxDecoration(
+                    // border: Border(
+                    //   top: BorderSide(
+                    //     color: selected ? AppColors.primary : Colors.transparent,
+                    //     width: 2,
+                    //   ),
+                    // ),
                     ),
-                  ),
-                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
                       selected ? item.$2 : item.$1,
-                      size: 21,
+                      size: 23,
                       color: selected ? AppColors.primary : AppColors.muted,
                     ),
                     const SizedBox(height: 4),

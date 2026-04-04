@@ -20,7 +20,8 @@ class HomeView extends GetView<HomeController> {
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final featureWidth = (constraints.maxWidth * 0.72).clamp(220.0, 292.0);
+            final featureWidth =
+                (constraints.maxWidth * 0.72).clamp(220.0, 292.0);
 
             return SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(
@@ -136,7 +137,7 @@ class _HomeImageFeature extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return SizedBox(
-      width: width,
+      width: Get.width,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -144,7 +145,7 @@ class _HomeImageFeature extends StatelessWidget {
             borderRadius: BorderRadius.circular(4),
             child: Image.asset(
               imagePath,
-              width: width,
+              width: Get.width,
               height: width * 1.16,
               fit: fit,
               alignment: alignment,

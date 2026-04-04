@@ -280,7 +280,11 @@ class _MessageBubble extends StatelessWidget {
               ),
               decoration: BoxDecoration(
                 color: isUser ? AppColors.primary : AppColors.surface,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.only(
+                    topLeft: const Radius.circular(16),
+                    topRight: const Radius.circular(16),
+                    bottomLeft: Radius.circular(isUser ? 16 : 4),
+                    bottomRight: Radius.circular(isUser ? 4 : 16)),
               ),
               child: Text(
                 message.text,
