@@ -103,13 +103,6 @@ abstract final class MockContent {
       route: AppRoutes.journal,
     ),
     QuickActionItem(
-      title: 'Q&A',
-      subtitle: 'Expert-written answers',
-      icon: AppIcons.questions,
-      accentColor: AppColors.terracotta,
-      route: AppRoutes.qa,
-    ),
-    QuickActionItem(
       title: 'Key Terms',
       subtitle: 'Plain-language definitions',
       icon: AppIcons.terms,
@@ -158,7 +151,7 @@ abstract final class MockContent {
     label: 'Help Me Now',
     title: 'Let’s slow this down.',
     body:
-        'Start with one clear next step. Talk to Resora, open a reset, or rehearse what to say.',
+        'Start with one clear next step. Talk to Resora, try a reset, or rehearse what to say.',
   );
 
   static const recentJournal = JournalEntry(
@@ -267,24 +260,53 @@ abstract final class MockContent {
   ];
 
   static const normalTopics = [
-    QaItem(
+    NormalTopicItem(
+      tab: 'evening stress',
       question: 'Is it normal to feel angry right before bedtime?',
-      answer:
-          'Yes. End-of-day overload is common, especially when you have been making decisions for everyone else all day. Start with regulation, then decide what actually needs to happen tonight.',
-      category: 'Evening Stress',
+      expertAnswer:
+          'Yes. End-of-day overload is common, especially when you have been carrying the weight of the day. Start with regulation, then decide what actually needs to happen tonight.',
+      metoo: 1204,
+      voices: [
+        'I used to think something was wrong with me. Turns out I just needed ten minutes alone before the evening started.',
+        'The angrier I felt, the more I realized I had not had a single moment to myself all day.',
+        'What helped me was recognizing it as a signal, not a flaw.',
+      ],
     ),
-    QaItem(
-      question:
-          'Is it normal to want to leave the room when everyone needs me?',
-      answer:
-          'Yes. Stepping away for a minute can be the regulated move, not the selfish one. A short pause can prevent a much messier moment.',
-      category: 'Overwhelm',
+    NormalTopicItem(
+      tab: 'overwhelm',
+      question: 'Is it normal to feel like I can\'t do anything right?',
+      expertAnswer:
+          'Yes. When you are overwhelmed, your brain narrows its focus to threats, which can make everything feel like evidence of failure. It is a stress response, not the truth.',
+      metoo: 980,
+      voices: [
+        'I kept waiting to feel competent. Eventually I realized that feeling was the overwhelm talking.',
+        'Naming it as a stress response completely changed how I related to it.',
+        'Once I stopped treating every mistake like proof, I could finally breathe again.',
+      ],
     ),
-    QaItem(
-      question: 'Why do small things feel huge when I am already tired?',
-      answer:
-          'Because tired systems lose flexibility first. When your bandwidth is low, ordinary friction feels bigger. Reduce the task, then return to the deeper issue later.',
-      category: 'Regulation',
+    NormalTopicItem(
+      tab: 'regulation',
+      question: 'Is it normal to need silence just to feel okay?',
+      expertAnswer:
+          'Completely. Sensory and social input accumulate across the day. Needing quiet is not withdrawal. It can be exactly what helps your system settle.',
+      metoo: 2341,
+      voices: [
+        'Silence is the only thing that actually works for me. I stopped apologizing for it.',
+        'I used to feel guilty for not wanting to talk. Now I protect that quiet time on purpose.',
+        'Even five minutes of silence in my car before going inside changed everything.',
+      ],
+    ),
+    NormalTopicItem(
+      tab: 'sleep',
+      question: 'Is it normal to lie awake replaying everything?',
+      expertAnswer:
+          'Yes. A tired nervous system often keeps scanning long after the day is over. The goal is not to solve every thought tonight. It is to help your body feel safe enough to rest.',
+      metoo: 1648,
+      voices: [
+        'My brain gets loudest the moment the house is finally quiet.',
+        'The replay loop eased up once I stopped trying to finish every thought before bed.',
+        'I needed a wind-down ritual, not more self-criticism.',
+      ],
     ),
   ];
 
@@ -405,7 +427,7 @@ abstract final class MockContent {
     QaItem(
       question: 'Can I get a custom answer for my exact situation?',
       answer:
-          'Premium unlocks expanded Q&A and custom AI-guided support when the pre-written library is not enough.',
+          'Premium unlocks expanded support and custom AI-guided help when the pre-written library is not enough.',
       category: 'Premium',
       isPremium: true,
     ),
@@ -470,12 +492,6 @@ abstract final class MockContent {
   ];
 
   static const profileOptions = [
-    ProfileOption(
-      label: 'Affirmation timing',
-      icon: AppIcons.notification,
-      trailing: 'Morning',
-      route: AppRoutes.affirmations,
-    ),
     ProfileOption(
       label: 'Journal lock',
       icon: AppIcons.privacy,

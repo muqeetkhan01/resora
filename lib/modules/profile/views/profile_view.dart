@@ -109,7 +109,7 @@ class _OptionRow extends StatelessWidget {
           trailing: option.trailing != null
               ? Text(option.trailing!,
                   style: Theme.of(context).textTheme.bodySmall)
-              : const Icon(Icons.arrow_forward_rounded,
+              : const Icon(Icons.arrow_forward_ios,
                   color: AppColors.terracotta),
         ),
         const Divider(height: 1),

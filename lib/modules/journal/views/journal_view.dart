@@ -78,8 +78,6 @@ class JournalView extends GetView<JournalController> {
 
                         return _PromptPage(
                           prompt: prompt,
-                          index: index + 1,
-                          count: controller.prompts.length,
                           onWriteOwn: () => controller.openEditor(prompt: prompt),
                           onStartWriting: () =>
                               controller.openEditor(prompt: prompt),
@@ -113,15 +111,11 @@ class JournalView extends GetView<JournalController> {
 class _PromptPage extends StatelessWidget {
   const _PromptPage({
     required this.prompt,
-    required this.index,
-    required this.count,
     required this.onWriteOwn,
     required this.onStartWriting,
   });
 
   final String prompt;
-  final int index;
-  final int count;
   final VoidCallback onWriteOwn;
   final VoidCallback onStartWriting;
 
@@ -144,11 +138,6 @@ class _PromptPage extends StatelessWidget {
         const SizedBox(height: AppSpacing.xs),
         LinkActionRow(
             label: 'start writing', alignStart: false, onTap: onStartWriting),
-        const SizedBox(height: AppSpacing.xl),
-        Text(
-          '$index / $count',
-          style: textTheme.bodySmall?.copyWith(color: AppColors.muted),
-        ),
         const Spacer(),
       ],
     );

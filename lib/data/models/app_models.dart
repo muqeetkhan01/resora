@@ -116,6 +116,24 @@ class QaItem {
   final bool isPremium;
 }
 
+class NormalTopicItem {
+  const NormalTopicItem({
+    required this.tab,
+    required this.question,
+    required this.expertAnswer,
+    required this.metoo,
+    required this.voices,
+    this.expertByline = 'LBS',
+  });
+
+  final String tab;
+  final String question;
+  final String expertAnswer;
+  final int metoo;
+  final List<String> voices;
+  final String expertByline;
+}
+
 class CommunityPost {
   const CommunityPost({
     required this.author,

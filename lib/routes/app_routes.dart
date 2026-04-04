@@ -13,14 +13,12 @@ abstract final class AppRoutes {
   static const resetSession = '/reset-session';
   static const noise = '/noise';
   static const audioPlayer = '/audio-player';
-  static const affirmations = '/affirmations';
   static const mindfulness = '/mindfulness';
   static const mindfulnessDetail = '/mindfulness-detail';
   static const rehearse = '/rehearse';
   static const terms = '/terms';
   static const profile = '/profile';
   static const editProfile = '/edit-profile';
-  static const qa = '/qa';
   static const community = '/community';
   static const premium = '/premium';
   static const rehearseDetail = '/rehearse-detail';

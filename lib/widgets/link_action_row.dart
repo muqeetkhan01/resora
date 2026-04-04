@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../core/constants/app_icons.dart';
 import '../core/constants/app_spacing.dart';
 import '../theme/app_colors.dart';
 
@@ -37,7 +38,7 @@ class LinkActionRow extends StatelessWidget {
                 ),
           ),
           const SizedBox(width: AppSpacing.xs),
-          Icon(Icons.arrow_forward_rounded, size: 16, color: color),
+          Icon(AppIcons.forward, size: 16, color: color),
         ],
       ),
     );

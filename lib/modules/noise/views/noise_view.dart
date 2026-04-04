@@ -58,8 +58,9 @@ class NoiseView extends GetView<NoiseController> {
                           child: Text(
                             category.toLowerCase(),
                             style: textTheme.bodySmall?.copyWith(
-                              color:
-                                  selected ? AppColors.primary : AppColors.muted,
+                              color: selected
+                                  ? AppColors.primary
+                                  : AppColors.muted,
                               decoration: selected
                                   ? TextDecoration.underline
                                   : TextDecoration.none,
@@ -84,7 +85,8 @@ class NoiseView extends GetView<NoiseController> {
                         final track = tracks[index];
 
                         return ListTile(
-                          contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                          contentPadding:
+                              const EdgeInsets.symmetric(vertical: 8),
                           title: Text(track.title, style: textTheme.titleLarge),
                           subtitle: Text(
                             track.description,
@@ -92,7 +94,7 @@ class NoiseView extends GetView<NoiseController> {
                                 ?.copyWith(color: AppColors.muted),
                           ),
                           trailing: const Icon(
-                            Icons.arrow_forward_rounded,
+                            Icons.arrow_forward_ios,
                             color: AppColors.terracotta,
                           ),
                           onTap: () => controller.openTrack(track),

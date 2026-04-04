@@ -24,8 +24,8 @@ class EmailAuthView extends GetView<EmailAuthController> {
             children: [
               IconButton(
                 onPressed: Get.back,
-                icon: const Icon(Icons.arrow_back_rounded,
-                    color: AppColors.primary),
+                icon:
+                    const Icon(Icons.arrow_back_ios, color: AppColors.primary),
               ),
               const SizedBox(height: AppSpacing.xl),
               Center(

@@ -5,7 +5,6 @@ import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
-import '../../../widgets/link_action_row.dart';
 import '../../../widgets/snap_feed_indicator.dart';
 import '../controllers/rehearse_controller.dart';
 
@@ -61,8 +60,9 @@ class RehearseView extends GetView<RehearseController> {
                           child: Text(
                             category,
                             style: textTheme.bodySmall?.copyWith(
-                              color:
-                                  selected ? AppColors.primary : AppColors.muted,
+                              color: selected
+                                  ? AppColors.primary
+                                  : AppColors.muted,
                               decoration: selected
                                   ? TextDecoration.underline
                                   : TextDecoration.none,
@@ -150,7 +150,15 @@ class _ScenarioPage extends StatelessWidget {
         const Spacer(),
         Text('$index / $count', style: textTheme.bodySmall),
         const SizedBox(height: AppSpacing.md),
-        LinkActionRow(label: 'open prompt', onTap: onTap),
+        InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
+          child: const Icon(
+            Icons.arrow_forward_ios,
+            size: 18,
+            color: AppColors.terracotta,
+          ),
+        ),
       ],
     );
   }

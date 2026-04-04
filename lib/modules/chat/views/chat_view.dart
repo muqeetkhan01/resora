@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../core/controllers/app_session_controller.dart';
 import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
-import '../../../widgets/app_button.dart';
 import '../controllers/chat_controller.dart';
 
 class ChatView extends GetView<ChatController> {
@@ -42,35 +42,33 @@ class _ChatContent extends GetView<ChatController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: AppSpacing.lg),
+          padding: const EdgeInsets.only(top: AppSpacing.xl),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (!rootTab)
                 IconButton(
                   onPressed: Get.back,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
                   icon: const Icon(AppIcons.back, color: AppColors.primary),
                 )
               else
-                const SizedBox(width: 8),
+                const SizedBox.shrink(),
+              if (!rootTab) const SizedBox(width: AppSpacing.md),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('talk to resora', style: textTheme.displayMedium),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Calm, direct support for the moment you are in.',
-                      style: textTheme.bodySmall?.copyWith(
-                        color: AppColors.primary.withOpacity(0.6),
-                      ),
-                    ),
-                  ],
+                child: Padding(
+                  padding: EdgeInsets.only(top: rootTab ? 0 : 2),
+                  child: Text(
+                    'what\'s on your mind?',
+                    style: textTheme.displayMedium,
+                  ),
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: AppSpacing.md),
+        const SizedBox(height: AppSpacing.sm),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
@@ -92,7 +90,7 @@ class _ChatContent extends GetView<ChatController> {
                 controller.messages.isEmpty && !controller.isTyping.value;
 
             if (showEmpty) {
-              return _EmptyState(suggestions: controller.suggestions);
+              return const _EmptyState();
             }
 
             final totalCount = controller.messages.length +
@@ -112,79 +110,39 @@ class _ChatContent extends GetView<ChatController> {
           }),
         ),
         const SizedBox(height: AppSpacing.sm),
-        Obx(
-          () => controller.messages.isEmpty
-              ? Wrap(
-                  spacing: AppSpacing.sm,
-                  runSpacing: AppSpacing.sm,
-                  children: controller.suggestions
-                      .map(
-                        (prompt) => GestureDetector(
-                          onTap: () => controller.sendMessage(prompt),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 10,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: AppColors.line),
-                            ),
-                            child: Text(
-                              prompt,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(
-                                    color: AppColors.primary,
-                                  ),
-                            ),
-                          ),
-                        ),
-                      )
-                      .toList(),
-                )
-              : const SizedBox.shrink(),
-        ),
-        const SizedBox(height: AppSpacing.md),
         Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Expanded(
               child: TextField(
                 controller: controller.inputController,
                 minLines: 1,
                 maxLines: 4,
-                decoration: InputDecoration(
-                  hintText: 'Share what is happening...',
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 18,
+                decoration: const InputDecoration(
+                  hintText: 'what\'s on your mind?',
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 0,
                     vertical: 14,
                   ),
-                  filled: true,
-                  fillColor: AppColors.surface,
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: const BorderSide(color: AppColors.line),
+                  filled: false,
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.line),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: const BorderSide(color: AppColors.primary),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.primary),
                   ),
                 ),
               ),
             ),
-            const SizedBox(width: AppSpacing.sm),
-            GestureDetector(
-              onTap: controller.sendMessage,
-              child: Container(
-                width: 50,
-                height: 50,
-                decoration: const BoxDecoration(
-                  color: AppColors.primary,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(AppIcons.send, color: AppColors.white),
+            const SizedBox(width: AppSpacing.md),
+            IconButton(
+              onPressed: controller.sendMessage,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+              icon: const Icon(
+                Icons.arrow_forward_ios,
+                color: AppColors.terracotta,
+                size: 22,
               ),
             ),
           ],
@@ -196,46 +154,18 @@ class _ChatContent extends GetView<ChatController> {
 }
 
 class _EmptyState extends StatelessWidget {
-  const _EmptyState({required this.suggestions});
-
-  final List<String> suggestions;
+  const _EmptyState();
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 82,
-            height: 82,
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.line),
-            ),
-            child: const Icon(AppIcons.chatFilled,
-                color: AppColors.primary, size: 30),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          Text('Start with one clear sentence.',
-              style: textTheme.headlineMedium),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            'Resora will respond with a steadier next step, not a long lecture.',
-            style: textTheme.bodyMedium,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          AppButton(
-            label: 'Use a suggested prompt below',
-            expanded: false,
-            style: AppButtonStyle.secondary,
-            onPressed: () {},
-          ),
-        ],
+      child: Text(
+        'Start with one clear sentence.',
+        style: textTheme.bodyMedium?.copyWith(
+          color: AppColors.placeholder,
+        ),
       ),
     );
   }
@@ -250,6 +180,10 @@ class _MessageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final isUser = message.isUser;
+    final currentUserName = Get.find<AppSessionController>().displayName == 'there'
+        ? 'user'
+        : Get.find<AppSessionController>().displayName;
+    final speaker = isUser ? currentUserName : 'resora';
 
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.md),
@@ -273,25 +207,41 @@ class _MessageBubble extends StatelessWidget {
           ],
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 280),
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.md,
-                vertical: 14,
-              ),
-              decoration: BoxDecoration(
-                color: isUser ? AppColors.primary : AppColors.surface,
-                borderRadius: BorderRadius.only(
-                    topLeft: const Radius.circular(16),
-                    topRight: const Radius.circular(16),
-                    bottomLeft: Radius.circular(isUser ? 16 : 4),
-                    bottomRight: Radius.circular(isUser ? 4 : 16)),
-              ),
-              child: Text(
-                message.text,
-                style: textTheme.bodyLarge?.copyWith(
-                  color: isUser ? AppColors.white : AppColors.text,
+            child: Column(
+              crossAxisAlignment:
+                  isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                  child: Text(
+                    speaker,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: AppColors.placeholder,
+                    ),
+                  ),
                 ),
-              ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                    vertical: 14,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isUser ? AppColors.primary : AppColors.surface,
+                    borderRadius: BorderRadius.only(
+                      topLeft: const Radius.circular(16),
+                      topRight: const Radius.circular(16),
+                      bottomLeft: Radius.circular(isUser ? 16 : 4),
+                      bottomRight: Radius.circular(isUser ? 4 : 16),
+                    ),
+                  ),
+                  child: Text(
+                    message.text,
+                    style: textTheme.bodyLarge?.copyWith(
+                      color: isUser ? AppColors.white : AppColors.text,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -305,9 +255,12 @@ class _TypingBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.md),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: 28,
@@ -320,25 +273,39 @@ class _TypingBubble extends StatelessWidget {
                 size: 16, color: AppColors.primary),
           ),
           const SizedBox(width: AppSpacing.xs),
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: 14,
-            ),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _Dot(),
-                SizedBox(width: 5),
-                _Dot(),
-                SizedBox(width: 5),
-                _Dot(),
-              ],
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                child: Text(
+                  'resora',
+                  style: textTheme.bodySmall?.copyWith(
+                    color: AppColors.placeholder,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: 14,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _Dot(),
+                    SizedBox(width: 5),
+                    _Dot(),
+                    SizedBox(width: 5),
+                    _Dot(),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),

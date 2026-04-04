@@ -15,6 +15,7 @@ abstract final class AppColors {
   static const Color error = Color(0xFFB85C5C);
   static const Color shadow = Color(0x12000000);
   static const Color forest = primary;
+  static const Color success = Color(0xFF88A394);
 
   static const Color darkBackground = Color(0xFF2B1F1A);
   static const Color darkSurface = Color(0xFF3B2D27);

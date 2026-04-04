@@ -18,6 +18,7 @@ class AppBottomNav extends StatelessWidget {
     (AppIcons.homeOutline, AppIcons.homeFilled, 'home'),
     (AppIcons.chatOutline, AppIcons.chatFilled, 'talk'),
     (AppIcons.spacesOutline, AppIcons.spacesFilled, 'space'),
+    (AppIcons.profileOutline, AppIcons.profileFilled, 'settings'),
   ];
 
   @override

@@ -127,7 +127,7 @@ class ResetSessionView extends StatelessWidget {
                           color: AppColors.white.withOpacity(0.92),
                         ),
                         child: const Icon(
-                          Icons.arrow_forward_rounded,
+                          Icons.arrow_forward_ios,
                           color: Color(0xFF8F7258),
                         ),
                       ),

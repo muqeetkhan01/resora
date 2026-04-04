@@ -1,7 +1,5 @@
 import 'package:get/get.dart';
 
-import '../modules/affirmations/controllers/affirmations_controller.dart';
-import '../modules/affirmations/views/affirmations_view.dart';
 import '../modules/auth/controllers/auth_entry_controller.dart';
 import '../modules/auth/controllers/email_auth_controller.dart';
 import '../modules/auth/views/email_auth_view.dart';
@@ -32,8 +30,6 @@ import '../modules/profile/controllers/edit_profile_controller.dart';
 import '../modules/profile/controllers/profile_controller.dart';
 import '../modules/profile/views/edit_profile_view.dart';
 import '../modules/profile/views/profile_view.dart';
-import '../modules/qa/controllers/qa_controller.dart';
-import '../modules/qa/views/qa_view.dart';
 import '../modules/rehearse/controllers/rehearse_controller.dart';
 import '../modules/rehearse/views/rehearse_detail_view.dart';
 import '../modules/rehearse/views/rehearse_view.dart';
@@ -88,6 +84,7 @@ abstract final class AppPages {
         Get.put(ChatController());
         Get.put(SpacesController());
         Get.put(JournalController());
+        Get.put(ProfileController());
       }),
     ),
     GetPage(
@@ -145,13 +142,6 @@ abstract final class AppPages {
       page: AudioPlayerView.new,
     ),
     GetPage(
-      name: AppRoutes.affirmations,
-      page: AffirmationsView.new,
-      binding: BindingsBuilder(() {
-        Get.lazyPut(AffirmationsController.new);
-      }),
-    ),
-    GetPage(
       name: AppRoutes.mindfulness,
       page: MindfulnessView.new,
       binding: BindingsBuilder(() {
@@ -178,13 +168,6 @@ abstract final class AppPages {
       page: TermsView.new,
       binding: BindingsBuilder(() {
         Get.lazyPut(TermsController.new);
-      }),
-    ),
-    GetPage(
-      name: AppRoutes.qa,
-      page: QaView.new,
-      binding: BindingsBuilder(() {
-        Get.lazyPut(QaController.new);
       }),
     ),
     GetPage(

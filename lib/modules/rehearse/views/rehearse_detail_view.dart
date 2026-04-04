@@ -15,17 +15,18 @@ class RehearseDetailView extends StatelessWidget {
   Widget build(BuildContext context) {
     final scenario = Get.arguments as RehearsalScenario? ??
         const RehearsalScenario(
-          title: 'Visualize a Moment',
+          title: 'Talking to my partner after a hard night',
           category: 'Relationships',
-          reframe: 'you showed strength',
+          reframe:
+              'You do not need a perfect explanation. You need a clear sentence.',
           script:
-              'Take a breath and bring to mind a moment where you showed strength.',
-          steps: ['when you\'re ready, continue'],
+              '“I was overloaded and I do not want to keep talking at that level. Can we try this again more calmly tonight?”',
+          steps: [],
         );
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF0EBE4),
+      backgroundColor: AppColors.canvas,
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -38,9 +39,11 @@ class RehearseDetailView extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  AppColors.white.withOpacity(0.22),
-                  const Color(0xFFF0E8DD).withOpacity(0.42),
-                  const Color(0xFFB29176).withOpacity(0.36),
+                  AppColors.white.withOpacity(0.08),
+                  AppColors.canvas.withOpacity(0.16),
+                  AppColors.canvas.withOpacity(0.52),
+                  AppColors.canvas.withOpacity(0.92),
+                  AppColors.canvas,
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -58,87 +61,56 @@ class RehearseDetailView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: Get.back,
-                        icon: const Icon(AppIcons.back, color: AppColors.white),
-                      ),
-                      const SizedBox(width: AppSpacing.xs),
-                      Expanded(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(999),
-                          child: LinearProgressIndicator(
-                            value: 0.2,
-                            minHeight: 2,
-                            backgroundColor: AppColors.white.withOpacity(0.28),
-                            valueColor: const AlwaysStoppedAnimation(
-                              AppColors.white,
-                            ),
+                  IconButton(
+                    onPressed: Get.back,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: const Icon(AppIcons.back, color: AppColors.white),
+                  ),
+                  const Spacer(),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 320),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          scenario.title,
+                          style: textTheme.headlineLarge?.copyWith(
+                            color: AppColors.primary,
+                            fontSize: 28,
                           ),
                         ),
-                      ),
-                      const SizedBox(width: AppSpacing.md),
-                      Text(
-                        '1 / 5',
-                        style: textTheme.bodySmall?.copyWith(
-                          color: AppColors.white.withOpacity(0.8),
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          scenario.reframe,
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: AppColors.placeholder,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const Spacer(flex: 3),
-                  Text(
-                    scenario.title,
-                    style: textTheme.headlineLarge?.copyWith(
-                      color: AppColors.white.withOpacity(0.86),
-                      fontSize: 27,
+                        const SizedBox(height: AppSpacing.lg),
+                        Text(
+                          scenario.script,
+                          style: textTheme.bodyLarge?.copyWith(
+                            color: AppColors.warmDark,
+                            height: 1.85,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    scenario.reframe,
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: AppColors.white.withOpacity(0.68),
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xxxl),
-                  Text(
-                    scenario.script,
-                    style: textTheme.bodyLarge?.copyWith(
-                      color: AppColors.white.withOpacity(0.88),
-                      height: 1.8,
-                    ),
-                  ),
-                  const Spacer(flex: 4),
-                  Text(
-                    'when you\'re ready, continue',
-                    style: textTheme.bodySmall?.copyWith(
-                      color: AppColors.white.withOpacity(0.66),
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
+                  const SizedBox(height: AppSpacing.xxl),
                   Align(
                     alignment: Alignment.center,
-                    child: GestureDetector(
+                    child: InkWell(
                       onTap: () => Get.offNamed(AppRoutes.thatMattered),
-                      child: Container(
-                        width: 58,
-                        height: 58,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppColors.white.withOpacity(0.92),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color(0x26000000),
-                              blurRadius: 24,
-                              offset: Offset(0, 10),
-                            ),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.arrow_forward_rounded,
-                          color: Color(0xFF8F7258),
+                      borderRadius:
+                          BorderRadius.circular(AppSpacing.radiusPill),
+                      child: const Padding(
+                        padding: EdgeInsets.all(AppSpacing.xs),
+                        child: Icon(
+                          Icons.arrow_forward_ios,
+                          color: AppColors.terracotta,
+                          size: 26,
                         ),
                       ),
                     ),
