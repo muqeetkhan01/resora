@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
@@ -36,15 +37,27 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
 
   @override
   Widget build(BuildContext context) {
-    final track = Get.arguments as AudioTrack? ??
-        const AudioTrack(
-          title: 'Soft rain on leaves',
-          category: 'Nature',
-          description: 'Steady sound for nervous-system downshift',
-          duration: '18 min',
-        );
+    final args = _AudioPlayerArgs.from(Get.arguments);
+    final track = args.track;
     final scene = _PlayerScene.fromTrack(track);
     final textTheme = Theme.of(context).textTheme;
+
+    if (args.minimal) {
+      return Scaffold(
+        backgroundColor: AppColors.canvas,
+        body: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) {
+            final progress = 0.12 + (_controller.value * 0.72);
+
+            return _MinimalAudioPlayer(
+              imagePath: args.imagePath,
+              progress: progress,
+            );
+          },
+        ),
+      );
+    }
 
     return Scaffold(
       backgroundColor: scene.base,
@@ -145,6 +158,216 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
   }
 }
 
+class _AudioPlayerArgs {
+  const _AudioPlayerArgs({
+    required this.track,
+    required this.minimal,
+    required this.imagePath,
+  });
+
+  final AudioTrack track;
+  final bool minimal;
+  final String imagePath;
+
+  factory _AudioPlayerArgs.from(dynamic arguments) {
+    if (arguments is Map) {
+      return _AudioPlayerArgs(
+        track: arguments['track'] as AudioTrack? ?? _fallbackTrack,
+        minimal: arguments['minimal'] == true,
+        imagePath: arguments['imagePath'] as String? ?? AppAssets.curtainLight,
+      );
+    }
+
+    return _AudioPlayerArgs(
+      track: arguments as AudioTrack? ?? _fallbackTrack,
+      minimal: false,
+      imagePath: AppAssets.curtainLight,
+    );
+  }
+
+  static const _fallbackTrack = AudioTrack(
+    title: 'Soft rain on leaves',
+    category: 'Nature',
+    description: 'Steady sound for nervous-system downshift',
+    duration: '18 min',
+  );
+}
+
+class _MinimalAudioPlayer extends StatelessWidget {
+  const _MinimalAudioPlayer({
+    required this.imagePath,
+    required this.progress,
+  });
+
+  final String imagePath;
+  final double progress;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Image.asset(
+          imagePath,
+          fit: BoxFit.cover,
+          alignment: Alignment.topCenter,
+        ),
+        DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.transparent,
+                AppColors.canvas.withOpacity(0.14),
+                AppColors.canvas.withOpacity(0.68),
+                AppColors.canvas.withOpacity(0.94),
+                AppColors.canvas,
+              ],
+              stops: const [0.0, 0.48, 0.72, 0.9, 1.0],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
+        SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.md,
+              AppSpacing.lg,
+              AppSpacing.xl,
+            ),
+            child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: IconButton(
+                    onPressed: Get.back,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: const Icon(
+                      AppIcons.back,
+                      color: AppColors.white,
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                _MinimalAudioDock(progress: progress),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MinimalAudioDock extends StatelessWidget {
+  const _MinimalAudioDock({required this.progress});
+
+  final double progress;
+
+  @override
+  Widget build(BuildContext context) {
+    final clampedProgress = progress.clamp(0.0, 1.0);
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          height: 18,
+          child: Stack(
+            alignment: Alignment.centerLeft,
+            children: [
+              Container(
+                height: 2,
+                decoration: BoxDecoration(
+                  color: AppColors.line,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              ),
+              FractionallySizedBox(
+                widthFactor: clampedProgress,
+                child: Container(
+                  height: 2.5,
+                  decoration: BoxDecoration(
+                    color: AppColors.terracotta,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+              ),
+              Align(
+                alignment: Alignment(clampedProgress * 2 - 1, 0),
+                child: Container(
+                  width: 10,
+                  height: 10,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.terracotta,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: AppSpacing.xl),
+        const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _MinimalControl(
+              icon: Icons.replay_10_rounded,
+              small: true,
+            ),
+            SizedBox(width: AppSpacing.xl),
+            _MinimalControl(
+              icon: Icons.pause_rounded,
+              filled: true,
+            ),
+            SizedBox(width: AppSpacing.xl),
+            _MinimalControl(
+              icon: Icons.forward_10_rounded,
+              small: true,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _MinimalControl extends StatelessWidget {
+  const _MinimalControl({
+    required this.icon,
+    this.filled = false,
+    this.small = false,
+  });
+
+  final IconData icon;
+  final bool filled;
+  final bool small;
+
+  @override
+  Widget build(BuildContext context) {
+    final size = filled ? 74.0 : (small ? 46.0 : 56.0);
+
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color:
+            filled ? AppColors.terracotta : AppColors.white.withOpacity(0.78),
+        border: Border.all(
+          color: filled ? AppColors.terracotta : AppColors.line,
+        ),
+      ),
+      child: Icon(
+        icon,
+        color: filled ? AppColors.white : AppColors.primary,
+      ),
+    );
+  }
+}
+
 class _PlayerScene {
   const _PlayerScene({
     required this.base,
@@ -237,7 +460,8 @@ class _AnimatedBackdrop extends StatelessWidget {
                   height: length,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(999),
-                    color: AppColors.white.withOpacity(index.isEven ? 0.18 : 0.08),
+                    color:
+                        AppColors.white.withOpacity(index.isEven ? 0.18 : 0.08),
                   ),
                 ),
               ),
@@ -272,7 +496,8 @@ class _AnimatedBackdrop extends StatelessWidget {
           }),
         if (scene.kind == _SceneKind.glow)
           ...List.generate(5, (index) {
-            final offset = math.sin((animationValue * math.pi * 2) + index) * 18;
+            final offset =
+                math.sin((animationValue * math.pi * 2) + index) * 18;
             final size = 180 + index * 52.0;
 
             return Positioned(
@@ -330,7 +555,8 @@ class _CenterMotion extends StatelessWidget {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(7, (index) {
-          final height = 20 + 28 * math.sin((animationValue * math.pi * 2) + index);
+          final height =
+              20 + 28 * math.sin((animationValue * math.pi * 2) + index);
           return Container(
             width: 6,
             height: height.abs(),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
@@ -26,10 +27,26 @@ class SpacesView extends GetView<SpacesController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'space',
-                style:
-                    textTheme.displayLarge?.copyWith(color: AppColors.primary),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      'space',
+                      style: textTheme.displayLarge
+                          ?.copyWith(color: AppColors.primary),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: controller.openProfile,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: const Icon(
+                      Icons.settings_outlined,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: AppSpacing.sm),
               Text(
@@ -96,11 +113,8 @@ class _SpaceRow extends StatelessWidget {
           InkWell(
             onTap: onTap,
             borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
-            child: const Icon(
-              Icons.arrow_forward_ios,
-              size: 18,
-              color: AppColors.terracotta,
-            ),
+            child: const Icon(AppIcons.forward,
+                size: 16, color: AppColors.terracotta),
           ),
         ],
       ),

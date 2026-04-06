@@ -19,11 +19,11 @@ class HomeController extends GetxController {
   }
 
   void openHelpNow() {
-    Get.find<DashboardController>().switchTab(1);
+    Get.toNamed(AppRoutes.chat);
   }
 
   void openTalk() {
-    Get.find<DashboardController>().switchTab(1);
+    Get.toNamed(AppRoutes.chat);
   }
 
   void openJournal() {

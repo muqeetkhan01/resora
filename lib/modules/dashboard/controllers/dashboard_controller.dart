@@ -1,3 +1,4 @@
+import '../../../routes/app_routes.dart';
 import 'package:get/get.dart';
 
 class DashboardController extends GetxController {
@@ -8,7 +9,7 @@ class DashboardController extends GetxController {
     super.onInit();
     final initialIndex = Get.arguments;
     if (initialIndex is int) {
-      selectedIndex.value = initialIndex.clamp(0, 3);
+      selectedIndex.value = initialIndex.clamp(0, 2);
     }
   }
 
@@ -17,6 +18,6 @@ class DashboardController extends GetxController {
   }
 
   void openProfile() {
-    switchTab(3);
+    Get.toNamed(AppRoutes.profile);
   }
 }

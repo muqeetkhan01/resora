@@ -56,8 +56,6 @@ class ProfileView extends GetView<ProfileController> {
                   onChanged: controller.toggleAffirmations,
                   contentPadding: EdgeInsets.zero,
                   title: Text('affirmations', style: textTheme.titleMedium),
-                  subtitle:
-                      Text('morning delivery', style: textTheme.bodySmall),
                   activeColor: AppColors.primary,
                 ),
               ),
@@ -109,8 +107,7 @@ class _OptionRow extends StatelessWidget {
           trailing: option.trailing != null
               ? Text(option.trailing!,
                   style: Theme.of(context).textTheme.bodySmall)
-              : const Icon(Icons.arrow_forward_ios,
-                  color: AppColors.terracotta),
+              : const Icon(AppIcons.forward, color: AppColors.terracotta),
         ),
         const Divider(height: 1),
       ],

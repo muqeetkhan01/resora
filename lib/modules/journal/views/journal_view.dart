@@ -52,8 +52,9 @@ class JournalView extends GetView<JournalController> {
                           child: Text(
                             controller.modes[index],
                             style: textTheme.bodySmall?.copyWith(
-                              color:
-                                  selected ? AppColors.primary : AppColors.muted,
+                              color: selected
+                                  ? AppColors.primary
+                                  : AppColors.muted,
                               decoration: selected
                                   ? TextDecoration.underline
                                   : TextDecoration.none,
@@ -78,7 +79,8 @@ class JournalView extends GetView<JournalController> {
 
                         return _PromptPage(
                           prompt: prompt,
-                          onWriteOwn: () => controller.openEditor(prompt: prompt),
+                          onWriteOwn: () =>
+                              controller.openEditor(prompt: prompt),
                           onStartWriting: () =>
                               controller.openEditor(prompt: prompt),
                         );
@@ -90,7 +92,7 @@ class JournalView extends GetView<JournalController> {
                       bottom: 0,
                       child: Center(
                         child: Obx(
-                          () => SnapFeedIndicator(
+                          () => _ThinPageSlider(
                             count: controller.prompts.length,
                             currentIndex: controller.currentPage.value,
                           ),
@@ -103,6 +105,58 @@ class JournalView extends GetView<JournalController> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _ThinPageSlider extends StatelessWidget {
+  const _ThinPageSlider({
+    required this.count,
+    required this.currentIndex,
+  });
+
+  final int count;
+  final int currentIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    if (count <= 1) {
+      return const SizedBox.shrink();
+    }
+
+    const trackHeight = 56.0;
+    const trackWidth = 2.0;
+    final thumbHeight = (trackHeight / count).clamp(10.0, 18.0);
+    final maxOffset = trackHeight - thumbHeight;
+    final progress = count == 1 ? 0.0 : currentIndex / (count - 1);
+
+    return SizedBox(
+      width: 8,
+      height: trackHeight,
+      child: Stack(
+        alignment: Alignment.topCenter,
+        children: [
+          Container(
+            width: trackWidth,
+            height: trackHeight,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(999),
+            ),
+          ),
+          Positioned(
+            top: maxOffset * progress.clamp(0.0, 1.0),
+            child: Container(
+              width: 3,
+              height: thumbHeight,
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.82),
+                borderRadius: BorderRadius.circular(999),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

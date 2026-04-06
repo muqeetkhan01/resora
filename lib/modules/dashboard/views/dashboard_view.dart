@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import '../../../widgets/app_bottom_nav.dart';
 import '../../chat/views/chat_view.dart';
 import '../../home/views/home_view.dart';
-import '../../profile/views/profile_view.dart';
 import '../../spaces/views/spaces_view.dart';
 import '../controllers/dashboard_controller.dart';
 
@@ -17,7 +16,6 @@ class DashboardView extends GetView<DashboardController> {
       HomeView(),
       ChatView(rootTab: true),
       SpacesView(),
-      ProfileView(),
     ];
 
     return Obx(

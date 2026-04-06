@@ -5,7 +5,6 @@ import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
-import '../../../widgets/snap_feed_indicator.dart';
 import '../controllers/rehearse_controller.dart';
 
 class RehearseView extends GetView<RehearseController> {
@@ -88,20 +87,22 @@ class RehearseView extends GetView<RehearseController> {
                           itemCount: scenarios.length,
                           itemBuilder: (context, index) {
                             final scenario = scenarios[index];
-                            return _ScenarioPage(
-                              scenario: scenario,
-                              index: index + 1,
-                              count: scenarios.length,
-                              onTap: () => controller.openScenario(scenario),
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: _ScenarioPage(
+                                scenario: scenario,
+                                onTap: () => controller.openScenario(scenario),
+                              ),
                             );
                           },
                         ),
                         Positioned(
-                          right: 0,
+                          right: 4,
                           top: 0,
                           bottom: 0,
                           child: Center(
-                            child: SnapFeedIndicator(
+                            child: _ThinPageSlider(
                               count: scenarios.length,
                               currentIndex: controller.currentPage.value,
                             ),
@@ -120,17 +121,65 @@ class RehearseView extends GetView<RehearseController> {
   }
 }
 
+class _ThinPageSlider extends StatelessWidget {
+  const _ThinPageSlider({
+    required this.count,
+    required this.currentIndex,
+  });
+
+  final int count;
+  final int currentIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    if (count <= 1) {
+      return const SizedBox.shrink();
+    }
+
+    const trackHeight = 56.0;
+    const trackWidth = 2.0;
+    final thumbHeight = (trackHeight / count).clamp(10.0, 18.0);
+    final maxOffset = trackHeight - thumbHeight;
+    final progress = count == 1 ? 0.0 : currentIndex / (count - 1);
+
+    return SizedBox(
+      width: 8,
+      height: trackHeight,
+      child: Stack(
+        alignment: Alignment.topCenter,
+        children: [
+          Container(
+            width: trackWidth,
+            height: trackHeight,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(999),
+            ),
+          ),
+          Positioned(
+            top: maxOffset * progress.clamp(0.0, 1.0),
+            child: Container(
+              width: 3,
+              height: thumbHeight,
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.82),
+                borderRadius: BorderRadius.circular(999),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _ScenarioPage extends StatelessWidget {
   const _ScenarioPage({
     required this.scenario,
-    required this.index,
-    required this.count,
     required this.onTap,
   });
 
   final RehearsalScenario scenario;
-  final int index;
-  final int count;
   final VoidCallback onTap;
 
   @override
@@ -138,25 +187,33 @@ class _ScenarioPage extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: AppSpacing.xl),
-        Text(scenario.title, style: textTheme.headlineLarge),
+        const Spacer(flex: 3),
+        Text(
+          scenario.title,
+          style: textTheme.displayMedium?.copyWith(fontSize: 30),
+          textAlign: TextAlign.center,
+        ),
         const SizedBox(height: AppSpacing.md),
         Text(
           scenario.reframe,
           style: textTheme.bodyLarge?.copyWith(color: AppColors.primary),
+          textAlign: TextAlign.center,
         ),
-        const Spacer(),
-        Text('$index / $count', style: textTheme.bodySmall),
-        const SizedBox(height: AppSpacing.md),
-        InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
-          child: const Icon(
-            Icons.arrow_forward_ios,
-            size: 18,
-            color: AppColors.terracotta,
+        const Spacer(flex: 4),
+        Align(
+          alignment: Alignment.centerRight,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
+            child: const Padding(
+              padding: EdgeInsets.all(AppSpacing.xs),
+              child: Icon(
+                AppIcons.forward,
+                size: 18,
+                color: AppColors.terracotta,
+              ),
+            ),
           ),
         ),
       ],

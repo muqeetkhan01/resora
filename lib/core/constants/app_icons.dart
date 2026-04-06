@@ -5,7 +5,7 @@ abstract final class AppIcons {
   static const back = Icons.arrow_back_ios;
   static const forward = Icons.arrow_forward_ios;
   static const close = Icons.close_rounded;
-  static const send = Icons.arrow_forward_ios;
+  static const send = Icons.arrow_upward;
   static const play = Icons.play_circle_fill_rounded;
 
   static const homeOutline = Icons.home_outlined;

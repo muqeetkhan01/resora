@@ -5,6 +5,7 @@ import '../../../core/controllers/app_session_controller.dart';
 import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
+import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
 import '../controllers/chat_controller.dart';
 
@@ -19,10 +20,14 @@ class ChatView extends GetView<ChatController> {
 
     return Scaffold(
       backgroundColor: AppColors.canvas,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-          child: content,
+      body: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+            child: content,
+          ),
         ),
       ),
     );
@@ -41,48 +46,78 @@ class _ChatContent extends GetView<ChatController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(top: AppSpacing.xl),
-          child: Row(
+        Obx(() {
+          final showIntroHeader = rootTab &&
+              controller.messages.isEmpty &&
+              !controller.isTyping.value;
+
+          return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (!rootTab)
-                IconButton(
-                  onPressed: Get.back,
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  icon: const Icon(AppIcons.back, color: AppColors.primary),
-                )
-              else
-                const SizedBox.shrink(),
-              if (!rootTab) const SizedBox(width: AppSpacing.md),
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(top: rootTab ? 0 : 2),
-                  child: Text(
-                    'what\'s on your mind?',
-                    style: textTheme.displayMedium,
-                  ),
-                ),
+              Padding(
+                padding: const EdgeInsets.only(top: AppSpacing.xl),
+                child: showIntroHeader
+                    ? Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'talk to resora',
+                                  style: textTheme.displayLarge,
+                                ),
+                                const SizedBox(height: AppSpacing.xs),
+                                Text(
+                                  'support for the moment you are in.',
+                                  style: textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.placeholder,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () => Get.toNamed(AppRoutes.profile),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            icon: const Icon(
+                              Icons.settings_outlined,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ],
+                      )
+                    : Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          if (!rootTab) ...[
+                            IconButton(
+                              onPressed: Get.back,
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              icon: const Icon(
+                                AppIcons.back,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.md),
+                          ],
+                          Expanded(
+                            child: Text(
+                              'what\'s on your mind?',
+                              style: textTheme.displayMedium,
+                            ),
+                          ),
+                        ],
+                      ),
               ),
+              const SizedBox(height: AppSpacing.md),
+              const Divider(height: 1),
             ],
-          ),
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.line),
-          ),
-          child: Obx(
-            () => Text(
-              '${controller.freeMessagesRemaining.value} free messages left today',
-              style: textTheme.bodySmall?.copyWith(color: AppColors.primary),
-            ),
-          ),
-        ),
+          );
+        }),
         const SizedBox(height: AppSpacing.lg),
         Expanded(
           child: Obx(() {
@@ -90,7 +125,7 @@ class _ChatContent extends GetView<ChatController> {
                 controller.messages.isEmpty && !controller.isTyping.value;
 
             if (showEmpty) {
-              return const _EmptyState();
+              return _EmptyState(rootTab: rootTab);
             }
 
             final totalCount = controller.messages.length +
@@ -140,7 +175,7 @@ class _ChatContent extends GetView<ChatController> {
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
               icon: const Icon(
-                Icons.arrow_forward_ios,
+                AppIcons.send,
                 color: AppColors.terracotta,
                 size: 22,
               ),
@@ -154,17 +189,26 @@ class _ChatContent extends GetView<ChatController> {
 }
 
 class _EmptyState extends StatelessWidget {
-  const _EmptyState();
+  const _EmptyState({required this.rootTab});
+
+  final bool rootTab;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
+    if (rootTab) {
+      return const SizedBox.shrink();
+    }
+
     return Center(
-      child: Text(
-        'Start with one clear sentence.',
-        style: textTheme.bodyMedium?.copyWith(
-          color: AppColors.placeholder,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: AppSpacing.xl),
+        child: Text(
+          'Start with one clear sentence.',
+          style: textTheme.bodyMedium?.copyWith(
+            color: AppColors.placeholder,
+          ),
         ),
       ),
     );
@@ -180,9 +224,10 @@ class _MessageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final isUser = message.isUser;
-    final currentUserName = Get.find<AppSessionController>().displayName == 'there'
-        ? 'user'
-        : Get.find<AppSessionController>().displayName;
+    final currentUserName =
+        Get.find<AppSessionController>().displayName == 'there'
+            ? 'user'
+            : Get.find<AppSessionController>().displayName;
     final speaker = isUser ? currentUserName : 'resora';
 
     return Padding(
@@ -228,10 +273,10 @@ class _MessageBubble extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: isUser ? AppColors.primary : AppColors.surface,
                     borderRadius: BorderRadius.only(
-                      topLeft: const Radius.circular(16),
-                      topRight: const Radius.circular(16),
-                      bottomLeft: Radius.circular(isUser ? 16 : 4),
-                      bottomRight: Radius.circular(isUser ? 4 : 16),
+                      topLeft: const Radius.circular(14),
+                      topRight: const Radius.circular(14),
+                      bottomLeft: Radius.circular(isUser ? 14 : 3),
+                      bottomRight: Radius.circular(isUser ? 3 : 14),
                     ),
                   ),
                   child: Text(

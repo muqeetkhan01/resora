@@ -95,6 +95,7 @@ class NoiseView extends GetView<NoiseController> {
                           ),
                           trailing: const Icon(
                             Icons.arrow_forward_ios,
+                            size: 16,
                             color: AppColors.terracotta,
                           ),
                           onTap: () => controller.openTrack(track),

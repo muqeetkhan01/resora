@@ -5,7 +5,6 @@ import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
-import '../../../widgets/link_action_row.dart';
 import '../../../widgets/snap_feed_indicator.dart';
 import '../controllers/resets_controller.dart';
 
@@ -61,8 +60,9 @@ class ResetsView extends GetView<ResetsController> {
                           child: Text(
                             category,
                             style: textTheme.bodySmall?.copyWith(
-                              color:
-                                  selected ? AppColors.primary : AppColors.muted,
+                              color: selected
+                                  ? AppColors.primary
+                                  : AppColors.muted,
                               decoration: selected
                                   ? TextDecoration.underline
                                   : TextDecoration.none,
@@ -90,8 +90,6 @@ class ResetsView extends GetView<ResetsController> {
                             final option = options[index];
                             return _ResetPage(
                               option: option,
-                              index: index + 1,
-                              count: options.length,
                               onTap: () => controller.openReset(option),
                             );
                           },
@@ -123,14 +121,10 @@ class ResetsView extends GetView<ResetsController> {
 class _ResetPage extends StatelessWidget {
   const _ResetPage({
     required this.option,
-    required this.index,
-    required this.count,
     required this.onTap,
   });
 
   final ResetOption option;
-  final int index;
-  final int count;
   final VoidCallback onTap;
 
   @override
@@ -138,21 +132,37 @@ class _ResetPage extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: AppSpacing.xl),
-        Text(option.title, style: textTheme.headlineLarge),
+        const Spacer(flex: 3),
+        Text(
+          option.title,
+          style: textTheme.displayMedium?.copyWith(fontSize: 30),
+          textAlign: TextAlign.center,
+        ),
         const SizedBox(height: AppSpacing.md),
         Text(
           option.subtitle,
           style: textTheme.bodyLarge?.copyWith(color: AppColors.primary),
+          textAlign: TextAlign.center,
         ),
         const SizedBox(height: AppSpacing.lg),
         Text(option.duration, style: textTheme.bodySmall),
-        const Spacer(),
-        Text('$index / $count', style: textTheme.bodySmall),
-        const SizedBox(height: AppSpacing.md),
-        LinkActionRow(label: 'start', onTap: onTap),
+        const Spacer(flex: 4),
+        Align(
+          alignment: Alignment.centerRight,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
+            child: const Padding(
+              padding: EdgeInsets.all(AppSpacing.xs),
+              child: Icon(
+                AppIcons.forward,
+                size: 18,
+                color: AppColors.terracotta,
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }

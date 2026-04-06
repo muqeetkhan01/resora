@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/constants/app_assets.dart';
+import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../theme/app_colors.dart';
 import '../controllers/home_controller.dart';
@@ -21,9 +22,9 @@ class HomeView extends GetView<HomeController> {
 
             return SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(
-                AppSpacing.lg,
-                AppSpacing.xxxl,
-                AppSpacing.lg,
+                0,
+                0,
+                0,
                 140,
               ),
               child: Column(
@@ -36,6 +37,7 @@ class HomeView extends GetView<HomeController> {
                     title: 'talk to resora',
                     subtitle: '"what do I need right now?"',
                     onTap: controller.openTalk,
+                    fullBleed: true,
                   ),
                   const SizedBox(height: AppSpacing.xxl),
                   _HomeImageFeature(
@@ -45,6 +47,7 @@ class HomeView extends GetView<HomeController> {
                     title: 'journal',
                     subtitle: '"what breathed?"',
                     onTap: controller.openJournal,
+                    fullBleed: true,
                   ),
                   const SizedBox(height: AppSpacing.xxl),
                   _HomeImageFeature(
@@ -54,15 +57,23 @@ class HomeView extends GetView<HomeController> {
                     title: 'quiet the noise',
                     subtitle: '"lower the room a little"',
                     onTap: controller.openNoise,
+                    fullBleed: true,
                   ),
                   const SizedBox(height: AppSpacing.xxl),
                   _HomeImageFeature(
                     imagePath: AppAssets.curtainLight,
                     height: featureHeight,
                     alignment: Alignment.topCenter,
-                    title: 'rehearse the moment',
-                    subtitle: '"say it more calmly"',
-                    onTap: controller.openRehearse,
+                    title: 'coming soon',
+                    subtitle: '"come back soon for new features"',
+                    onTap: () => Get.snackbar(
+                      'coming soon',
+                      'come back soon for new features',
+                      snackPosition: SnackPosition.BOTTOM,
+                      colorText: AppColors.white,
+                      backgroundColor: AppColors.primary,
+                    ),
+                    fullBleed: true,
                   ),
                 ],
               ),
@@ -82,6 +93,7 @@ class _HomeImageFeature extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.onTap,
+    this.fullBleed = false,
   });
 
   final String imagePath;
@@ -90,6 +102,7 @@ class _HomeImageFeature extends StatelessWidget {
   final String title;
   final String subtitle;
   final VoidCallback onTap;
+  final bool fullBleed;
 
   @override
   Widget build(BuildContext context) {
@@ -108,39 +121,44 @@ class _HomeImageFeature extends StatelessWidget {
             alignment: alignment,
           ),
           const SizedBox(height: AppSpacing.md),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: textTheme.headlineMedium?.copyWith(
-                        color: AppColors.primary,
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: fullBleed ? AppSpacing.lg : 0,
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: textTheme.headlineMedium?.copyWith(
+                          color: AppColors.primary,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: AppSpacing.xs),
-                    Text(
-                      subtitle,
-                      style: textTheme.bodySmall?.copyWith(
-                        color: AppColors.placeholder,
+                      const SizedBox(height: AppSpacing.xs),
+                      Text(
+                        subtitle,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: AppColors.placeholder,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(width: AppSpacing.md),
-              const Padding(
-                padding: EdgeInsets.only(top: 2),
-                child: Icon(
-                  Icons.arrow_forward_ios,
-                  size: 20,
-                  color: AppColors.primary,
+                const SizedBox(width: AppSpacing.md),
+                const Padding(
+                  padding: EdgeInsets.only(top: 2),
+                  child: Icon(
+                    AppIcons.forward,
+                    size: 20,
+                    color: AppColors.terracotta,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

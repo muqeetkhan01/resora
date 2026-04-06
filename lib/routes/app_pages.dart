@@ -84,7 +84,6 @@ abstract final class AppPages {
         Get.put(ChatController());
         Get.put(SpacesController());
         Get.put(JournalController());
-        Get.put(ProfileController());
       }),
     ),
     GetPage(
