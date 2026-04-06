@@ -12,6 +12,7 @@ class SpacesView extends GetView<SpacesController> {
 
   @override
   Widget build(BuildContext context) {
+    final items = controller.spaces;
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
@@ -19,9 +20,9 @@ class SpacesView extends GetView<SpacesController> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg,
+            AppSpacing.xl,
             AppSpacing.xxl,
-            AppSpacing.lg,
+            AppSpacing.xl,
             120,
           ),
           child: Column(
@@ -31,36 +32,79 @@ class SpacesView extends GetView<SpacesController> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: Text(
-                      'space',
-                      style: textTheme.displayLarge
-                          ?.copyWith(color: AppColors.primary),
-                    ),
+                    child: Text('space', style: textTheme.displayLarge),
                   ),
                   IconButton(
                     onPressed: controller.openProfile,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                     icon: const Icon(
-                      Icons.settings_outlined,
+                      Icons.wb_sunny_outlined,
                       color: AppColors.primary,
+                      size: 18,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: AppSpacing.sm),
+              const SizedBox(height: AppSpacing.xs),
               Text(
                 'A quieter library of support tools, terms, and next steps.',
-                style: textTheme.bodyMedium?.copyWith(
+                style: textTheme.bodySmall?.copyWith(
                   color: AppColors.placeholder,
+                  height: 1.8,
                 ),
               ),
-              const SizedBox(height: AppSpacing.xxl),
-              ...controller.spaces.map(
-                (item) => _SpaceRow(
-                  item: item,
-                  onTap: () => controller.openSpace(item),
-                ),
+              const SizedBox(height: AppSpacing.xxxl),
+              _SpaceFeatureCard(
+                item: items[0],
+                onTap: () => controller.openSpace(items[0]),
+                height: 188,
+              ),
+              const SizedBox(height: AppSpacing.md),
+              Row(
+                children: [
+                  Expanded(
+                    child: _SpaceFeatureCard(
+                      item: items[1],
+                      onTap: () => controller.openSpace(items[1]),
+                      height: 208,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: _SpaceFeatureCard(
+                      item: items[2],
+                      onTap: () => controller.openSpace(items[2]),
+                      height: 208,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.md),
+              Row(
+                children: [
+                  Expanded(
+                    child: _SpaceFeatureCard(
+                      item: items[3],
+                      onTap: () => controller.openSpace(items[3]),
+                      height: 208,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: _SpaceFeatureCard(
+                      item: items[4],
+                      onTap: () => controller.openSpace(items[4]),
+                      height: 208,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.md),
+              _SpaceFeatureCard(
+                item: items[5],
+                onTap: () => controller.openSpace(items[5]),
+                height: 188,
               ),
             ],
           ),
@@ -70,53 +114,90 @@ class SpacesView extends GetView<SpacesController> {
   }
 }
 
-class _SpaceRow extends StatelessWidget {
-  const _SpaceRow({
+class _SpaceFeatureCard extends StatelessWidget {
+  const _SpaceFeatureCard({
     required this.item,
     required this.onTap,
+    required this.height,
   });
 
   final QuickActionItem item;
   final VoidCallback onTap;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.lg),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: AppSpacing.sm),
-                Text(
-                  item.title.toLowerCase(),
-                  style: textTheme.headlineMedium
-                      ?.copyWith(color: AppColors.primary),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(22),
+      child: Ink(
+        height: height,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: AppColors.line),
+          image: item.imagePath == null
+              ? null
+              : DecorationImage(
+                  image: AssetImage(item.imagePath!),
+                  fit: BoxFit.cover,
                 ),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  item.subtitle,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: AppColors.placeholder,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.md),
-                // const SizedBox(height: AppSpacing.sm),
-                const Divider(color: AppColors.line, height: 1),
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(22),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                AppColors.white.withOpacity(item.imagePath == null ? 1 : 0.16),
+                AppColors.white.withOpacity(item.imagePath == null ? 1 : 0.94),
               ],
             ),
           ),
-          InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
-            child: const Icon(AppIcons.forward,
-                size: 16, color: AppColors.terracotta),
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Spacer(),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          item.title.toLowerCase(),
+                          style: textTheme.displayMedium?.copyWith(
+                            fontSize: 23,
+                            color: AppColors.primary.withOpacity(0.72),
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.xs),
+                        Text(
+                          item.subtitle,
+                          style: textTheme.bodySmall?.copyWith(
+                            color: AppColors.placeholder,
+                            height: 1.7,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  const Icon(
+                    AppIcons.forward,
+                    size: 16,
+                    color: AppColors.placeholder,
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

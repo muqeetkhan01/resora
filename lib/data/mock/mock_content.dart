@@ -1,3 +1,4 @@
+import '../../core/constants/app_assets.dart';
 import '../../core/constants/app_icons.dart';
 import '../../routes/app_routes.dart';
 import '../../theme/app_colors.dart';
@@ -73,6 +74,7 @@ abstract final class MockContent {
       icon: AppIcons.isNormal,
       accentColor: AppColors.terracotta,
       route: AppRoutes.normal,
+      imagePath: AppAssets.homeNormalStem,
     ),
     QuickActionItem(
       title: 'Gentle Resets',
@@ -80,6 +82,7 @@ abstract final class MockContent {
       icon: AppIcons.resets,
       accentColor: AppColors.primary,
       route: AppRoutes.resets,
+      imagePath: AppAssets.spaceGarden,
     ),
     QuickActionItem(
       title: 'Quiet the Noise',
@@ -87,6 +90,7 @@ abstract final class MockContent {
       icon: AppIcons.noise,
       accentColor: AppColors.success,
       route: AppRoutes.noise,
+      imagePath: AppAssets.spaceRoom,
     ),
     QuickActionItem(
       title: 'Rehearse the Moment',
@@ -94,6 +98,7 @@ abstract final class MockContent {
       icon: AppIcons.rehearse,
       accentColor: AppColors.terracotta,
       route: AppRoutes.rehearse,
+      imagePath: AppAssets.spaceMountain,
     ),
     QuickActionItem(
       title: 'Journal',
@@ -101,6 +106,7 @@ abstract final class MockContent {
       icon: AppIcons.journal,
       accentColor: AppColors.surface,
       route: AppRoutes.journal,
+      imagePath: AppAssets.homeJournalBed,
     ),
     QuickActionItem(
       title: 'Key Terms',
@@ -108,6 +114,7 @@ abstract final class MockContent {
       icon: AppIcons.terms,
       accentColor: AppColors.success,
       route: AppRoutes.terms,
+      imagePath: AppAssets.homeComingSoonFlower,
     ),
   ];
 
@@ -172,9 +179,26 @@ abstract final class MockContent {
   static const chatMessages = <ChatMessageModel>[];
 
   static const journalPrompts = [
-    'What helped?',
-    'What do I need next?',
-    'What felt heavier than it looked?',
+    JournalPrompt(
+      category: 'clarity',
+      prompt: 'What felt heavier than it looked?',
+    ),
+    JournalPrompt(
+      category: 'ground',
+      prompt: 'Where did you feel most steady today?',
+    ),
+    JournalPrompt(
+      category: 'release',
+      prompt: 'What are you still carrying from yesterday?',
+    ),
+    JournalPrompt(
+      category: 'connect',
+      prompt: 'What do you wish someone had said to you today?',
+    ),
+    JournalPrompt(
+      category: 'restore',
+      prompt: 'What would feel restorative before the day ends?',
+    ),
   ];
 
   static const journalEntries = [
@@ -206,27 +230,39 @@ abstract final class MockContent {
 
   static const resetOptions = [
     ResetOption(
+      category: 'ground',
       title: 'Breath reset',
-      subtitle: 'A guided inhale and exhale loop',
+      subtitle: 'A guided inhale and exhale loop to slow the body down.',
       duration: '2 min',
       icon: AppIcons.resets,
     ),
     ResetOption(
-      title: 'Sensory grounding',
-      subtitle: 'One prompt at a time',
-      duration: '3 min',
+      category: 'release',
+      title: 'Step away',
+      subtitle: 'A short permission to pause before you respond to anything.',
+      duration: '1 min',
       icon: AppIcons.isNormal,
     ),
     ResetOption(
-      title: 'Step away',
-      subtitle: 'A timed pause with permission',
-      duration: '5 min',
+      category: 'clarity',
+      title: '5-4-3-2-1 ground',
+      subtitle:
+          'Bring yourself back to the room when your mind will not settle.',
+      duration: '3 min',
       icon: AppIcons.close,
     ),
     ResetOption(
-      title: 'Reset tone',
-      subtitle: 'A short audio anchor',
-      duration: '90 sec',
+      category: 'ground',
+      title: 'Box breath',
+      subtitle: 'Four counts in, hold, four counts out.',
+      duration: '4 min',
+      icon: AppIcons.play,
+    ),
+    ResetOption(
+      category: 'restore',
+      title: 'Cold water reset',
+      subtitle: 'A simple physical anchor when everything feels like too much.',
+      duration: '1 min',
       icon: AppIcons.play,
     ),
   ];
@@ -367,7 +403,7 @@ abstract final class MockContent {
   static const rehearsalScenarios = [
     RehearsalScenario(
       title: 'Talking to my partner after a hard night',
-      category: 'Relationships',
+      category: 'Connect',
       reframe:
           'You do not need a perfect explanation. You need a clear sentence.',
       script:
@@ -379,29 +415,52 @@ abstract final class MockContent {
       ],
     ),
     RehearsalScenario(
-      title: 'Holding a boundary with my child',
-      category: 'Parenting',
-      reframe: 'Calm and firm can happen at the same time.',
+      title: 'Setting a limit with someone I care about',
+      category: 'Release',
+      reframe: 'Saying it clearly is not the same as saying it unkindly.',
       script:
-          '“I am not changing the limit. I am staying with you while you are upset.”',
+          '“I care about this, and I need to stop here for tonight. I can come back to it when I have more room.”',
       steps: [
-        'Lower your pace before you speak.',
-        'Say the limit once.',
-        'Repeat only the key line.',
+        'Keep the sentence short.',
+        'Let the boundary be the message.',
+        'Do not explain past the first clear line.',
       ],
     ),
     RehearsalScenario(
-      title: 'Saying no without over-explaining',
-      category: 'Work Stress',
-      reframe: 'A short no is still a complete answer.',
+      title: 'Asking for what I actually need',
+      category: 'Clarity',
+      reframe: 'Most people cannot guess. Most people will help if you say it.',
       script:
-          '“I can’t take that on this week, but I can revisit it next Tuesday.”',
+          '“I do not need advice first. I need a little support and one clear next step.”',
       steps: [
-        'Lead with the answer.',
-        'Offer one alternative if you want to.',
-        'Do not keep negotiating after the first clear line.',
+        'Ask for the real need.',
+        'Say it plainly.',
+        'Pause before adding extra explanation.',
       ],
-      isPremium: true,
+    ),
+    RehearsalScenario(
+      title: 'Repairing after I lost my temper',
+      category: 'Connect',
+      reframe: 'You do not have to be perfect. You have to show up.',
+      script:
+          '“I do not like how I handled that. I want to try again more gently.”',
+      steps: [
+        'Own your part without over-explaining.',
+        'Say the repair line simply.',
+        'Focus on the next interaction, not a perfect apology.',
+      ],
+    ),
+    RehearsalScenario(
+      title: 'Handling a hard conversation at work',
+      category: 'Ground',
+      reframe: 'Steady beats certain. You do not need all the answers.',
+      script:
+          '“I want to be thoughtful here. Let me answer the part I know, and I can follow up on the rest.”',
+      steps: [
+        'Slow your pace first.',
+        'Answer what is clear.',
+        'Leave room for a follow-up instead of forcing certainty.',
+      ],
     ),
   ];
 

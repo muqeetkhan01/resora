@@ -30,6 +30,10 @@ class HomeController extends GetxController {
     Get.toNamed(AppRoutes.journal);
   }
 
+  void openNormal() {
+    Get.toNamed(AppRoutes.normal);
+  }
+
   void openNoise() {
     Get.toNamed(AppRoutes.noise);
   }

@@ -6,21 +6,25 @@ import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 
 class JournalController extends GetxController {
-  final selectedMode = 0.obs;
+  final selectedCategory = 'all'.obs;
   final currentPage = 0.obs;
   final draftController = TextEditingController();
 
-  List<String> get modes =>
-      const ['all', 'calm', 'clarity', 'relationships', 'identity'];
-  String get promptOfTheDay => MockContent.journalPrompts.first;
-  List<String> get prompts => const [
-        'What\'s one thought that made you feel lighter today?',
-        'What helped more than you expected?',
-        'What felt heavier than it looked?',
-      ];
+  List<String> get categories =>
+      const ['all', 'ground', 'release', 'clarity', 'connect', 'restore'];
+  JournalPrompt get promptOfTheDay => MockContent.journalPrompts.first;
+  List<JournalPrompt> get prompts {
+    if (selectedCategory.value == 'all') {
+      return MockContent.journalPrompts;
+    }
 
-  void selectMode(int index) {
-    selectedMode.value = index;
+    return MockContent.journalPrompts
+        .where((prompt) => prompt.category == selectedCategory.value)
+        .toList();
+  }
+
+  void selectCategory(String category) {
+    selectedCategory.value = category;
     currentPage.value = 0;
   }
 

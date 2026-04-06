@@ -11,9 +11,10 @@ class RehearseController extends GetxController {
 
   List<String> get categories => const [
         'all',
-        'relationships',
-        'parenting',
-        'work stress',
+        'connect',
+        'release',
+        'clarity',
+        'ground',
       ];
 
   List<RehearsalScenario> get scenarios => MockContent.rehearsalScenarios;

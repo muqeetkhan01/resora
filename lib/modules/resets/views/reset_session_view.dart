@@ -15,6 +15,7 @@ class ResetSessionView extends StatelessWidget {
   Widget build(BuildContext context) {
     final option = Get.arguments as ResetOption? ??
         const ResetOption(
+          category: 'ground',
           title: 'Breath reset',
           subtitle: 'A guided inhale and exhale loop',
           duration: '2 min',

@@ -6,6 +6,11 @@ abstract final class AppColors {
   static const Color surface = Color(0xFFF5F4EF);
   static const Color warmDark = Color(0xFF38564E);
   static const Color terracotta = Color(0xFFC47A5A);
+  static const Color sage = Color(0xFFE8F0EB);
+  static const Color dustyRose = Color(0xFFF2EAEA);
+  static const Color warmIvory = Color(0xFFF5F0E8);
+  static const Color blush = Color(0xFFF4EDE8);
+  static const Color softBlueGrey = Color(0xFFEAF0F2);
 
   static const Color text = primary;
   static const Color muted = Color(0xFF6F837D);
@@ -26,8 +31,6 @@ abstract final class AppColors {
   static const Color card = white;
   static const Color cardStrong = surface;
   static const Color peach = Color(0xFFE7D8CF);
-  static const Color blush = Color(0xFFEFD8D2);
-  static const Color sage = Color(0xFFD8E6DE);
   static const Color gold = Color(0xFFD8B86A);
   static const Color ink = text;
   static const Color premium = terracotta;
@@ -55,4 +58,21 @@ abstract final class AppColors {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
+
+  static Color categoryColor(String category) {
+    switch (category.trim().toLowerCase()) {
+      case 'ground':
+        return sage;
+      case 'release':
+        return dustyRose;
+      case 'clarity':
+        return warmIvory;
+      case 'connect':
+        return blush;
+      case 'restore':
+        return softBlueGrey;
+      default:
+        return canvas;
+    }
+  }
 }

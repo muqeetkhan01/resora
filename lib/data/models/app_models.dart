@@ -23,6 +23,7 @@ class QuickActionItem {
     required this.icon,
     required this.accentColor,
     required this.route,
+    this.imagePath,
     this.routeArguments,
     this.premium = false,
     this.dashboardIndex,
@@ -33,6 +34,7 @@ class QuickActionItem {
   final IconData icon;
   final Color accentColor;
   final String route;
+  final String? imagePath;
   final dynamic routeArguments;
   final bool premium;
   final int? dashboardIndex;
@@ -194,16 +196,28 @@ class GoalOption {
 
 class ResetOption {
   const ResetOption({
+    required this.category,
     required this.title,
     required this.subtitle,
     required this.duration,
     required this.icon,
   });
 
+  final String category;
   final String title;
   final String subtitle;
   final String duration;
   final IconData icon;
+}
+
+class JournalPrompt {
+  const JournalPrompt({
+    required this.category,
+    required this.prompt,
+  });
+
+  final String category;
+  final String prompt;
 }
 
 class AudioTrack {

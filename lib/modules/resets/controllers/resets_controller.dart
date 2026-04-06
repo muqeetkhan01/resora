@@ -11,9 +11,10 @@ class ResetsController extends GetxController {
 
   List<String> get categories => const [
         'all',
-        'breath',
-        'grounding',
-        'pause',
+        'ground',
+        'release',
+        'clarity',
+        'restore',
       ];
 
   List<ResetOption> get options => MockContent.resetOptions;
@@ -25,8 +26,7 @@ class ResetsController extends GetxController {
 
     return options
         .where(
-          (option) =>
-              option.title.toLowerCase().contains(selectedCategory.value),
+          (option) => option.category.toLowerCase() == selectedCategory.value,
         )
         .toList();
   }
@@ -46,7 +46,7 @@ class ResetsController extends GetxController {
       arguments: {
         'track': AudioTrack(
           title: option.title,
-          category: 'gentle reset',
+          category: option.category,
           description: option.subtitle,
           duration: option.duration,
         ),
