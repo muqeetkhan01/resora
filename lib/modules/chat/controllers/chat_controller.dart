@@ -5,8 +5,20 @@ import '../../../data/models/app_models.dart';
 
 class ChatController extends GetxController {
   final inputController = TextEditingController();
+  final scrollController = ScrollController();
   final messages = <ChatMessageModel>[].obs;
   final isTyping = false.obs;
+  final draftText = ''.obs;
+
+  int _pendingReplies = 0;
+
+  bool get canSend => draftText.value.trim().isNotEmpty;
+
+  @override
+  void onInit() {
+    super.onInit();
+    inputController.addListener(_handleDraftChanged);
+  }
 
   void sendMessage([String? preset]) {
     final text = (preset ?? inputController.text).trim();
@@ -14,16 +26,35 @@ class ChatController extends GetxController {
 
     messages.add(ChatMessageModel(text: text, isUser: true, time: 'Now'));
     inputController.clear();
+    _pendingReplies += 1;
     isTyping.value = true;
+    _scrollToBottom();
 
     Future<void>.delayed(const Duration(milliseconds: 700), () {
-      isTyping.value = false;
       messages.add(
         ChatMessageModel(
           text: _buildMockReply(text),
           isUser: false,
           time: 'Now',
         ),
+      );
+      _pendingReplies = (_pendingReplies - 1).clamp(0, 999);
+      isTyping.value = _pendingReplies > 0;
+      _scrollToBottom();
+    });
+  }
+
+  void _handleDraftChanged() {
+    draftText.value = inputController.text;
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!scrollController.hasClients) return;
+      scrollController.animateTo(
+        scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOut,
       );
     });
   }
@@ -46,7 +77,9 @@ class ChatController extends GetxController {
 
   @override
   void onClose() {
+    inputController.removeListener(_handleDraftChanged);
     inputController.dispose();
+    scrollController.dispose();
     super.onClose();
   }
 }
