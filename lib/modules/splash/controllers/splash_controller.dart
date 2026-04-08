@@ -11,7 +11,7 @@ class SplashController extends GetxController {
   void onReady() {
     super.onReady();
     _timer = Timer(
-      const Duration(milliseconds: 2800),
+      const Duration(milliseconds: 3000),
       () => Get.offNamed(AppRoutes.welcome),
     );
   }

@@ -131,11 +131,12 @@ class _SpaceFeatureCard extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(22),
+      borderRadius: BorderRadius.circular(4),
       child: Ink(
         height: height,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(22),
+          color: AppColors.primary,
+          borderRadius: BorderRadius.circular(4),
           border: Border.all(color: AppColors.line),
           image: item.imagePath == null
               ? null
@@ -146,13 +147,13 @@ class _SpaceFeatureCard extends StatelessWidget {
         ),
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(22),
+            borderRadius: BorderRadius.circular(4),
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                AppColors.white.withOpacity(item.imagePath == null ? 1 : 0.16),
-                AppColors.white.withOpacity(item.imagePath == null ? 1 : 0.94),
+                Colors.black.withOpacity(item.imagePath == null ? 0.08 : 0.18),
+                Colors.black.withOpacity(item.imagePath == null ? 0.18 : 0.58),
               ],
             ),
           ),
@@ -173,14 +174,14 @@ class _SpaceFeatureCard extends StatelessWidget {
                           item.title.toLowerCase(),
                           style: textTheme.displayMedium?.copyWith(
                             fontSize: 23,
-                            color: AppColors.primary.withOpacity(0.72),
+                            color: AppColors.white,
                           ),
                         ),
                         const SizedBox(height: AppSpacing.xs),
                         Text(
                           item.subtitle,
                           style: textTheme.bodySmall?.copyWith(
-                            color: AppColors.placeholder,
+                            color: AppColors.white.withOpacity(0.84),
                             height: 1.7,
                           ),
                         ),
@@ -191,7 +192,7 @@ class _SpaceFeatureCard extends StatelessWidget {
                   const Icon(
                     AppIcons.forward,
                     size: 16,
-                    color: AppColors.placeholder,
+                    color: AppColors.terracotta,
                   ),
                 ],
               ),

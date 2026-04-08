@@ -16,19 +16,22 @@ class HomeView extends GetView<HomeController> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(
-            AppSpacing.xl,
+            0,
             AppSpacing.lg,
-            AppSpacing.xl,
+            0,
             140,
           ),
           child: Column(
             children: [
-              Text(
-                'R E S O R A',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.primary.withOpacity(0.78),
-                      letterSpacing: 4,
-                    ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                child: Text(
+                  'R E S O R A',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.primary.withOpacity(0.78),
+                        letterSpacing: 4,
+                      ),
+                ),
               ),
               const SizedBox(height: AppSpacing.xxl),
               _HomeFeatureCard(
@@ -103,42 +106,51 @@ class _HomeFeatureCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AspectRatio(
-              aspectRatio: 0.7,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(2),
-                child: Image.asset(
-                  imagePath,
-                  fit: BoxFit.cover,
-                  alignment: Alignment.center,
-                ),
+              aspectRatio: 0.9,
+              child: Image.asset(
+                imagePath,
+                fit: BoxFit.cover,
+                alignment: Alignment.center,
               ),
             ),
-            const SizedBox(height: AppSpacing.xl),
-            Text(
-              title,
-              style: textTheme.displayMedium?.copyWith(
-                fontSize: 30,
-                color: AppColors.primary.withOpacity(0.86),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.xl,
+                AppSpacing.xl,
+                AppSpacing.xl,
+                0,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: textTheme.displayMedium?.copyWith(
+                      fontSize: 30,
+                      color: AppColors.primary.withOpacity(0.86),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    subtitle,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: AppColors.placeholder,
+                      height: 1.8,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  Text(
+                    actionLabel,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: AppColors.terracotta,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xl),
+                  const Divider(height: 1, color: AppColors.line),
+                ],
               ),
             ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              subtitle,
-              style: textTheme.bodySmall?.copyWith(
-                color: AppColors.placeholder,
-                height: 1.8,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            Text(
-              actionLabel,
-              style: textTheme.bodySmall?.copyWith(
-                color: AppColors.muted.withOpacity(0.78),
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.xl),
-            const Divider(height: 1, color: AppColors.line),
           ],
         ),
       ),

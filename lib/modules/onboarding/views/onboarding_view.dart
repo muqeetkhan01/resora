@@ -42,7 +42,7 @@ class OnboardingView extends GetView<OnboardingController> {
             child: TextButton(
               onPressed: controller.finish,
               child: Text(
-                'next >',
+                'next',
                 style: textTheme.bodyMedium?.copyWith(color: AppColors.primary),
               ),
             ),

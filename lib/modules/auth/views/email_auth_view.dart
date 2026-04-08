@@ -5,6 +5,7 @@ import '../../../core/constants/app_spacing.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/app_background.dart';
 import '../../../widgets/app_button.dart';
+import '../../../widgets/centered_back_header.dart';
 import '../controllers/email_auth_controller.dart';
 
 class EmailAuthView extends GetView<EmailAuthController> {
@@ -22,14 +23,8 @@ class EmailAuthView extends GetView<EmailAuthController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              IconButton(
-                onPressed: Get.back,
-                icon:
-                    const Icon(Icons.arrow_back_ios, color: AppColors.primary),
-              ),
-              const SizedBox(height: AppSpacing.xl),
-              Center(
-                child: Text('continue', style: textTheme.headlineMedium),
+              CenteredBackHeader(
+                title: controller.isSignIn.value ? 'sign in' : 'sign up',
               ),
               const SizedBox(height: AppSpacing.xxl),
               Text(

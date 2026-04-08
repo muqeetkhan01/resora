@@ -23,7 +23,12 @@ class HomeController extends GetxController {
   }
 
   void openTalk() {
-    Get.toNamed(AppRoutes.chat);
+    if (Get.isRegistered<DashboardController>()) {
+      Get.find<DashboardController>().switchTab(1);
+      return;
+    }
+
+    Get.offNamed(AppRoutes.dashboard, arguments: 1);
   }
 
   void openJournal() {

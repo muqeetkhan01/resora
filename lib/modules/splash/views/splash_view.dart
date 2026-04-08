@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 
+import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/app_background.dart';
@@ -18,34 +20,28 @@ class SplashView extends GetView<SplashController> {
     return AppBackground(
       safeArea: false,
       child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'RESORA',
-              style: textTheme.bodySmall?.copyWith(
-                color: AppColors.terracotta,
-                letterSpacing: 3.2,
-                fontWeight: FontWeight.w400,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xxl),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: 240,
+                child: Lottie.asset(
+                  AppAssets.lottieIntroOption2,
+                  repeat: false,
+                  fit: BoxFit.contain,
+                ),
               ),
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            Text(
-              'resora',
-              style: textTheme.displayLarge?.copyWith(
-                fontSize: 52,
-                height: 0.98,
-                letterSpacing: 0.4,
+              const SizedBox(height: AppSpacing.lg),
+              Text(
+                'for real life moments',
+                style: textTheme.bodySmall?.copyWith(
+                  color: AppColors.placeholder,
+                ),
               ),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              'for real life moments',
-              style: textTheme.bodySmall?.copyWith(
-                color: AppColors.placeholder,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

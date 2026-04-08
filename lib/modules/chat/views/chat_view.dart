@@ -7,6 +7,7 @@ import '../../../core/controllers/app_session_controller.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
+import '../../../widgets/centered_back_header.dart';
 import '../controllers/chat_controller.dart';
 
 class ChatView extends GetView<ChatController> {
@@ -124,11 +125,13 @@ class _ChatHeader extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              'what\'s on your\nmind?',
+              'what\'s on your mind?',
               style: textTheme.displayLarge?.copyWith(
-                fontSize: 34,
-                height: 1.08,
+                fontSize: 30,
+                height: 1.02,
               ),
+              maxLines: 1,
+              softWrap: false,
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
@@ -144,37 +147,19 @@ class _ChatHeader extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.only(top: AppSpacing.lg),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          IconButton(
-            onPressed: Get.back,
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
-            icon: const Icon(
-              AppIcons.back,
-              color: AppColors.primary,
-            ),
+      child: CenteredBackHeader(
+        title:
+            showConversationHeader ? 'what\'s on your mind?' : 'talk to resora',
+        trailing: IconButton(
+          onPressed: () => Get.toNamed(AppRoutes.profile),
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints.tightFor(width: 30, height: 30),
+          iconSize: 16,
+          icon: const Icon(
+            Icons.settings_outlined,
+            color: AppColors.primary,
           ),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Text(
-              showConversationHeader
-                  ? 'what\'s on your mind?'
-                  : 'talk to resora',
-              style: textTheme.displayMedium,
-            ),
-          ),
-          IconButton(
-            onPressed: () => Get.toNamed(AppRoutes.profile),
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
-            icon: const Icon(
-              Icons.settings_outlined,
-              color: AppColors.primary,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -272,25 +257,22 @@ class _ChatInputBar extends GetView<ChatController> {
               ),
             ),
           ),
-          !canSend ? const SizedBox() : const SizedBox(width: AppSpacing.sm),
-          !canSend
-              ? const SizedBox()
-              : InkWell(
-                  onTap: canSend ? controller.sendMessage : null,
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.xs,
-                      vertical: AppSpacing.sm,
-                    ),
-                    child: Icon(
-                      Icons.arrow_forward_ios,
-                      color: canSend
-                          ? AppColors.terracotta
-                          : AppColors.placeholder,
-                    ),
-                  ),
-                ),
+          const SizedBox(width: AppSpacing.sm),
+          InkWell(
+            onTap: canSend ? controller.sendMessage : null,
+            borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.xs,
+                vertical: AppSpacing.sm,
+              ),
+              child: Icon(
+                AppIcons.forward,
+                size: 16,
+                color: canSend ? AppColors.terracotta : AppColors.placeholder,
+              ),
+            ),
+          ),
         ],
       );
     });
@@ -320,26 +302,7 @@ class _MessageBubble extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!isUser) ...[
-            Container(
-              width: 28,
-              height: 28,
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                shape: BoxShape.circle,
-                border: Border.all(color: AppColors.line),
-              ),
-              child: const Center(
-                child: Text(
-                  'R',
-                  style: TextStyle(
-                    fontFamily: 'Cormorant Garamond',
-                    fontSize: 18,
-                    color: AppColors.primary,
-                    height: 1,
-                  ),
-                ),
-              ),
-            ),
+            const _MessageAvatar(isUser: false),
             const SizedBox(width: AppSpacing.xs),
           ],
           ConstrainedBox(
@@ -383,6 +346,10 @@ class _MessageBubble extends StatelessWidget {
               ],
             ),
           ),
+          if (isUser) ...[
+            const SizedBox(width: AppSpacing.xs),
+            const _MessageAvatar(isUser: true),
+          ],
         ],
       ),
     );
@@ -401,26 +368,7 @@ class _TypingBubble extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 28,
-            height: 28,
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.line),
-            ),
-            child: const Center(
-              child: Text(
-                'R',
-                style: TextStyle(
-                  fontFamily: 'Cormorant Garamond',
-                  fontSize: 18,
-                  color: AppColors.primary,
-                  height: 1,
-                ),
-              ),
-            ),
-          ),
+          const _MessageAvatar(isUser: false),
           const SizedBox(width: AppSpacing.xs),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -458,6 +406,42 @@ class _TypingBubble extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _MessageAvatar extends StatelessWidget {
+  const _MessageAvatar({required this.isUser});
+
+  final bool isUser;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 28,
+      height: 28,
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        shape: BoxShape.circle,
+        border: Border.all(color: AppColors.line),
+      ),
+      child: Center(
+        child: isUser
+            ? const Icon(
+                Icons.person_outline_rounded,
+                size: 16,
+                color: AppColors.primary,
+              )
+            : const Text(
+                'R',
+                style: TextStyle(
+                  fontFamily: 'Cormorant Garamond',
+                  fontSize: 18,
+                  color: AppColors.primary,
+                  height: 1,
+                ),
+              ),
       ),
     );
   }

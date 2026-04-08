@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../theme/app_colors.dart';
+import '../../../widgets/centered_back_header.dart';
 import '../controllers/terms_controller.dart';
 
 class TermsView extends GetView<TermsController> {
@@ -27,17 +27,7 @@ class TermsView extends GetView<TermsController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              IconButton(
-                onPressed: Get.back,
-                icon: const Icon(AppIcons.back, color: AppColors.primary),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Text('key terms', style: textTheme.displayMedium),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                'Plain-language definitions for the concepts that keep coming up.',
-                style: textTheme.bodyMedium?.copyWith(color: AppColors.primary),
-              ),
+              const CenteredBackHeader(title: 'key terms'),
               const SizedBox(height: AppSpacing.lg),
               TextField(
                 controller: controller.searchController,

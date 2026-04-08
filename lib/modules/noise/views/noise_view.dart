@@ -3,7 +3,9 @@ import 'package:get/get.dart';
 
 import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
+import '../../../widgets/centered_back_header.dart';
 import '../controllers/noise_controller.dart';
 
 class NoiseView extends GetView<NoiseController> {
@@ -26,17 +28,7 @@ class NoiseView extends GetView<NoiseController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              IconButton(
-                onPressed: Get.back,
-                icon: const Icon(AppIcons.back, color: AppColors.primary),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Text('quiet the noise', style: textTheme.displayMedium),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                'What would help right now?',
-                style: textTheme.bodyMedium?.copyWith(color: AppColors.primary),
-              ),
+              const CenteredBackHeader(title: 'quiet the noise'),
               const SizedBox(height: AppSpacing.lg),
               SizedBox(
                 height: 36,
@@ -85,19 +77,8 @@ class NoiseView extends GetView<NoiseController> {
                         final track = tracks[index];
 
                         return ListTile(
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: 8),
-                          title: Text(track.title, style: textTheme.titleLarge),
-                          subtitle: Text(
-                            track.description,
-                            style: textTheme.bodySmall
-                                ?.copyWith(color: AppColors.muted),
-                          ),
-                          trailing: const Icon(
-                            Icons.arrow_forward_ios,
-                            size: 16,
-                            color: AppColors.terracotta,
-                          ),
+                          contentPadding: EdgeInsets.zero,
+                          title: _TrackRow(track: track),
                           onTap: () => controller.openTrack(track),
                         );
                       },
@@ -108,6 +89,58 @@ class NoiseView extends GetView<NoiseController> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _TrackRow extends StatelessWidget {
+  const _TrackRow({required this.track});
+
+  final AudioTrack track;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(top: 2),
+            child: Icon(
+              AppIcons.play,
+              size: 18,
+              color: AppColors.terracotta,
+            ),
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(track.title, style: textTheme.titleLarge),
+                const SizedBox(height: AppSpacing.xxs),
+                Text(
+                  track.description,
+                  style: textTheme.bodySmall?.copyWith(color: AppColors.muted),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Padding(
+            padding: const EdgeInsets.only(top: 3),
+            child: Text(
+              track.duration,
+              style: textTheme.bodySmall?.copyWith(
+                color: AppColors.placeholder,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

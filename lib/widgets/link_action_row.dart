@@ -10,12 +10,16 @@ class LinkActionRow extends StatelessWidget {
     required this.label,
     required this.onTap,
     this.color = AppColors.primary,
+    this.iconColor,
+    this.iconSize = 16,
     this.alignStart = true,
   });
 
   final String label;
   final VoidCallback onTap;
   final Color color;
+  final Color? iconColor;
+  final double iconSize;
   final bool alignStart;
 
   @override
@@ -38,7 +42,11 @@ class LinkActionRow extends StatelessWidget {
                 ),
           ),
           const SizedBox(width: AppSpacing.xs),
-          Icon(AppIcons.forward, size: 16, color: color),
+          Icon(
+            AppIcons.forward,
+            size: iconSize,
+            color: iconColor ?? color,
+          ),
         ],
       ),
     );

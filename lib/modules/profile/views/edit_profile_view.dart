@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
-import '../../../theme/app_colors.dart';
 import '../../../widgets/app_background.dart';
 import '../../../widgets/app_button.dart';
+import '../../../widgets/centered_back_header.dart';
 import '../controllers/edit_profile_controller.dart';
 
 class EditProfileView extends GetView<EditProfileController> {
@@ -13,8 +12,6 @@ class EditProfileView extends GetView<EditProfileController> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
     return AppBackground(
       child: SingleChildScrollView(
         padding:
@@ -22,12 +19,7 @@ class EditProfileView extends GetView<EditProfileController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            IconButton(
-              onPressed: Get.back,
-              icon: const Icon(AppIcons.back, color: AppColors.primary),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text('edit profile', style: textTheme.displayMedium),
+            const CenteredBackHeader(title: 'edit profile'),
             const SizedBox(height: AppSpacing.xl),
             TextField(
               controller: controller.nameController,

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
+import '../../../widgets/centered_back_header.dart';
 import '../../../widgets/snap_feed_indicator.dart';
 import '../controllers/resets_controller.dart';
 
@@ -13,8 +13,6 @@ class ResetsView extends GetView<ResetsController> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
     return Scaffold(
       body: Obx(
         () {
@@ -41,22 +39,7 @@ class ResetsView extends GetView<ResetsController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    IconButton(
-                      onPressed: Get.back,
-                      icon: const Icon(
-                        AppIcons.back,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    Text('gentle reset', style: textTheme.displayMedium),
-                    const SizedBox(height: AppSpacing.xs),
-                    Text(
-                      'Regulate first. Reflect later.',
-                      style: textTheme.bodySmall?.copyWith(
-                        color: AppColors.primary.withOpacity(0.72),
-                      ),
-                    ),
+                    const CenteredBackHeader(title: 'gentle reset'),
                     const SizedBox(height: AppSpacing.lg),
                     SizedBox(
                       height: 38,

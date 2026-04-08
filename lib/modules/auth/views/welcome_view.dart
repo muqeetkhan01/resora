@@ -26,8 +26,6 @@ class WelcomeView extends GetView<AuthEntryController> {
               style: textTheme.displayLarge?.copyWith(fontSize: 42),
             ),
             const SizedBox(height: AppSpacing.xxxl),
-            Text('continue', style: textTheme.headlineMedium),
-            const SizedBox(height: AppSpacing.xl),
             AppButton(
               label: 'Continue with Apple',
               style: AppButtonStyle.secondary,
