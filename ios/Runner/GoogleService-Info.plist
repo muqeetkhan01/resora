@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>643534621490-pqlchlb1pl6t314hq9p0nm9o26f7kv4a.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.643534621490-pqlchlb1pl6t314hq9p0nm9o26f7kv4a</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>643534621490-0os9bqb90sd7gll5aatat9um5863upr1.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDi_Y4Y7HvLJRRf5eeXHRqL4oEjElTsuWs</string>
+	<key>GCM_SENDER_ID</key>
+	<string>643534621490</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.resora.app</string>
+	<key>PROJECT_ID</key>
+	<string>calmacare-b6d6c</string>
+	<key>STORAGE_BUCKET</key>
+	<string>calmacare-b6d6c.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:643534621490:ios:a1ad502a14fe0f9907252b</string>
+</dict>
+</plist>

@@ -81,6 +81,12 @@ class SpacesView extends GetView<SpacesController> {
                 ],
               ),
               const SizedBox(height: AppSpacing.md),
+              _SpaceFeatureCard(
+                item: items[5],
+                onTap: () => controller.openSpace(items[5]),
+                height: 188,
+              ),
+              const SizedBox(height: AppSpacing.md),
               Row(
                 children: [
                   Expanded(
@@ -99,12 +105,6 @@ class SpacesView extends GetView<SpacesController> {
                     ),
                   ),
                 ],
-              ),
-              const SizedBox(height: AppSpacing.md),
-              _SpaceFeatureCard(
-                item: items[5],
-                onTap: () => controller.openSpace(items[5]),
-                height: 188,
               ),
             ],
           ),
