@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../theme/app_colors.dart';
+import '../../../widgets/app_snackbar.dart';
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
@@ -63,7 +64,7 @@ class HomeView extends GetView<HomeController> {
                 subtitle:
                     'More space, more tools, and more support screens soon.',
                 actionLabel: 'preview',
-                onTap: () => Get.snackbar(
+                onTap: () => showAppSnackbar(
                   'coming soon',
                   'More support tools are on the way.',
                   snackPosition: SnackPosition.BOTTOM,

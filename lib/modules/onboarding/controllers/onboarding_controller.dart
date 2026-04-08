@@ -8,13 +8,13 @@ class OnboardingController extends GetxController {
   final _session = Get.find<AppSessionController>();
   final nameController = TextEditingController();
 
-  void finish() {
+  Future<void> finish() async {
     final value = nameController.text.trim();
     if (value.isEmpty) {
       return;
     }
 
-    _session.saveName(value);
+    await _session.saveName(value);
     Get.offAllNamed(AppRoutes.dashboard);
   }
 

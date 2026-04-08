@@ -32,9 +32,24 @@ class ProfileView extends GetView<ProfileController> {
             children: [
               const CenteredBackHeader(title: 'settings'),
               const SizedBox(height: AppSpacing.lg),
-              Text(session.displayName, style: textTheme.headlineLarge),
-              const SizedBox(height: AppSpacing.xs),
-              Text('free membership', style: textTheme.bodySmall),
+              Obx(
+                () => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(session.displayName, style: textTheme.headlineLarge),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      session.email ?? 'No email on file',
+                      style: textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      '${session.authProviderLabel} account',
+                      style: textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: AppSpacing.lg),
               TextButton(
                 onPressed: controller.openEditProfile,
@@ -76,7 +91,7 @@ class ProfileView extends GetView<ProfileController> {
               ...controller.options.map(
                 (option) => _OptionRow(
                   option: option,
-                  onTap: () => controller.openOption(option),
+                  onTap: () async => controller.openOption(option),
                 ),
               ),
             ],

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
+import '../../../widgets/app_snackbar.dart';
 
 class ThatMatteredView extends StatelessWidget {
   const ThatMatteredView({super.key});
@@ -46,7 +47,7 @@ class ThatMatteredView extends StatelessWidget {
                     width: 320,
                     child: _GlassOutlineButton(
                       label: 'save this moment',
-                      onTap: () => Get.snackbar(
+                      onTap: () => showAppSnackbar(
                         'Saved',
                         'This moment is saved locally in the prototype.',
                         snackPosition: SnackPosition.BOTTOM,

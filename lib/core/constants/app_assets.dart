@@ -1,6 +1,6 @@
 abstract final class AppAssets {
   static const lottieBreath = 'assets/lottie/resora_breathe.json';
-  static const lottieIntro = 'assets/lottie/resora_intro_option_1.json';
+  static const lottieIntro = 'assets/lottie/resora_intro_option_1.lottie';
   static const lottieIntroOption2 = 'assets/lottie/resora_intro_option_2.json';
 
   static const curtainLight = 'assets/images/curtain_light.jpeg';

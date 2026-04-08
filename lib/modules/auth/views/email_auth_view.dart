@@ -7,6 +7,7 @@ import '../../../widgets/app_background.dart';
 import '../../../widgets/app_button.dart';
 import '../../../widgets/centered_back_header.dart';
 import '../controllers/email_auth_controller.dart';
+import '../widgets/resora_loading_overlay.dart';
 
 class EmailAuthView extends GetView<EmailAuthController> {
   const EmailAuthView({super.key});
@@ -17,81 +18,120 @@ class EmailAuthView extends GetView<EmailAuthController> {
 
     return AppBackground(
       child: Obx(
-        () => SingleChildScrollView(
-          padding:
-              const EdgeInsets.only(top: AppSpacing.lg, bottom: AppSpacing.xxl),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CenteredBackHeader(
-                title: controller.isSignIn.value ? 'sign in' : 'sign up',
-              ),
-              const SizedBox(height: AppSpacing.xxl),
-              Text(
-                'email',
-                style: textTheme.bodyMedium?.copyWith(color: AppColors.primary),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              TextField(
-                controller: controller.emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(hintText: 'amber@resora.com'),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              Text(
-                'password',
-                style: textTheme.bodyMedium?.copyWith(color: AppColors.primary),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              TextField(
-                controller: controller.passwordController,
-                obscureText: controller.obscurePassword.value,
-                decoration: InputDecoration(
-                  hintText: '••••••••',
-                  suffixIcon: IconButton(
-                    onPressed: controller.togglePassword,
-                    icon: Icon(
-                      controller.obscurePassword.value
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined,
-                      color: AppColors.muted,
+        () => Stack(
+          children: [
+            IgnorePointer(
+              ignoring: controller.isSubmitting.value,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.only(
+                  top: AppSpacing.lg,
+                  bottom: AppSpacing.xxl,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CenteredBackHeader(
+                      title: controller.isSignIn.value ? 'sign in' : 'sign up',
                     ),
-                  ),
-                ),
-              ),
-              if (!controller.isSignIn.value) ...[
-                const SizedBox(height: AppSpacing.lg),
-                Text(
-                  'confirm password',
-                  style:
-                      textTheme.bodyMedium?.copyWith(color: AppColors.primary),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                TextField(
-                  controller: controller.confirmPasswordController,
-                  obscureText: controller.obscureConfirmPassword.value,
-                  decoration: InputDecoration(
-                    hintText: '••••••••',
-                    suffixIcon: IconButton(
-                      onPressed: controller.toggleConfirmPassword,
-                      icon: Icon(
-                        controller.obscureConfirmPassword.value
-                            ? Icons.visibility_off_outlined
-                            : Icons.visibility_outlined,
-                        color: AppColors.muted,
+                    const SizedBox(height: AppSpacing.xxl),
+                    Text(
+                      'email',
+                      style: textTheme.bodyMedium
+                          ?.copyWith(color: AppColors.primary),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    TextField(
+                      controller: controller.emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration:
+                          const InputDecoration(hintText: 'amber@resora.com'),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    Text(
+                      'password',
+                      style: textTheme.bodyMedium
+                          ?.copyWith(color: AppColors.primary),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    TextField(
+                      controller: controller.passwordController,
+                      obscureText: controller.obscurePassword.value,
+                      decoration: InputDecoration(
+                        hintText: '••••••••',
+                        helperText: null,
+                        suffixIcon: IconButton(
+                          onPressed: controller.togglePassword,
+                          icon: Icon(
+                            controller.obscurePassword.value
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                            color: AppColors.muted,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                    if (!controller.isSignIn.value) ...[
+                      const SizedBox(height: AppSpacing.lg),
+                      Text(
+                        'confirm password',
+                        style: textTheme.bodyMedium
+                            ?.copyWith(color: AppColors.primary),
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      TextField(
+                        controller: controller.confirmPasswordController,
+                        obscureText: controller.obscureConfirmPassword.value,
+                        decoration: InputDecoration(
+                          hintText: '••••••••',
+                          suffixIcon: IconButton(
+                            onPressed: controller.toggleConfirmPassword,
+                            icon: Icon(
+                              controller.obscureConfirmPassword.value
+                                  ? Icons.visibility_off_outlined
+                                  : Icons.visibility_outlined,
+                              color: AppColors.muted,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: AppSpacing.xxxl),
+                    AppButton(
+                      label: controller.isSignIn.value ? 'sign in' : 'continue',
+                      style: AppButtonStyle.secondary,
+                      onPressed: controller.isSubmitting.value
+                          ? null
+                          : controller.submit,
+                    ),
+                    if (controller.isSignIn.value) ...[
+                      const SizedBox(height: AppSpacing.md),
+                      TextButton(
+                        onPressed: controller.isSubmitting.value
+                            ? null
+                            : controller.forgotPassword,
+                        child: Text(
+                          'forgot password?',
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
-              ],
-              const SizedBox(height: AppSpacing.xxxl),
-              AppButton(
-                label: controller.isSignIn.value ? 'sign in' : 'continue',
-                style: AppButtonStyle.secondary,
-                onPressed: controller.submit,
               ),
-            ],
-          ),
+            ),
+            Positioned.fill(
+              child: IgnorePointer(
+                ignoring: !controller.isSubmitting.value,
+                child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 220),
+                  opacity: controller.isSubmitting.value ? 1 : 0,
+                  child: const ResoraLoadingOverlay(),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

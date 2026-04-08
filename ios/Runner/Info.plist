@@ -18,6 +18,17 @@
 	<string>resora</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.643534621490-pqlchlb1pl6t314hq9p0nm9o26f7kv4a</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
@@ -32,6 +43,20 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+		<string>This app use the location for the Job Finding</string>
+		<key>NSLocationAlwaysUsageDescription</key>
+		<string>This app use the location for the Job Finding</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>This app use the location for the Job Finding</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>This app needs access to Microphone for the Voice Messages</string>
+		<key>NSPhotoLibraryAddUsageDescription</key>
+		<string>This permission is required to get images for the profile and feeds.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>This permission is required to get images for the profile and feeds.</string>
+		<key>NSCameraUsageDescription</key>
+		<string>This app needs access to the camera for video calls and profile photos.</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

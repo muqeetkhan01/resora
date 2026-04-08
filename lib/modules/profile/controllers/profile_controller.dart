@@ -32,10 +32,10 @@ class ProfileController extends GetxController {
     journalLockEnabled.value = value;
   }
 
-  void openOption(ProfileOption option) {
+  Future<void> openOption(ProfileOption option) async {
     if (option.route != null) {
       if (option.route == AppRoutes.welcome) {
-        _session.signOut();
+        await _session.signOut();
         return;
       }
       Get.toNamed(option.route!);
