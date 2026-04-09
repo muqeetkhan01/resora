@@ -261,15 +261,15 @@ class _ChatInputBar extends GetView<ChatController> {
           InkWell(
             onTap: canSend ? controller.sendMessage : null,
             borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
+            child: const Padding(
+              padding: EdgeInsets.symmetric(
                 horizontal: AppSpacing.xs,
                 vertical: AppSpacing.sm,
               ),
               child: Icon(
                 AppIcons.forward,
                 size: 16,
-                color: canSend ? AppColors.terracotta : AppColors.placeholder,
+                color: AppColors.terracotta,
               ),
             ),
           ),

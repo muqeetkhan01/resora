@@ -48,6 +48,7 @@ class RehearseController extends GetxController {
           category: scenario.category,
           description: scenario.reframe,
           duration: '7 min',
+          assetPath: _assetForScenario(scenario),
         ),
         'imagePath': AppAssets.curtainLight,
         'minimal': true,
@@ -61,5 +62,22 @@ class RehearseController extends GetxController {
 
   void practiceAgain(RehearsalScenario scenario) {
     Get.toNamed(AppRoutes.chat);
+  }
+
+  String _assetForScenario(RehearsalScenario scenario) {
+    switch (scenario.title) {
+      case 'Talking to my partner after a hard night':
+        return AppAssets.rehearsePartnerAfterHardNight;
+      case 'Setting a limit with someone I care about':
+        return AppAssets.rehearseSettingLimit;
+      case 'Asking for what I actually need':
+        return AppAssets.rehearseAskForNeed;
+      case 'Repairing after I lost my temper':
+        return AppAssets.rehearseRepairAfterTemper;
+      case 'Handling a hard conversation at work':
+        return AppAssets.rehearseHardConversationWork;
+      default:
+        return AppAssets.rehearseAskForNeed;
+    }
   }
 }

@@ -21,6 +21,7 @@ dependencies:
   firebase_storage:
   intl:
   image_picker:
+  just_audio: ^0.9.46
 
 dev_dependencies:
   flutter_test:
@@ -34,6 +35,7 @@ flutter:
   assets:
     - assets/images/
     - assets/lottie/
+    - assets/audio/
 
   fonts:
     - family: Cormorant Garamond Regular

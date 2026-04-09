@@ -82,7 +82,7 @@ class _SplashWordmarkState extends State<_SplashWordmark>
                     height: 1,
                     fontWeight: FontWeight.w100,
                     letterSpacing: 7.6,
-                    color: AppColors.terracotta,
+                    color: AppColors.primary,
                   ),
                 ),
               ),

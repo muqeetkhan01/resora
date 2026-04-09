@@ -226,6 +226,7 @@ class AudioTrack {
     required this.category,
     required this.description,
     required this.duration,
+    required this.assetPath,
     this.isPremium = false,
   });
 
@@ -233,6 +234,7 @@ class AudioTrack {
   final String category;
   final String description;
   final String duration;
+  final String assetPath;
   final bool isPremium;
 }
 

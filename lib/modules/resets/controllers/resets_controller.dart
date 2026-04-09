@@ -49,10 +49,28 @@ class ResetsController extends GetxController {
           category: option.category,
           description: option.subtitle,
           duration: option.duration,
+          assetPath: _assetForReset(option),
         ),
         'imagePath': AppAssets.archway,
         'minimal': true,
       },
     );
+  }
+
+  String _assetForReset(ResetOption option) {
+    switch (option.title) {
+      case 'Breath reset':
+        return AppAssets.resetBreathReset;
+      case 'Step away':
+        return AppAssets.resetStepAway;
+      case '5-4-3-2-1 ground':
+        return AppAssets.resetGroundFiveFourThreeTwoOne;
+      case 'Box breath':
+        return AppAssets.resetBoxBreath;
+      case 'Cold water reset':
+        return AppAssets.resetColdWater;
+      default:
+        return AppAssets.resetBreathReset;
+    }
   }
 }
