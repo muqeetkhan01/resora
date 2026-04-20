@@ -95,7 +95,11 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
 
   Future<void> _loadTrack() async {
     try {
-      final loadedDuration = await _player.setAsset(_args.track.assetPath);
+      final source = _args.track.assetPath.trim();
+      final loadedDuration =
+          source.startsWith('http://') || source.startsWith('https://')
+              ? await _player.setUrl(source)
+              : await _player.setAsset(source);
       if (!mounted) {
         return;
       }
