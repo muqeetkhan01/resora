@@ -80,6 +80,24 @@ class UserProfileService {
     );
   }
 
+  Future<void> updateJournalLock({
+    required String uid,
+    required bool enabled,
+    required String? pin,
+  }) {
+    final trimmedPin = pin?.trim();
+
+    return _users.doc(uid).set(
+      <String, dynamic>{
+        'journalLockEnabled': enabled,
+        'journalPin':
+            enabled && (trimmedPin?.isNotEmpty ?? false) ? trimmedPin : null,
+        'updatedAt': FieldValue.serverTimestamp(),
+      },
+      SetOptions(merge: true),
+    );
+  }
+
   static String _firstNonEmpty(List<String?> values) {
     for (final value in values) {
       final trimmed = value?.trim();

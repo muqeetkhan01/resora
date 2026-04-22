@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../core/controllers/app_session_controller.dart';
 import '../../../core/services/content_items_service.dart';
 import '../../../data/models/app_models.dart';
+import '../../profile/controllers/profile_controller.dart';
 import '../../ritual_wrap/models/ritual_wrap_args.dart';
 import '../../../routes/app_routes.dart';
 import '../../dashboard/controllers/dashboard_controller.dart';
@@ -127,7 +128,15 @@ class HomeController extends GetxController {
     );
   }
 
-  void openJournal() {
+  Future<void> openJournal() async {
+    final profile = Get.isRegistered<ProfileController>()
+        ? Get.find<ProfileController>()
+        : Get.put(ProfileController());
+    final unlocked = await profile.ensureJournalUnlocked();
+    if (!unlocked) {
+      return;
+    }
+
     Get.toNamed(
       AppRoutes.ritualWrap,
       arguments: RitualWrapArgs.entry(

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../core/services/content_items_service.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
+import '../../profile/controllers/profile_controller.dart';
 import '../../ritual_wrap/models/ritual_wrap_args.dart';
 import '../../dashboard/controllers/dashboard_controller.dart';
 
@@ -88,11 +89,19 @@ class SpacesController extends GetxController {
     return _routeHasContent[route] ?? false;
   }
 
-  void openSpace(QuickActionItem item) {
+  Future<void> openSpace(QuickActionItem item) async {
     if (item.route.trim().isEmpty) {
       return;
     }
     if (item.route == AppRoutes.journal) {
+      final profile = Get.isRegistered<ProfileController>()
+          ? Get.find<ProfileController>()
+          : Get.put(ProfileController());
+      final unlocked = await profile.ensureJournalUnlocked();
+      if (!unlocked) {
+        return;
+      }
+
       Get.toNamed(
         AppRoutes.ritualWrap,
         arguments: RitualWrapArgs.entry(

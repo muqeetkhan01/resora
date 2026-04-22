@@ -3,11 +3,14 @@ import 'package:get/get.dart';
 
 import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/controllers/app_session_controller.dart';
+import '../../../core/services/user_generated_content_service.dart';
 import '../../../data/models/app_models.dart';
 import '../../ritual_wrap/models/ritual_wrap_args.dart';
 import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/app_background.dart';
+import '../../../widgets/app_snackbar.dart';
 
 class JournalEditorView extends StatefulWidget {
   const JournalEditorView({super.key});
@@ -19,10 +22,14 @@ class JournalEditorView extends StatefulWidget {
 class _JournalEditorViewState extends State<JournalEditorView> {
   late final TextEditingController _controller;
   late final String _prompt;
+  final _userGeneratedContentService = UserGeneratedContentService();
+  late final AppSessionController _session;
+  bool _isSaving = false;
 
   @override
   void initState() {
     super.initState();
+    _session = Get.find<AppSessionController>();
     final argument = Get.arguments;
 
     if (argument is JournalEntry) {
@@ -60,14 +67,9 @@ class _JournalEditorViewState extends State<JournalEditorView> {
               ),
               const Spacer(),
               TextButton(
-                onPressed: () => Get.offNamed(
-                  AppRoutes.ritualWrap,
-                  arguments: RitualWrapArgs.exit(
-                    feature: RitualWrapFeature.journal,
-                  ).toMap(),
-                ),
+                onPressed: _isSaving ? null : _onDonePressed,
                 child: Text(
-                  'done',
+                  _isSaving ? 'saving...' : 'done',
                   style:
                       textTheme.bodyMedium?.copyWith(color: AppColors.primary),
                 ),
@@ -100,6 +102,59 @@ class _JournalEditorViewState extends State<JournalEditorView> {
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _onDonePressed() async {
+    if (_isSaving) {
+      return;
+    }
+
+    final text = _controller.text.trim();
+    if (text.isNotEmpty) {
+      final uid = _session.firebaseUser?.uid;
+      if (uid == null) {
+        showAppSnackbar(
+          'Sign in required',
+          'Please sign in to save this journal entry.',
+        );
+        return;
+      }
+
+      setState(() {
+        _isSaving = true;
+      });
+
+      try {
+        await _userGeneratedContentService.saveJournalEntry(
+          uid: uid,
+          prompt: _prompt,
+          body: text,
+        );
+      } catch (_) {
+        if (!mounted) {
+          return;
+        }
+        setState(() {
+          _isSaving = false;
+        });
+        showAppSnackbar(
+          'Could not save journal',
+          'Your journal entry could not be saved right now. Please try again.',
+        );
+        return;
+      }
+    }
+
+    if (!mounted) {
+      return;
+    }
+
+    Get.offNamed(
+      AppRoutes.ritualWrap,
+      arguments: RitualWrapArgs.exit(
+        feature: RitualWrapFeature.journal,
+      ).toMap(),
     );
   }
 }

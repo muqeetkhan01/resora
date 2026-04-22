@@ -395,12 +395,14 @@ class _TopicSheetState extends State<_TopicSheet> {
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: () {
-                  widget.controller.addVoiceFor(
+                onPressed: () async {
+                  final saved = await widget.controller.addVoiceFor(
                     topic: widget.topic,
                     voice: _voiceController.text,
                   );
-                  Navigator.of(context).pop();
+                  if (saved && context.mounted) {
+                    Navigator.of(context).pop();
+                  }
                 },
                 child: Text(
                   'submit voice',

@@ -1,24 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../core/controllers/app_session_controller.dart';
 import '../../../core/services/content_items_service.dart';
+import '../../../core/services/user_generated_content_service.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
+import '../../../widgets/app_snackbar.dart';
 import '../../ritual_wrap/models/ritual_wrap_args.dart';
 
 class NormalController extends GetxController {
-  NormalController({ContentItemsService? contentItemsService})
-      : _contentItemsService = contentItemsService ?? ContentItemsService();
+  NormalController({
+    ContentItemsService? contentItemsService,
+    UserGeneratedContentService? userGeneratedContentService,
+  })  : _contentItemsService = contentItemsService ?? ContentItemsService(),
+        _userGeneratedContentService =
+            userGeneratedContentService ?? UserGeneratedContentService();
 
   final ContentItemsService _contentItemsService;
+  final UserGeneratedContentService _userGeneratedContentService;
+  final _session = Get.find<AppSessionController>();
 
   final selectedCategory = 'all'.obs;
   final sortMode = 'felt'.obs;
   final questionDraft = ''.obs;
+  final isSubmittingQuestion = false.obs;
 
   final askController = TextEditingController();
 
   final localVoices = <String, List<String>>{}.obs;
+  final _savedVoices = <String, List<String>>{}.obs;
   final _remoteTopics = <NormalTopicItem>[].obs;
   final _submittedTopics = <NormalTopicItem>[].obs;
 
@@ -43,8 +54,36 @@ class NormalController extends GetxController {
       _remoteTopics.clear();
     }
 
+    await _loadUserGeneratedContent();
+
     if (!categories.contains(selectedCategory.value)) {
       selectedCategory.value = 'all';
+    }
+  }
+
+  Future<void> _loadUserGeneratedContent() async {
+    final uid = _session.firebaseUser?.uid;
+    if (uid == null) {
+      _submittedTopics.clear();
+      _savedVoices.clear();
+      return;
+    }
+
+    try {
+      final questions = await _userGeneratedContentService.loadNormalQuestions(
+        uid,
+      );
+      _submittedTopics.assignAll(questions);
+    } catch (_) {
+      _submittedTopics.clear();
+    }
+
+    try {
+      final voices =
+          await _userGeneratedContentService.loadNormalVoicesByTopic(uid);
+      _savedVoices.assignAll(voices);
+    } catch (_) {
+      _savedVoices.clear();
     }
   }
 
@@ -106,24 +145,56 @@ class NormalController extends GetxController {
   }
 
   List<String> voicesFor(NormalTopicItem topic) {
+    final key = _topicKey(topic.question);
     return [
       ...topic.voices,
-      ...(localVoices[topic.question] ?? const <String>[]),
+      ...(_savedVoices[key] ?? const <String>[]),
+      ...(localVoices[key] ?? const <String>[]),
     ];
   }
 
-  void addVoiceFor({
+  Future<bool> addVoiceFor({
     required NormalTopicItem topic,
     required String voice,
-  }) {
+  }) async {
     final text = voice.trim();
     if (text.isEmpty) {
-      return;
+      return false;
     }
 
-    final existing = List<String>.from(localVoices[topic.question] ?? const []);
+    final uid = _session.firebaseUser?.uid;
+    if (uid == null) {
+      showAppSnackbar(
+        'Sign in required',
+        'Please sign in to save your voice.',
+      );
+      return false;
+    }
+
+    final key = _topicKey(topic.question);
+    final existing = List<String>.from(localVoices[key] ?? const []);
     existing.add(text);
-    localVoices[topic.question] = existing;
+    localVoices[key] = existing;
+
+    try {
+      await _userGeneratedContentService.submitNormalVoice(
+        uid: uid,
+        topicQuestion: topic.question,
+        voice: text,
+      );
+
+      final persisted = List<String>.from(_savedVoices[key] ?? const []);
+      persisted.add(text);
+      _savedVoices[key] = persisted;
+      localVoices.remove(key);
+      return true;
+    } catch (_) {
+      showAppSnackbar(
+        'Could not submit voice',
+        'Your voice could not be saved right now. Please try again.',
+      );
+      return false;
+    }
   }
 
   void openAskQuestion() {
@@ -142,37 +213,69 @@ class NormalController extends GetxController {
 
   bool get canSubmitQuestion => questionDraft.value.trim().isNotEmpty;
 
-  void submitQuestion() {
+  Future<void> submitQuestion() async {
     final text = questionDraft.value.trim();
     if (text.isEmpty) {
+      return;
+    }
+    if (isSubmittingQuestion.value) {
+      return;
+    }
+
+    final uid = _session.firebaseUser?.uid;
+    if (uid == null) {
+      showAppSnackbar(
+        'Sign in required',
+        'Please sign in to submit your question.',
+      );
       return;
     }
 
     final category =
         selectedCategory.value == 'all' ? 'community' : selectedCategory.value;
 
-    _submittedTopics.insert(
-      0,
-      NormalTopicItem(
-        tab: category,
+    isSubmittingQuestion.value = true;
+    try {
+      await _userGeneratedContentService.submitNormalQuestion(
+        uid: uid,
         question: text,
-        expertAnswer:
-            'Thank you for sharing this. Our team will respond with a grounded answer soon.',
-        metoo: 1,
-        voices: const [],
-        expertByline: 'Resora',
-      ),
-    );
+        category: category,
+      );
 
-    askController.clear();
-    questionDraft.value = '';
+      _submittedTopics.insert(
+        0,
+        NormalTopicItem(
+          tab: category,
+          question: text,
+          expertAnswer:
+              'Thank you for sharing this. Our team will respond with a grounded answer soon.',
+          metoo: 1,
+          voices: const [],
+          expertByline: 'Resora',
+        ),
+      );
 
-    Get.offNamed(
-      AppRoutes.ritualWrap,
-      arguments: RitualWrapArgs.exit(
-        feature: RitualWrapFeature.normal,
-      ).toMap(),
-    );
+      askController.clear();
+      questionDraft.value = '';
+
+      Get.offNamed(
+        AppRoutes.ritualWrap,
+        arguments: RitualWrapArgs.exit(
+          feature: RitualWrapFeature.normal,
+        ).toMap(),
+      );
+    } catch (_) {
+      showAppSnackbar(
+        'Could not submit question',
+        'Your question could not be saved right now. Please try again.',
+      );
+    } finally {
+      isSubmittingQuestion.value = false;
+    }
+  }
+
+  static String _topicKey(String value) {
+    return value.trim().toLowerCase().replaceAll(RegExp(r'\s+'), ' ');
   }
 
   @override

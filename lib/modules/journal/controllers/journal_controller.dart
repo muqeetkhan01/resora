@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../core/services/content_items_service.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
+import '../../profile/controllers/profile_controller.dart';
 
 class JournalController extends GetxController {
   JournalController({ContentItemsService? contentItemsService})
@@ -22,6 +23,12 @@ class JournalController extends GetxController {
   void onInit() {
     super.onInit();
     _loadPrompts();
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+    _ensureUnlockedForRoute();
   }
 
   Future<void> _loadPrompts() async {
@@ -71,8 +78,26 @@ class JournalController extends GetxController {
     currentPage.value = index;
   }
 
-  void openEditor({JournalEntry? entry, String? prompt}) {
+  Future<void> openEditor({JournalEntry? entry, String? prompt}) async {
+    final profile = Get.isRegistered<ProfileController>()
+        ? Get.find<ProfileController>()
+        : Get.put(ProfileController());
+    final unlocked = await profile.ensureJournalUnlocked();
+    if (!unlocked) {
+      return;
+    }
+
     Get.toNamed(AppRoutes.journalEditor, arguments: entry ?? prompt);
+  }
+
+  Future<void> _ensureUnlockedForRoute() async {
+    final profile = Get.isRegistered<ProfileController>()
+        ? Get.find<ProfileController>()
+        : Get.put(ProfileController());
+    final unlocked = await profile.ensureJournalUnlocked();
+    if (!unlocked && Get.currentRoute == AppRoutes.journal) {
+      Get.back<void>();
+    }
   }
 
   @override

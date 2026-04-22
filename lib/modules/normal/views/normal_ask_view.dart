@@ -63,13 +63,17 @@ class NormalAskView extends GetView<NormalController> {
                 alignment: Alignment.centerRight,
                 child: Obx(
                   () => TextButton(
-                    onPressed: controller.canSubmitQuestion
+                    onPressed: controller.canSubmitQuestion &&
+                            !controller.isSubmittingQuestion.value
                         ? controller.submitQuestion
                         : null,
                     child: Text(
-                      'submit anonymously',
+                      controller.isSubmittingQuestion.value
+                          ? 'submitting...'
+                          : 'submit anonymously',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: controller.canSubmitQuestion
+                            color: controller.canSubmitQuestion &&
+                                    !controller.isSubmittingQuestion.value
                                 ? AppColors.primary
                                 : AppColors.placeholder,
                             letterSpacing: 1.2,

@@ -7,6 +7,8 @@ class AppUserProfile {
     required this.displayName,
     required this.photoUrl,
     required this.providerIds,
+    required this.journalLockEnabled,
+    required this.journalPin,
     this.createdAt,
     this.updatedAt,
   });
@@ -16,6 +18,8 @@ class AppUserProfile {
   final String displayName;
   final String? photoUrl;
   final List<String> providerIds;
+  final bool journalLockEnabled;
+  final String? journalPin;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -49,6 +53,8 @@ class AppUserProfile {
       providerIds: ((data['providerIds'] as List<dynamic>?) ?? const [])
           .whereType<String>()
           .toList(),
+      journalLockEnabled: data['journalLockEnabled'] == true,
+      journalPin: (data['journalPin'] as String?)?.trim(),
       createdAt: _toDateTime(data['createdAt']),
       updatedAt: _toDateTime(data['updatedAt']),
     );

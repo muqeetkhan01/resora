@@ -32,6 +32,7 @@ import '../modules/profile/controllers/profile_controller.dart';
 import '../modules/profile/views/edit_profile_view.dart';
 import '../modules/profile/views/help_support_view.dart';
 import '../modules/profile/views/journal_lock_view.dart';
+import '../modules/profile/views/journal_unlock_view.dart';
 import '../modules/profile/views/privacy_policy_view.dart';
 import '../modules/profile/views/profile_view.dart';
 import '../modules/profile/views/subscription_view.dart';
@@ -217,6 +218,15 @@ abstract final class AppPages {
     GetPage(
       name: AppRoutes.journalLock,
       page: JournalLockView.new,
+      binding: BindingsBuilder(() {
+        if (!Get.isRegistered<ProfileController>()) {
+          Get.put(ProfileController());
+        }
+      }),
+    ),
+    GetPage(
+      name: AppRoutes.journalUnlock,
+      page: JournalUnlockView.new,
       binding: BindingsBuilder(() {
         if (!Get.isRegistered<ProfileController>()) {
           Get.put(ProfileController());

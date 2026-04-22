@@ -32,6 +32,7 @@ class AppSessionController extends GetxController {
 
   User? get firebaseUser => _firebaseUser.value;
   AppUserProfile? get profile => _profile.value;
+  Rxn<AppUserProfile> get profileRx => _profile;
   bool get isAuthenticated => firebaseUser != null;
   bool get hasPasswordProvider =>
       firebaseUser?.providerData
@@ -277,6 +278,8 @@ class AppSessionController extends GetxController {
       displayName: trimmed,
       photoUrl: null,
       providerIds: const [],
+      journalLockEnabled: false,
+      journalPin: null,
     );
   }
 
