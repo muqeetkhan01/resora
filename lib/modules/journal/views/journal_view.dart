@@ -64,39 +64,46 @@ class JournalView extends GetView<JournalController> {
                     const Divider(height: 1, color: AppColors.line),
                     const SizedBox(height: AppSpacing.lg),
                     Expanded(
-                      child: Stack(
-                        children: [
-                          PageView.builder(
-                            key: ValueKey(selectedCategory),
-                            scrollDirection: Axis.vertical,
-                            onPageChanged: controller.setCurrentPage,
-                            itemCount: prompts.length,
-                            itemBuilder: (context, index) {
-                              final prompt = prompts[index];
-
-                              return _PromptPage(
-                                prompt: prompt,
-                                onWriteOwn: () => controller.openEditor(
-                                    prompt: prompt.prompt),
-                                onStartWriting: () => controller.openEditor(
-                                    prompt: prompt.prompt),
-                              );
-                            },
-                          ),
-                          Positioned(
-                            right: 0,
-                            top: 0,
-                            bottom: 0,
-                            child: Center(
-                              child: SnapFeedIndicator(
-                                count: prompts.length,
-                                currentIndex: currentIndex,
-                                color: AppColors.primary,
+                      child: prompts.isEmpty
+                          ? Center(
+                              child: Text(
+                                'No journal prompts published yet.',
+                                style: Theme.of(context).textTheme.bodyMedium,
                               ),
+                            )
+                          : Stack(
+                              children: [
+                                PageView.builder(
+                                  key: ValueKey(selectedCategory),
+                                  scrollDirection: Axis.vertical,
+                                  onPageChanged: controller.setCurrentPage,
+                                  itemCount: prompts.length,
+                                  itemBuilder: (context, index) {
+                                    final prompt = prompts[index];
+
+                                    return _PromptPage(
+                                      prompt: prompt,
+                                      onWriteOwn: () => controller.openEditor(
+                                          prompt: prompt.prompt),
+                                      onStartWriting: () => controller.openEditor(
+                                          prompt: prompt.prompt),
+                                    );
+                                  },
+                                ),
+                                Positioned(
+                                  right: 0,
+                                  top: 0,
+                                  bottom: 0,
+                                  child: Center(
+                                    child: SnapFeedIndicator(
+                                      count: prompts.length,
+                                      currentIndex: currentIndex,
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
                     ),
                   ],
                 ),

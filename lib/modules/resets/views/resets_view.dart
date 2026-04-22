@@ -63,35 +63,42 @@ class ResetsView extends GetView<ResetsController> {
                     const Divider(height: 1, color: AppColors.line),
                     const SizedBox(height: AppSpacing.lg),
                     Expanded(
-                      child: Stack(
-                        children: [
-                          PageView.builder(
-                            key: ValueKey(selectedCategory),
-                            scrollDirection: Axis.vertical,
-                            onPageChanged: controller.setCurrentPage,
-                            itemCount: options.length,
-                            itemBuilder: (context, index) {
-                              final option = options[index];
-                              return _ResetPage(
-                                option: option,
-                                onTap: () => controller.openReset(option),
-                              );
-                            },
-                          ),
-                          Positioned(
-                            right: 0,
-                            top: 0,
-                            bottom: 0,
-                            child: Center(
-                              child: SnapFeedIndicator(
-                                count: options.length,
-                                currentIndex: currentIndex,
-                                color: AppColors.primary,
+                      child: options.isEmpty
+                          ? Center(
+                              child: Text(
+                                'No reset sessions published yet.',
+                                style: Theme.of(context).textTheme.bodyMedium,
                               ),
+                            )
+                          : Stack(
+                              children: [
+                                PageView.builder(
+                                  key: ValueKey(selectedCategory),
+                                  scrollDirection: Axis.vertical,
+                                  onPageChanged: controller.setCurrentPage,
+                                  itemCount: options.length,
+                                  itemBuilder: (context, index) {
+                                    final option = options[index];
+                                    return _ResetPage(
+                                      option: option,
+                                      onTap: () => controller.openReset(option),
+                                    );
+                                  },
+                                ),
+                                Positioned(
+                                  right: 0,
+                                  top: 0,
+                                  bottom: 0,
+                                  child: Center(
+                                    child: SnapFeedIndicator(
+                                      count: options.length,
+                                      currentIndex: currentIndex,
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
                     ),
                   ],
                 ),

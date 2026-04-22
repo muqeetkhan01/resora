@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 
 import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
-import '../../../data/mock/mock_content.dart';
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/app_background.dart';
@@ -18,7 +17,6 @@ class AffirmationsView extends GetView<AffirmationsController> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final hero = MockContent.affirmations.first;
 
     return AppBackground(
       child: SingleChildScrollView(
@@ -42,29 +40,41 @@ class AffirmationsView extends GetView<AffirmationsController> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Daily affirmation', style: textTheme.labelLarge),
-                  const SizedBox(height: AppSpacing.sm),
-                  Text(hero.text, style: textTheme.headlineMedium),
-                  const SizedBox(height: AppSpacing.lg),
-                  Row(
+              child: Obx(
+                () {
+                  final hero = controller.hero;
+                  if (hero == null) {
+                    return Text(
+                      'No affirmations published yet.',
+                      style: textTheme.bodyMedium,
+                    );
+                  }
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: const BoxDecoration(
-                          color: AppColors.ink,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(AppIcons.play, color: Colors.white),
+                      Text('Daily affirmation', style: textTheme.labelLarge),
+                      const SizedBox(height: AppSpacing.sm),
+                      Text(hero.text, style: textTheme.headlineMedium),
+                      const SizedBox(height: AppSpacing.lg),
+                      Row(
+                        children: [
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: const BoxDecoration(
+                              color: AppColors.ink,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(AppIcons.play, color: Colors.white),
+                          ),
+                          const SizedBox(width: AppSpacing.md),
+                          Text(hero.duration, style: textTheme.titleMedium),
+                        ],
                       ),
-                      const SizedBox(width: AppSpacing.md),
-                      Text(hero.duration, style: textTheme.titleMedium),
                     ],
-                  ),
-                ],
+                  );
+                },
               ),
             ),
             const SizedBox(height: AppSpacing.xl),

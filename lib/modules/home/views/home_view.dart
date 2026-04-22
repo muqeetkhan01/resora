@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/constants/app_assets.dart';
+import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../data/models/app_models.dart';
+import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
-import '../../../widgets/app_snackbar.dart';
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
@@ -35,72 +37,125 @@ class HomeView extends GetView<HomeController> {
                 ),
               ),
               const SizedBox(height: AppSpacing.xxl),
-              _HomeFeatureCard(
-                imagePath: AppAssets.homeTalkOcean,
-                title: 'talk to resora',
-                subtitle:
-                    'Ask anything. Get a clear next step, not a list of suggestions.',
-                actionLabel: 'open',
-                onTap: controller.openTalk,
-              ),
-              _HomeFeatureCard(
-                imagePath: AppAssets.homeNormalStem,
-                title: 'is this normal?',
-                subtitle:
-                    'Short, reassuring answers when you need a steadier read on the moment.',
-                actionLabel: 'open',
-                onTap: controller.openNormal,
-              ),
-              _HomeFeatureCard(
-                imagePath: AppAssets.homeJournalBed,
-                title: 'journal',
-                subtitle: 'Reflect gently after the moment passes.',
-                actionLabel: 'open',
-                onTap: controller.openJournal,
-              ),
-              _HomeFeatureCard(
-                imagePath: AppAssets.homeComingSoonFlower,
-                title: 'coming soon',
-                subtitle:
-                    'More space, more tools, and more support screens soon.',
-                actionLabel: 'preview',
-                onTap: () => showAppSnackbar(
-                  'coming soon',
-                  'More support tools are on the way.',
-                  snackPosition: SnackPosition.BOTTOM,
-                  colorText: AppColors.white,
-                  backgroundColor: AppColors.primary,
-                ),
-              ),
+              Obx(() {
+                final talk = _resolveSlot(
+                  route: AppRoutes.chat,
+                  titleHint: 'talk',
+                  defaultTitle: 'talk to resora',
+                  defaultSubtitle:
+                      'Ask anything. Get a clear next step, not a list of suggestions.',
+                  defaultImage: AppAssets.homeTalkOcean,
+                );
+                final normal = _resolveSlot(
+                  route: AppRoutes.normal,
+                  titleHint: 'normal',
+                  defaultTitle: 'is this normal?',
+                  defaultSubtitle:
+                      'Short, reassuring answers when you need a steadier read on the moment.',
+                  defaultImage: AppAssets.homeNormalStem,
+                );
+                final journal = _resolveSlot(
+                  route: AppRoutes.journal,
+                  titleHint: 'journal',
+                  defaultTitle: 'journal',
+                  defaultSubtitle: 'Reflect gently after the moment passes.',
+                  defaultImage: AppAssets.homeJournalBed,
+                );
+                final comingSoon = _resolveSlot(
+                  route: '',
+                  titleHint: 'coming',
+                  defaultTitle: 'coming soon',
+                  defaultSubtitle:
+                      'More space, more tools, and more support screens soon.',
+                  defaultImage: AppAssets.homeComingSoonFlower,
+                );
+
+                return Column(
+                  children: [
+                    _HomeFeatureCard(slot: talk),
+                    _HomeFeatureCard(slot: normal),
+                    _HomeFeatureCard(slot: journal),
+                    _HomeFeatureCard(slot: comingSoon),
+                  ],
+                );
+              }),
             ],
           ),
         ),
       ),
     );
   }
+
+  _HomeSlot _resolveSlot({
+    required String route,
+    required String titleHint,
+    required String defaultTitle,
+    required String defaultSubtitle,
+    required String defaultImage,
+  }) {
+    final item = route.isEmpty
+        ? controller.findActionByTitle(titleHint)
+        : controller.findActionByRoute(route);
+    if (item == null) {
+      final hasRouteContent = controller.hasContentForRoute(route);
+      return _HomeSlot(
+        title: defaultTitle.toLowerCase(),
+        subtitle: hasRouteContent ? defaultSubtitle : 'No content yet.',
+        imagePath: defaultImage,
+        actionLabel: hasRouteContent ? 'open' : 'no content',
+        onTap: hasRouteContent
+            ? () => controller.openAction(
+                  QuickActionItem(
+                    title: defaultTitle,
+                    subtitle: defaultSubtitle,
+                    icon: AppIcons.forward,
+                    accentColor: AppColors.primary,
+                    route: route,
+                  ),
+                )
+            : null,
+      );
+    }
+
+    return _HomeSlot(
+      title: item.title.toLowerCase(),
+      subtitle: item.subtitle,
+      imagePath: item.imagePath ?? defaultImage,
+      actionLabel: 'open',
+      onTap: () => controller.openAction(item),
+    );
+  }
 }
 
-class _HomeFeatureCard extends StatelessWidget {
-  const _HomeFeatureCard({
-    required this.imagePath,
+class _HomeSlot {
+  const _HomeSlot({
     required this.title,
     required this.subtitle,
+    required this.imagePath,
     required this.actionLabel,
     required this.onTap,
   });
 
-  final String imagePath;
   final String title;
   final String subtitle;
+  final String imagePath;
   final String actionLabel;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
+}
+
+class _HomeFeatureCard extends StatelessWidget {
+  const _HomeFeatureCard({
+    required this.slot,
+  });
+
+  final _HomeSlot slot;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
     return InkWell(
-      onTap: onTap,
+      onTap: slot.onTap,
       child: Padding(
         padding: const EdgeInsets.only(bottom: AppSpacing.xxl),
         child: Column(
@@ -108,11 +163,7 @@ class _HomeFeatureCard extends StatelessWidget {
           children: [
             AspectRatio(
               aspectRatio: 0.9,
-              child: Image.asset(
-                imagePath,
-                fit: BoxFit.cover,
-                alignment: Alignment.center,
-              ),
+              child: _HomeImage(imagePath: slot.imagePath),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(
@@ -125,7 +176,7 @@ class _HomeFeatureCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    title,
+                    slot.title,
                     style: textTheme.displayMedium?.copyWith(
                       fontSize: 30,
                       color: AppColors.primary.withOpacity(0.86),
@@ -133,7 +184,7 @@ class _HomeFeatureCard extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   Text(
-                    subtitle,
+                    slot.subtitle,
                     style: textTheme.bodySmall?.copyWith(
                       color: AppColors.placeholder,
                       height: 1.8,
@@ -141,7 +192,7 @@ class _HomeFeatureCard extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   Text(
-                    actionLabel,
+                    slot.actionLabel,
                     style: textTheme.bodySmall?.copyWith(
                       color: AppColors.terracotta,
                       fontWeight: FontWeight.w400,
@@ -155,6 +206,34 @@ class _HomeFeatureCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _HomeImage extends StatelessWidget {
+  const _HomeImage({required this.imagePath});
+
+  final String imagePath;
+
+  @override
+  Widget build(BuildContext context) {
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      return Image.network(
+        imagePath,
+        fit: BoxFit.cover,
+        alignment: Alignment.center,
+        errorBuilder: (_, __, ___) => Image.asset(
+          AppAssets.homeComingSoonFlower,
+          fit: BoxFit.cover,
+          alignment: Alignment.center,
+        ),
+      );
+    }
+
+    return Image.asset(
+      imagePath,
+      fit: BoxFit.cover,
+      alignment: Alignment.center,
     );
   }
 }

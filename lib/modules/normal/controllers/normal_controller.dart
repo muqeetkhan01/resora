@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/services/content_items_service.dart';
-import '../../../data/mock/mock_content.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 import '../../ritual_wrap/models/ritual_wrap_args.dart';
@@ -23,13 +22,7 @@ class NormalController extends GetxController {
   final _remoteTopics = <NormalTopicItem>[].obs;
   final _submittedTopics = <NormalTopicItem>[].obs;
 
-  List<NormalTopicItem> get _baseTopics {
-    if (_remoteTopics.isNotEmpty) {
-      return _remoteTopics;
-    }
-
-    return MockContent.normalTopics;
-  }
+  List<NormalTopicItem> get _baseTopics => _remoteTopics;
 
   List<NormalTopicItem> get _allTopics => [
         ..._submittedTopics,
@@ -45,9 +38,7 @@ class NormalController extends GetxController {
   Future<void> _loadTopics() async {
     try {
       final topics = await _contentItemsService.loadNormalTopics();
-      if (topics.isNotEmpty) {
-        _remoteTopics.assignAll(topics);
-      }
+      _remoteTopics.assignAll(topics);
     } catch (_) {
       _remoteTopics.clear();
     }

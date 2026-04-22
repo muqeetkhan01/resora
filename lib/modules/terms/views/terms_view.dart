@@ -54,29 +54,40 @@ class TermsView extends GetView<TermsController> {
               ),
               const SizedBox(height: AppSpacing.xl),
               Obx(
-                () => Column(
-                  children: controller.terms
-                      .map(
-                        (term) => Padding(
-                          padding: const EdgeInsets.only(bottom: AppSpacing.lg),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(term.term, style: textTheme.titleLarge),
-                              const SizedBox(height: AppSpacing.xs),
-                              Text(
-                                term.definition,
-                                style: textTheme.bodyLarge
-                                    ?.copyWith(color: AppColors.primary),
-                              ),
-                              const SizedBox(height: AppSpacing.md),
-                              const Divider(height: 1),
-                            ],
+                () {
+                  final terms = controller.terms;
+                  if (terms.isEmpty) {
+                    return Text(
+                      'No key terms published yet.',
+                      style: textTheme.bodyMedium,
+                    );
+                  }
+
+                  return Column(
+                    children: terms
+                        .map(
+                          (term) => Padding(
+                            padding:
+                                const EdgeInsets.only(bottom: AppSpacing.lg),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(term.term, style: textTheme.titleLarge),
+                                const SizedBox(height: AppSpacing.xs),
+                                Text(
+                                  term.definition,
+                                  style: textTheme.bodyLarge
+                                      ?.copyWith(color: AppColors.primary),
+                                ),
+                                const SizedBox(height: AppSpacing.md),
+                                const Divider(height: 1),
+                              ],
+                            ),
                           ),
-                        ),
-                      )
-                      .toList(),
-                ),
+                        )
+                        .toList(),
+                  );
+                },
               ),
             ],
           ),

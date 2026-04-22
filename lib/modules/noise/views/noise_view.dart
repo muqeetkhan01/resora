@@ -69,6 +69,14 @@ class NoiseView extends GetView<NoiseController> {
                 child: Obx(
                   () {
                     final tracks = controller.tracks;
+                    if (tracks.isEmpty) {
+                      return Center(
+                        child: Text(
+                          'No audio tracks published yet.',
+                          style: textTheme.bodyMedium,
+                        ),
+                      );
+                    }
 
                     return ListView.separated(
                       itemCount: tracks.length,

@@ -1,7 +1,6 @@
 import 'package:get/get.dart';
 
 import '../../../core/services/content_items_service.dart';
-import '../../../data/mock/mock_content.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 import '../../ritual_wrap/models/ritual_wrap_args.dart';
@@ -15,12 +14,7 @@ class NoiseController extends GetxController {
   final selectedCategory = 'All'.obs;
   final _remoteTracks = <AudioTrack>[].obs;
 
-  List<AudioTrack> get _sourceTracks {
-    if (_remoteTracks.isNotEmpty) {
-      return _remoteTracks;
-    }
-    return MockContent.audioTracks;
-  }
+  List<AudioTrack> get _sourceTracks => _remoteTracks;
 
   @override
   void onInit() {
@@ -31,9 +25,7 @@ class NoiseController extends GetxController {
   Future<void> _loadTracks() async {
     try {
       final tracks = await _contentItemsService.loadAudioTracks();
-      if (tracks.isNotEmpty) {
-        _remoteTracks.assignAll(tracks);
-      }
+      _remoteTracks.assignAll(tracks);
     } catch (_) {
       _remoteTracks.clear();
     }

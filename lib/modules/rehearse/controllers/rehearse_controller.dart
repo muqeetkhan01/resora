@@ -1,24 +1,53 @@
 import 'package:get/get.dart';
 
 import '../../../core/constants/app_assets.dart';
-import '../../../data/mock/mock_content.dart';
+import '../../../core/services/content_items_service.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 import '../../ritual_wrap/models/ritual_wrap_args.dart';
 
 class RehearseController extends GetxController {
+  RehearseController({ContentItemsService? contentItemsService})
+      : _contentItemsService = contentItemsService ?? ContentItemsService();
+
+  final ContentItemsService _contentItemsService;
+
   final selectedCategory = 'all'.obs;
   final currentPage = 0.obs;
+  final _scenarios = <RehearsalScenario>[].obs;
 
-  List<String> get categories => const [
-        'all',
-        'connect',
-        'release',
-        'clarity',
-        'ground',
-      ];
+  @override
+  void onInit() {
+    super.onInit();
+    _loadScenarios();
+  }
 
-  List<RehearsalScenario> get scenarios => MockContent.rehearsalScenarios;
+  Future<void> _loadScenarios() async {
+    try {
+      final scenarios = await _contentItemsService.loadRehearsalScenarios();
+      _scenarios.assignAll(scenarios);
+    } catch (_) {
+      _scenarios.clear();
+    }
+
+    if (!categories.contains(selectedCategory.value)) {
+      selectedCategory.value = 'all';
+    }
+  }
+
+  List<String> get categories {
+    final values = <String>['all'];
+    for (final scenario in _scenarios) {
+      final category = scenario.category.trim().toLowerCase();
+      if (category.isEmpty || values.contains(category)) {
+        continue;
+      }
+      values.add(category);
+    }
+    return values;
+  }
+
+  List<RehearsalScenario> get scenarios => _scenarios;
 
   List<RehearsalScenario> get filteredScenarios {
     if (selectedCategory.value == 'all') {
@@ -52,7 +81,9 @@ class RehearseController extends GetxController {
             category: scenario.category,
             description: scenario.reframe,
             duration: '7 min',
-            assetPath: _assetForScenario(scenario),
+            assetPath: scenario.audioPath.isEmpty
+                ? AppAssets.rehearseAskForNeed
+                : scenario.audioPath,
           ),
           'imagePath': AppAssets.curtainLight,
           'minimal': true,
@@ -68,22 +99,5 @@ class RehearseController extends GetxController {
 
   void practiceAgain(RehearsalScenario scenario) {
     Get.toNamed(AppRoutes.chat);
-  }
-
-  String _assetForScenario(RehearsalScenario scenario) {
-    switch (scenario.title) {
-      case 'Talking to my partner after a hard night':
-        return AppAssets.rehearsePartnerAfterHardNight;
-      case 'Setting a limit with someone I care about':
-        return AppAssets.rehearseSettingLimit;
-      case 'Asking for what I actually need':
-        return AppAssets.rehearseAskForNeed;
-      case 'Repairing after I lost my temper':
-        return AppAssets.rehearseRepairAfterTemper;
-      case 'Handling a hard conversation at work':
-        return AppAssets.rehearseHardConversationWork;
-      default:
-        return AppAssets.rehearseAskForNeed;
-    }
   }
 }

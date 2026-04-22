@@ -49,57 +49,82 @@ class MindfulnessView extends GetView<MindfulnessController> {
               ),
             ),
             const SizedBox(height: AppSpacing.xl),
-            AppCard(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFF2E9DE), Color(0xFFFBF6F1)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Featured session', style: textTheme.labelLarge),
-                  const SizedBox(height: AppSpacing.sm),
-                  Text('Quiet the room inside you',
-                      style: textTheme.headlineMedium),
-                  const SizedBox(height: AppSpacing.sm),
-                  Text(
-                    'A guided session for the moments when everything feels too loud.',
-                    style: textTheme.bodyMedium,
+            Obx(
+              () {
+                final featured = controller.featuredSession;
+                if (featured == null) {
+                  return const SizedBox.shrink();
+                }
+
+                return AppCard(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFF2E9DE), Color(0xFFFBF6F1)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                  const SizedBox(height: AppSpacing.lg),
-                  Row(
+                  onTap: () => controller.openSession(featured),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: 50,
-                        height: 50,
-                        decoration: const BoxDecoration(
-                          color: AppColors.ink,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(AppIcons.play, color: Colors.white),
+                      Text('Featured session', style: textTheme.labelLarge),
+                      const SizedBox(height: AppSpacing.sm),
+                      Text(featured.title, style: textTheme.headlineMedium),
+                      const SizedBox(height: AppSpacing.sm),
+                      Text(
+                        featured.subtitle,
+                        style: textTheme.bodyMedium,
                       ),
-                      const SizedBox(width: AppSpacing.md),
-                      Text('10 min session', style: textTheme.titleMedium),
+                      const SizedBox(height: AppSpacing.lg),
+                      Row(
+                        children: [
+                          Container(
+                            width: 50,
+                            height: 50,
+                            decoration: const BoxDecoration(
+                              color: AppColors.ink,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(AppIcons.play, color: Colors.white),
+                          ),
+                          const SizedBox(width: AppSpacing.md),
+                          Text(
+                            '${featured.length} session',
+                            style: textTheme.titleMedium,
+                          ),
+                        ],
+                      ),
                     ],
                   ),
-                ],
-              ),
+                );
+              },
             ),
             const SizedBox(height: AppSpacing.xl),
             Obx(
-              () => Column(
-                children: controller.sessions
-                    .map(
-                      (session) => Padding(
-                        padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                        child: _SessionCard(
+              () {
+                final sessions = controller.sessions;
+                if (sessions.isEmpty) {
+                  return Text(
+                    'No mindfulness sessions published yet.',
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: AppColors.placeholder,
+                    ),
+                  );
+                }
+
+                return Column(
+                  children: sessions
+                      .map(
+                        (session) => Padding(
+                          padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                          child: _SessionCard(
                             session: session,
-                            onTap: () => controller.openSession(session)),
-                      ),
-                    )
-                    .toList(),
-              ),
+                            onTap: () => controller.openSession(session),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                );
+              },
             ),
           ],
         ),

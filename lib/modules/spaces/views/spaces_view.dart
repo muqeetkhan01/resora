@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
+import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
 import '../controllers/spaces_controller.dart';
 
@@ -12,7 +14,6 @@ class SpacesView extends GetView<SpacesController> {
 
   @override
   Widget build(BuildContext context) {
-    final items = controller.spaces;
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
@@ -55,74 +56,160 @@ class SpacesView extends GetView<SpacesController> {
                 ),
               ),
               const SizedBox(height: AppSpacing.xxxl),
-              _SpaceFeatureCard(
-                item: items[0],
-                onTap: () => controller.openSpace(items[0]),
-                height: 188,
-              ),
-              const SizedBox(height: AppSpacing.md),
-              Row(
-                children: [
-                  Expanded(
-                    child: _SpaceFeatureCard(
-                      item: items[1],
-                      onTap: () => controller.openSpace(items[1]),
-                      height: 208,
+              Obx(() {
+                final normal = _resolveSlot(
+                  route: AppRoutes.normal,
+                  titleHint: 'normal',
+                  defaultTitle: 'is this normal?',
+                  defaultSubtitle: 'Short, reassuring answers',
+                  defaultImage: AppAssets.homeNormalStem,
+                );
+                final resets = _resolveSlot(
+                  route: AppRoutes.resets,
+                  titleHint: 'reset',
+                  defaultTitle: 'gentle resets',
+                  defaultSubtitle: 'Breath, grounding, step away',
+                  defaultImage: AppAssets.spaceGarden,
+                );
+                final noise = _resolveSlot(
+                  route: AppRoutes.noise,
+                  titleHint: 'noise',
+                  defaultTitle: 'quiet the noise',
+                  defaultSubtitle: 'Ambient audio and guided calm',
+                  defaultImage: AppAssets.spaceRoom,
+                );
+                final terms = _resolveSlot(
+                  route: AppRoutes.terms,
+                  titleHint: 'term',
+                  defaultTitle: 'key terms',
+                  defaultSubtitle: 'Plain-language definitions',
+                  defaultImage: AppAssets.homeComingSoonFlower,
+                );
+                final rehearse = _resolveSlot(
+                  route: AppRoutes.rehearse,
+                  titleHint: 'rehearse',
+                  defaultTitle: 'rehearse the moment',
+                  defaultSubtitle: 'Scripts for the hard part',
+                  defaultImage: AppAssets.spaceMountain,
+                );
+                final journal = _resolveSlot(
+                  route: AppRoutes.journal,
+                  titleHint: 'journal',
+                  defaultTitle: 'journal',
+                  defaultSubtitle: 'Reflect after you reset',
+                  defaultImage: AppAssets.homeJournalBed,
+                );
+
+                return Column(
+                  children: [
+                    _SpaceFeatureCard(slot: normal, height: 188),
+                    const SizedBox(height: AppSpacing.md),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _SpaceFeatureCard(
+                            slot: resets,
+                            height: 208,
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.md),
+                        Expanded(
+                          child: _SpaceFeatureCard(
+                            slot: noise,
+                            height: 208,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: _SpaceFeatureCard(
-                      item: items[2],
-                      onTap: () => controller.openSpace(items[2]),
-                      height: 208,
+                    const SizedBox(height: AppSpacing.md),
+                    _SpaceFeatureCard(slot: terms, height: 188),
+                    const SizedBox(height: AppSpacing.md),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _SpaceFeatureCard(
+                            slot: rehearse,
+                            height: 208,
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.md),
+                        Expanded(
+                          child: _SpaceFeatureCard(
+                            slot: journal,
+                            height: 208,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.md),
-              _SpaceFeatureCard(
-                item: items[5],
-                onTap: () => controller.openSpace(items[5]),
-                height: 188,
-              ),
-              const SizedBox(height: AppSpacing.md),
-              Row(
-                children: [
-                  Expanded(
-                    child: _SpaceFeatureCard(
-                      item: items[3],
-                      onTap: () => controller.openSpace(items[3]),
-                      height: 208,
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: _SpaceFeatureCard(
-                      item: items[4],
-                      onTap: () => controller.openSpace(items[4]),
-                      height: 208,
-                    ),
-                  ),
-                ],
-              ),
+                  ],
+                );
+              }),
             ],
           ),
         ),
       ),
     );
   }
+
+  _SpaceSlot _resolveSlot({
+    required String route,
+    required String titleHint,
+    required String defaultTitle,
+    required String defaultSubtitle,
+    required String defaultImage,
+  }) {
+    final item = controller.findSpaceByRoute(route) ??
+        controller.findSpaceByTitle(titleHint);
+    if (item == null) {
+      final hasRouteContent = controller.hasContentForRoute(route);
+      return _SpaceSlot(
+        title: defaultTitle.toLowerCase(),
+        subtitle: hasRouteContent ? defaultSubtitle : 'No content yet.',
+        imagePath: defaultImage,
+        onTap: hasRouteContent
+            ? () => controller.openSpace(
+                  QuickActionItem(
+                    title: defaultTitle,
+                    subtitle: defaultSubtitle,
+                    icon: AppIcons.forward,
+                    accentColor: AppColors.primary,
+                    route: route,
+                  ),
+                )
+            : null,
+      );
+    }
+
+    return _SpaceSlot(
+      title: item.title.toLowerCase(),
+      subtitle: item.subtitle,
+      imagePath: item.imagePath ?? defaultImage,
+      onTap: () => controller.openSpace(item),
+    );
+  }
+}
+
+class _SpaceSlot {
+  const _SpaceSlot({
+    required this.title,
+    required this.subtitle,
+    required this.imagePath,
+    required this.onTap,
+  });
+
+  final String title;
+  final String subtitle;
+  final String imagePath;
+  final VoidCallback? onTap;
 }
 
 class _SpaceFeatureCard extends StatelessWidget {
   const _SpaceFeatureCard({
-    required this.item,
-    required this.onTap,
+    required this.slot,
     required this.height,
   });
 
-  final QuickActionItem item;
-  final VoidCallback onTap;
+  final _SpaceSlot slot;
   final double height;
 
   @override
@@ -130,7 +217,7 @@ class _SpaceFeatureCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return InkWell(
-      onTap: onTap,
+      onTap: slot.onTap,
       borderRadius: BorderRadius.circular(4),
       child: Ink(
         height: height,
@@ -138,12 +225,13 @@ class _SpaceFeatureCard extends StatelessWidget {
           color: AppColors.primary,
           borderRadius: BorderRadius.circular(4),
           border: Border.all(color: AppColors.line),
-          image: item.imagePath == null
-              ? null
-              : DecorationImage(
-                  image: AssetImage(item.imagePath!),
-                  fit: BoxFit.cover,
-                ),
+          image: DecorationImage(
+            image: slot.imagePath.startsWith('http://') ||
+                    slot.imagePath.startsWith('https://')
+                ? NetworkImage(slot.imagePath) as ImageProvider
+                : AssetImage(slot.imagePath),
+            fit: BoxFit.cover,
+          ),
         ),
         child: Container(
           decoration: BoxDecoration(
@@ -152,8 +240,8 @@ class _SpaceFeatureCard extends StatelessWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Colors.black.withOpacity(item.imagePath == null ? 0.08 : 0.18),
-                Colors.black.withOpacity(item.imagePath == null ? 0.18 : 0.58),
+                Colors.black.withOpacity(0.18),
+                Colors.black.withOpacity(0.58),
               ],
             ),
           ),
@@ -171,7 +259,7 @@ class _SpaceFeatureCard extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          item.title.toLowerCase(),
+                          slot.title,
                           style: textTheme.displayMedium?.copyWith(
                             fontSize: 23,
                             color: AppColors.white,
@@ -179,7 +267,7 @@ class _SpaceFeatureCard extends StatelessWidget {
                         ),
                         const SizedBox(height: AppSpacing.xs),
                         Text(
-                          item.subtitle,
+                          slot.subtitle,
                           style: textTheme.bodySmall?.copyWith(
                             color: AppColors.white.withOpacity(0.84),
                             height: 1.7,

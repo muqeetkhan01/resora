@@ -63,35 +63,42 @@ class RehearseView extends GetView<RehearseController> {
                     const Divider(height: 1, color: AppColors.line),
                     const SizedBox(height: AppSpacing.lg),
                     Expanded(
-                      child: Stack(
-                        children: [
-                          PageView.builder(
-                            key: ValueKey(selectedCategory),
-                            scrollDirection: Axis.vertical,
-                            onPageChanged: controller.setCurrentPage,
-                            itemCount: scenarios.length,
-                            itemBuilder: (context, index) {
-                              final scenario = scenarios[index];
-                              return _ScenarioPage(
-                                scenario: scenario,
-                                onTap: () => controller.openScenario(scenario),
-                              );
-                            },
-                          ),
-                          Positioned(
-                            right: 0,
-                            top: 0,
-                            bottom: 0,
-                            child: Center(
-                              child: SnapFeedIndicator(
-                                count: scenarios.length,
-                                currentIndex: currentIndex,
-                                color: AppColors.primary,
+                      child: scenarios.isEmpty
+                          ? Center(
+                              child: Text(
+                                'No rehearsal scenarios published yet.',
+                                style: Theme.of(context).textTheme.bodyMedium,
                               ),
+                            )
+                          : Stack(
+                              children: [
+                                PageView.builder(
+                                  key: ValueKey(selectedCategory),
+                                  scrollDirection: Axis.vertical,
+                                  onPageChanged: controller.setCurrentPage,
+                                  itemCount: scenarios.length,
+                                  itemBuilder: (context, index) {
+                                    final scenario = scenarios[index];
+                                    return _ScenarioPage(
+                                      scenario: scenario,
+                                      onTap: () => controller.openScenario(scenario),
+                                    );
+                                  },
+                                ),
+                                Positioned(
+                                  right: 0,
+                                  top: 0,
+                                  bottom: 0,
+                                  child: Center(
+                                    child: SnapFeedIndicator(
+                                      count: scenarios.length,
+                                      currentIndex: currentIndex,
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
                     ),
                   ],
                 ),

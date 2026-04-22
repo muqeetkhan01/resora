@@ -1,29 +1,85 @@
 import 'package:get/get.dart';
 
-import '../../../core/constants/app_assets.dart';
-import '../../../data/mock/mock_content.dart';
+import '../../../core/services/content_items_service.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 
 class MindfulnessController extends GetxController {
+  MindfulnessController({ContentItemsService? contentItemsService})
+      : _contentItemsService = contentItemsService ?? ContentItemsService();
+
+  final ContentItemsService _contentItemsService;
+
   final selectedTab = 0.obs;
+  final _sessions = <MindfulnessSession>[].obs;
 
-  List<String> get tabs => MockContent.mindfulnessTabs;
+  List<String> get tabs {
+    final values = <String>[];
+    for (final session in _sessions) {
+      final type = session.type.trim();
+      if (type.isEmpty || values.contains(type)) {
+        continue;
+      }
+      values.add(type);
+    }
+    return values;
+  }
 
-  List<MindfulnessSession> get sessions => MockContent.mindfulnessSessions
-      .where((session) => session.type == tabs[selectedTab.value])
-      .toList();
+  List<MindfulnessSession> get sessions {
+    final availableTabs = tabs;
+    if (availableTabs.isEmpty) {
+      return const <MindfulnessSession>[];
+    }
+    final safeIndex = selectedTab.value.clamp(0, availableTabs.length - 1);
+    final currentType = availableTabs[safeIndex];
+
+    return _sessions
+        .where((session) => session.type == currentType)
+        .toList();
+  }
+
+  MindfulnessSession? get featuredSession {
+    if (_sessions.isEmpty) {
+      return null;
+    }
+    return _sessions.first;
+  }
 
   @override
   void onInit() {
     super.onInit();
-    final initialTab = Get.arguments;
-    if (initialTab is int && initialTab >= 0 && initialTab < tabs.length) {
-      selectedTab.value = initialTab;
+    _loadSessions();
+  }
+
+  Future<void> _loadSessions() async {
+    try {
+      final sessions = await _contentItemsService.loadMindfulnessSessions();
+      _sessions.assignAll(sessions);
+    } catch (_) {
+      _sessions.clear();
     }
+
+    final availableTabs = tabs;
+    if (availableTabs.isEmpty) {
+      selectedTab.value = 0;
+      return;
+    }
+
+    final initialTab = Get.arguments;
+    if (initialTab is int &&
+        initialTab >= 0 &&
+        initialTab < availableTabs.length) {
+      selectedTab.value = initialTab;
+      return;
+    }
+
+    selectedTab.value = selectedTab.value.clamp(0, availableTabs.length - 1);
   }
 
   void selectTab(int index) {
+    if (index < 0 || index >= tabs.length) {
+      return;
+    }
     selectedTab.value = index;
   }
 
@@ -42,24 +98,9 @@ class MindfulnessController extends GetxController {
       category: session.type,
       description: session.subtitle,
       duration: session.length,
-      assetPath: _assetForSession(session),
+      assetPath: session.audioPath,
       isPremium: session.isPremium,
     );
     Get.toNamed(AppRoutes.audioPlayer, arguments: track);
-  }
-
-  String _assetForSession(MindfulnessSession session) {
-    switch (session.title) {
-      case 'Soft rain on leaves':
-        return AppAssets.ambientSoftRain;
-      case 'Brown noise for the background':
-        return AppAssets.ambientBrownNoise;
-      case 'Five-minute guided exhale':
-        return AppAssets.guidedExhale;
-      case 'Parenting calm visualization':
-        return AppAssets.guidedParentingCalm;
-      default:
-        return AppAssets.guidedExhale;
-    }
   }
 }
