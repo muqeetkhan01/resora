@@ -4,6 +4,7 @@ import '../../../core/constants/app_assets.dart';
 import '../../../data/mock/mock_content.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
+import '../../ritual_wrap/models/ritual_wrap_args.dart';
 
 class RehearseController extends GetxController {
   final selectedCategory = 'all'.obs;
@@ -41,18 +42,23 @@ class RehearseController extends GetxController {
 
   void openScenario(RehearsalScenario scenario) {
     Get.toNamed(
-      AppRoutes.audioPlayer,
-      arguments: {
-        'track': AudioTrack(
-          title: scenario.title,
-          category: scenario.category,
-          description: scenario.reframe,
-          duration: '7 min',
-          assetPath: _assetForScenario(scenario),
-        ),
-        'imagePath': AppAssets.curtainLight,
-        'minimal': true,
-      },
+      AppRoutes.ritualWrap,
+      arguments: RitualWrapArgs.entry(
+        feature: RitualWrapFeature.visualization,
+        nextRoute: AppRoutes.audioPlayer,
+        nextArguments: {
+          'track': AudioTrack(
+            title: scenario.title,
+            category: scenario.category,
+            description: scenario.reframe,
+            duration: '7 min',
+            assetPath: _assetForScenario(scenario),
+          ),
+          'imagePath': AppAssets.curtainLight,
+          'minimal': true,
+          'ritualFeature': RitualWrapFeature.visualization,
+        },
+      ).toMap(),
     );
   }
 

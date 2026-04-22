@@ -10,6 +10,8 @@ class EditProfileController extends GetxController {
   late final TextEditingController emailController;
   final isSaving = false.obs;
 
+  bool get canEditEmail => _session.hasPasswordProvider;
+
   @override
   void onInit() {
     super.onInit();
@@ -26,7 +28,7 @@ class EditProfileController extends GetxController {
       isSaving.value = true;
       final message = await _session.updateProfile(
         displayName: nameController.text,
-        email: emailController.text,
+        email: canEditEmail ? emailController.text : (_session.email ?? ''),
       );
       Get.back();
       showAppSnackbar(

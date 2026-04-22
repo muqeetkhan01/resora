@@ -21,6 +21,7 @@ import '../modules/noise/controllers/noise_controller.dart';
 import '../modules/noise/views/audio_player_view.dart';
 import '../modules/noise/views/noise_view.dart';
 import '../modules/normal/controllers/normal_controller.dart';
+import '../modules/normal/views/normal_ask_view.dart';
 import '../modules/normal/views/normal_view.dart';
 import '../modules/onboarding/controllers/onboarding_controller.dart';
 import '../modules/onboarding/views/onboarding_view.dart';
@@ -29,13 +30,18 @@ import '../modules/premium/views/premium_view.dart';
 import '../modules/profile/controllers/edit_profile_controller.dart';
 import '../modules/profile/controllers/profile_controller.dart';
 import '../modules/profile/views/edit_profile_view.dart';
+import '../modules/profile/views/help_support_view.dart';
+import '../modules/profile/views/journal_lock_view.dart';
+import '../modules/profile/views/privacy_policy_view.dart';
 import '../modules/profile/views/profile_view.dart';
+import '../modules/profile/views/subscription_view.dart';
 import '../modules/rehearse/controllers/rehearse_controller.dart';
 import '../modules/rehearse/views/rehearse_detail_view.dart';
 import '../modules/rehearse/views/rehearse_view.dart';
 import '../modules/resets/controllers/resets_controller.dart';
 import '../modules/resets/views/reset_session_view.dart';
 import '../modules/resets/views/resets_view.dart';
+import '../modules/ritual_wrap/views/ritual_wrap_view.dart';
 import '../modules/spaces/controllers/spaces_controller.dart';
 import '../modules/spaces/views/spaces_view.dart';
 import '../modules/splash/controllers/splash_controller.dart';
@@ -119,6 +125,15 @@ abstract final class AppPages {
       }),
     ),
     GetPage(
+      name: AppRoutes.normalAsk,
+      page: NormalAskView.new,
+      binding: BindingsBuilder(() {
+        if (!Get.isRegistered<NormalController>()) {
+          Get.put(NormalController());
+        }
+      }),
+    ),
+    GetPage(
       name: AppRoutes.resets,
       page: ResetsView.new,
       binding: BindingsBuilder(() {
@@ -191,6 +206,32 @@ abstract final class AppPages {
       }),
     ),
     GetPage(
+      name: AppRoutes.subscription,
+      page: SubscriptionView.new,
+      binding: BindingsBuilder(() {
+        if (!Get.isRegistered<ProfileController>()) {
+          Get.put(ProfileController());
+        }
+      }),
+    ),
+    GetPage(
+      name: AppRoutes.journalLock,
+      page: JournalLockView.new,
+      binding: BindingsBuilder(() {
+        if (!Get.isRegistered<ProfileController>()) {
+          Get.put(ProfileController());
+        }
+      }),
+    ),
+    GetPage(
+      name: AppRoutes.helpSupport,
+      page: HelpSupportView.new,
+    ),
+    GetPage(
+      name: AppRoutes.privacyPolicy,
+      page: PrivacyPolicyView.new,
+    ),
+    GetPage(
       name: AppRoutes.premium,
       page: PremiumView.new,
       binding: BindingsBuilder(() {
@@ -200,6 +241,10 @@ abstract final class AppPages {
     GetPage(
       name: AppRoutes.thatMattered,
       page: ThatMatteredView.new,
+    ),
+    GetPage(
+      name: AppRoutes.ritualWrap,
+      page: RitualWrapView.new,
     ),
   ];
 }

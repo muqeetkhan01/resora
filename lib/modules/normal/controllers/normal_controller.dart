@@ -5,6 +5,7 @@ import '../../../core/services/content_items_service.dart';
 import '../../../data/mock/mock_content.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
+import '../../ritual_wrap/models/ritual_wrap_args.dart';
 
 class NormalController extends GetxController {
   NormalController({ContentItemsService? contentItemsService})
@@ -13,20 +14,27 @@ class NormalController extends GetxController {
   final ContentItemsService _contentItemsService;
 
   final selectedCategory = 'all'.obs;
-  final voiceDraft = ''.obs;
-  final currentCardIndex = 0.obs;
-  final showingVoiceEditor = false.obs;
-  final showingVoiceConfirmation = false.obs;
-  final voiceInputController = TextEditingController();
+  final sortMode = 'felt'.obs;
+  final questionDraft = ''.obs;
+
+  final askController = TextEditingController();
+
   final localVoices = <String, List<String>>{}.obs;
   final _remoteTopics = <NormalTopicItem>[].obs;
+  final _submittedTopics = <NormalTopicItem>[].obs;
 
-  List<NormalTopicItem> get _sourceTopics {
+  List<NormalTopicItem> get _baseTopics {
     if (_remoteTopics.isNotEmpty) {
       return _remoteTopics;
     }
+
     return MockContent.normalTopics;
   }
+
+  List<NormalTopicItem> get _allTopics => [
+        ..._submittedTopics,
+        ..._baseTopics,
+      ];
 
   @override
   void onInit() {
@@ -40,142 +48,145 @@ class NormalController extends GetxController {
       if (topics.isNotEmpty) {
         _remoteTopics.assignAll(topics);
       }
-      _normalizeSelection();
     } catch (_) {
       _remoteTopics.clear();
-      _normalizeSelection();
+    }
+
+    if (!categories.contains(selectedCategory.value)) {
+      selectedCategory.value = 'all';
     }
   }
 
   List<String> get categories {
     final values = <String>['all'];
-    for (final topic in _sourceTopics) {
-      final tab = topic.tab.trim();
+
+    for (final topic in _allTopics) {
+      final tab = topic.tab.trim().toLowerCase();
       if (tab.isEmpty || values.contains(tab)) {
         continue;
       }
       values.add(tab);
     }
+
     return values;
   }
 
   List<NormalTopicItem> get topics {
-    if (selectedCategory.value == 'all') {
-      return _sourceTopics;
+    final selected = selectedCategory.value;
+    final filtered = selected == 'all'
+        ? List<NormalTopicItem>.from(_allTopics)
+        : _allTopics
+            .where((topic) => topic.tab.toLowerCase() == selected)
+            .toList();
+
+    if (sortMode.value == 'latest') {
+      return filtered;
     }
 
-    return _sourceTopics
-        .where((topic) => topic.tab == selectedCategory.value)
-        .toList();
+    filtered.sort((a, b) => b.metoo.compareTo(a.metoo));
+    return filtered;
   }
 
-  NormalTopicItem get currentTopic {
-    final list = topics;
-    if (list.isEmpty) {
-      return MockContent.normalTopics.first;
+  String categoryLabel(String value) {
+    switch (value.trim().toLowerCase()) {
+      case 'all':
+        return 'all';
+      case 'overwhelm':
+        return 'release';
+      case 'regulation':
+        return 'ground';
+      case 'identity':
+        return 'clarity';
+      case 'sleep':
+        return 'restore';
+      case 'connection':
+        return 'connect';
+      default:
+        return value;
     }
-    final safeIndex = currentCardIndex.value.clamp(0, list.length - 1);
-    return list[safeIndex];
   }
-
-  bool get hasPreviousTopic => currentCardIndex.value > 0;
-
-  bool get hasNextTopic => currentCardIndex.value < topics.length - 1;
-
-  bool get canSubmitVoice => voiceDraft.value.trim().isNotEmpty;
-
-  List<String> voicesFor(NormalTopicItem topic) => [
-        ...topic.voices,
-        ...(localVoices[topic.question] ?? const <String>[]),
-      ];
 
   void selectCategory(String value) {
     selectedCategory.value = value;
-    currentCardIndex.value = 0;
-    _resetVoiceState();
   }
 
-  void previousTopic() {
-    if (!hasPreviousTopic) return;
-    currentCardIndex.value -= 1;
-    _resetVoiceState();
+  void setSortMode(String value) {
+    sortMode.value = value;
   }
 
-  void nextTopic() {
-    if (!hasNextTopic) return;
-    currentCardIndex.value += 1;
-    _resetVoiceState();
+  List<String> voicesFor(NormalTopicItem topic) {
+    return [
+      ...topic.voices,
+      ...(localVoices[topic.question] ?? const <String>[]),
+    ];
   }
 
-  void addYourVoice() {
-    showingVoiceEditor.value = true;
-    showingVoiceConfirmation.value = false;
-    voiceDraft.value = '';
-    voiceInputController.clear();
-  }
-
-  void updateVoiceDraft(String value) {
-    voiceDraft.value = value;
-  }
-
-  void cancelVoiceEntry() {
-    _resetVoiceState();
-  }
-
-  void submitVoice() {
-    final text = voiceDraft.value.trim();
-    if (text.isEmpty) return;
-
-    final existing =
-        List<String>.from(localVoices[currentTopic.question] ?? const []);
-    existing.add(text);
-    localVoices[currentTopic.question] = existing;
-
-    showingVoiceEditor.value = false;
-    showingVoiceConfirmation.value = true;
-    voiceDraft.value = '';
-    voiceInputController.clear();
-  }
-
-  void dismissVoiceConfirmation() {
-    _resetVoiceState();
-  }
-
-  void openRelatedReset() {
-    Get.toNamed(AppRoutes.resets);
-  }
-
-  void askDifferentQuestion() {
-    Get.toNamed(AppRoutes.chat);
-  }
-
-  void _normalizeSelection() {
-    final tabs = categories;
-    if (!tabs.contains(selectedCategory.value)) {
-      selectedCategory.value = 'all';
-    }
-
-    final list = topics;
-    if (list.isEmpty) {
-      currentCardIndex.value = 0;
+  void addVoiceFor({
+    required NormalTopicItem topic,
+    required String voice,
+  }) {
+    final text = voice.trim();
+    if (text.isEmpty) {
       return;
     }
 
-    if (currentCardIndex.value > list.length - 1) {
-      currentCardIndex.value = list.length - 1;
-    }
+    final existing = List<String>.from(localVoices[topic.question] ?? const []);
+    existing.add(text);
+    localVoices[topic.question] = existing;
   }
 
-  void _resetVoiceState() {
-    showingVoiceEditor.value = false;
-    showingVoiceConfirmation.value = false;
-    voiceDraft.value = '';
-    voiceInputController.clear();
+  void openAskQuestion() {
+    Get.toNamed(
+      AppRoutes.ritualWrap,
+      arguments: RitualWrapArgs.entry(
+        feature: RitualWrapFeature.normal,
+        nextRoute: AppRoutes.normalAsk,
+      ).toMap(),
+    );
+  }
+
+  void updateQuestionDraft(String value) {
+    questionDraft.value = value;
+  }
+
+  bool get canSubmitQuestion => questionDraft.value.trim().isNotEmpty;
+
+  void submitQuestion() {
+    final text = questionDraft.value.trim();
+    if (text.isEmpty) {
+      return;
+    }
+
+    final category =
+        selectedCategory.value == 'all' ? 'community' : selectedCategory.value;
+
+    _submittedTopics.insert(
+      0,
+      NormalTopicItem(
+        tab: category,
+        question: text,
+        expertAnswer:
+            'Thank you for sharing this. Our team will respond with a grounded answer soon.',
+        metoo: 1,
+        voices: const [],
+        expertByline: 'Resora',
+      ),
+    );
+
+    askController.clear();
+    questionDraft.value = '';
+
+    Get.offNamed(
+      AppRoutes.ritualWrap,
+      arguments: RitualWrapArgs.exit(
+        feature: RitualWrapFeature.normal,
+      ).toMap(),
+    );
   }
 
   @override
   void onClose() {
-    voiceInputController.dispose();
+    askController.dispose();
     super.onClose();
   }
 }

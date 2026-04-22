@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
+import '../../ritual_wrap/models/ritual_wrap_args.dart';
 import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/app_background.dart';
@@ -59,7 +60,12 @@ class _JournalEditorViewState extends State<JournalEditorView> {
               ),
               const Spacer(),
               TextButton(
-                onPressed: () => Get.offNamed(AppRoutes.thatMattered),
+                onPressed: () => Get.offNamed(
+                  AppRoutes.ritualWrap,
+                  arguments: RitualWrapArgs.exit(
+                    feature: RitualWrapFeature.journal,
+                  ).toMap(),
+                ),
                 child: Text(
                   'done',
                   style:

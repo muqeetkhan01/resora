@@ -22,6 +22,7 @@ dependencies:
   intl:
   image_picker:
   just_audio: ^0.9.46
+  http: ^1.2.2
 
 dev_dependencies:
   flutter_test:

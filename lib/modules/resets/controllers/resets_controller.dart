@@ -4,6 +4,7 @@ import '../../../core/constants/app_assets.dart';
 import '../../../data/mock/mock_content.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
+import '../../ritual_wrap/models/ritual_wrap_args.dart';
 
 class ResetsController extends GetxController {
   final selectedCategory = 'all'.obs;
@@ -42,18 +43,23 @@ class ResetsController extends GetxController {
 
   void openReset(ResetOption option) {
     Get.toNamed(
-      AppRoutes.audioPlayer,
-      arguments: {
-        'track': AudioTrack(
-          title: option.title,
-          category: option.category,
-          description: option.subtitle,
-          duration: option.duration,
-          assetPath: _assetForReset(option),
-        ),
-        'imagePath': AppAssets.archway,
-        'minimal': true,
-      },
+      AppRoutes.ritualWrap,
+      arguments: RitualWrapArgs.entry(
+        feature: RitualWrapFeature.meditation,
+        nextRoute: AppRoutes.audioPlayer,
+        nextArguments: {
+          'track': AudioTrack(
+            title: option.title,
+            category: option.category,
+            description: option.subtitle,
+            duration: option.duration,
+            assetPath: _assetForReset(option),
+          ),
+          'imagePath': AppAssets.archway,
+          'minimal': true,
+          'ritualFeature': RitualWrapFeature.meditation,
+        },
+      ).toMap(),
     );
   }
 

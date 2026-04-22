@@ -4,6 +4,7 @@ import '../../../core/services/content_items_service.dart';
 import '../../../data/mock/mock_content.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
+import '../../ritual_wrap/models/ritual_wrap_args.dart';
 
 class NoiseController extends GetxController {
   NoiseController({ContentItemsService? contentItemsService})
@@ -67,6 +68,16 @@ class NoiseController extends GetxController {
   }
 
   void openTrack(AudioTrack track) {
-    Get.toNamed(AppRoutes.audioPlayer, arguments: track);
+    Get.toNamed(
+      AppRoutes.ritualWrap,
+      arguments: RitualWrapArgs.entry(
+        feature: RitualWrapFeature.asmr,
+        nextRoute: AppRoutes.audioPlayer,
+        nextArguments: {
+          'track': track,
+          'ritualFeature': RitualWrapFeature.asmr,
+        },
+      ).toMap(),
+    );
   }
 }

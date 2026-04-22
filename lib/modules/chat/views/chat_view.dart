@@ -9,6 +9,7 @@ import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/centered_back_header.dart';
 import '../controllers/chat_controller.dart';
+import '../../ritual_wrap/models/ritual_wrap_args.dart';
 
 class ChatView extends GetView<ChatController> {
   const ChatView({super.key, this.rootTab = false});
@@ -17,26 +18,54 @@ class ChatView extends GetView<ChatController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.canvas,
-      body: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-            child: _ChatContent(rootTab: rootTab),
+    final routeArgs = _ChatRouteArgs.from(Get.arguments);
+    final showRitualExit =
+        !rootTab && routeArgs.ritualFeature == RitualWrapFeature.talk;
+
+    return PopScope(
+      canPop: !showRitualExit,
+      onPopInvoked: (didPop) {
+        if (!didPop && showRitualExit) {
+          _openRitualExit(routeArgs.ritualFeature!);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.canvas,
+        body: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+              child: _ChatContent(
+                rootTab: rootTab,
+                onBack: showRitualExit
+                    ? () => _openRitualExit(routeArgs.ritualFeature!)
+                    : () => Get.back(),
+              ),
+            ),
           ),
         ),
       ),
     );
   }
+
+  void _openRitualExit(String feature) {
+    Get.offNamed(
+      AppRoutes.ritualWrap,
+      arguments: RitualWrapArgs.exit(feature: feature).toMap(),
+    );
+  }
 }
 
 class _ChatContent extends GetView<ChatController> {
-  const _ChatContent({required this.rootTab});
+  const _ChatContent({
+    required this.rootTab,
+    required this.onBack,
+  });
 
   final bool rootTab;
+  final VoidCallback onBack;
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +76,7 @@ class _ChatContent extends GetView<ChatController> {
           () => _ChatHeader(
             rootTab: rootTab,
             showConversationHeader: controller.messages.isNotEmpty,
+            onBack: onBack,
           ),
         ),
         const SizedBox(height: AppSpacing.md),
@@ -100,10 +130,12 @@ class _ChatHeader extends StatelessWidget {
   const _ChatHeader({
     required this.rootTab,
     required this.showConversationHeader,
+    required this.onBack,
   });
 
   final bool rootTab;
   final bool showConversationHeader;
+  final VoidCallback onBack;
 
   @override
   Widget build(BuildContext context) {
@@ -148,6 +180,7 @@ class _ChatHeader extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: AppSpacing.lg),
       child: CenteredBackHeader(
+        onBack: onBack,
         title:
             showConversationHeader ? 'what\'s on your mind?' : 'talk to resora',
         trailing: IconButton(
@@ -162,6 +195,24 @@ class _ChatHeader extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _ChatRouteArgs {
+  const _ChatRouteArgs({
+    this.ritualFeature,
+  });
+
+  final String? ritualFeature;
+
+  factory _ChatRouteArgs.from(dynamic value) {
+    if (value is Map) {
+      return _ChatRouteArgs(
+        ritualFeature: value['ritualFeature'] as String?,
+      );
+    }
+
+    return const _ChatRouteArgs();
   }
 }
 

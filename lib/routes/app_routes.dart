@@ -9,6 +9,7 @@ abstract final class AppRoutes {
   static const chat = '/chat';
   static const spaces = '/spaces';
   static const normal = '/normal';
+  static const normalAsk = '/normal-ask';
   static const resets = '/resets';
   static const resetSession = '/reset-session';
   static const noise = '/noise';
@@ -21,6 +22,11 @@ abstract final class AppRoutes {
   static const editProfile = '/edit-profile';
   static const community = '/community';
   static const premium = '/premium';
+  static const subscription = '/subscription';
+  static const journalLock = '/journal-lock';
+  static const helpSupport = '/help-support';
+  static const privacyPolicy = '/privacy-policy';
   static const rehearseDetail = '/rehearse-detail';
   static const thatMattered = '/that-mattered';
+  static const ritualWrap = '/ritual-wrap';
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
@@ -13,6 +12,8 @@ class NormalView extends GetView<NormalController> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       backgroundColor: AppColors.canvas,
       body: SafeArea(
@@ -29,31 +30,65 @@ class NormalView extends GetView<NormalController> {
               const CenteredBackHeader(title: 'is this normal'),
               const SizedBox(height: AppSpacing.lg),
               _CategoryTabs(controller: controller),
-              const SizedBox(height: AppSpacing.lg),
-              Expanded(
-                child: Obx(() {
-                  final topic = controller.currentTopic;
-                  final voices = controller.voicesFor(topic);
-                  final isEditingVoice = controller.showingVoiceEditor.value;
-                  final isVoiceConfirmed =
-                      controller.showingVoiceConfirmation.value;
-                  final voiceDraft = controller.voiceDraft.value;
-
-                  return AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 220),
-                    child: SingleChildScrollView(
-                      key: ValueKey(
-                        '${controller.selectedCategory.value}-${controller.currentCardIndex.value}-$isEditingVoice-$isVoiceConfirmed',
-                      ),
-                      child: _NormalTopicDetail(
-                        topic: topic,
-                        voices: voices,
-                        controller: controller,
-                        isEditingVoice: isEditingVoice,
-                        isVoiceConfirmed: isVoiceConfirmed,
-                        canSubmitVoice: voiceDraft.trim().isNotEmpty,
+              const SizedBox(height: AppSpacing.md),
+              Obx(
+                () => Row(
+                  children: [
+                    _SortChip(
+                      label: 'most felt',
+                      selected: controller.sortMode.value == 'felt',
+                      onTap: () => controller.setSortMode('felt'),
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                    _SortChip(
+                      label: 'latest',
+                      selected: controller.sortMode.value == 'latest',
+                      onTap: () => controller.setSortMode('latest'),
+                    ),
+                    const Spacer(),
+                    TextButton(
+                      onPressed: controller.openAskQuestion,
+                      child: Text(
+                        'ask anonymously',
+                        style: textTheme.bodySmall?.copyWith(
+                          color: AppColors.primary,
+                          letterSpacing: 1,
+                        ),
                       ),
                     ),
+                  ],
+                ),
+              ),
+              const Divider(height: 1, color: AppColors.line),
+              const SizedBox(height: AppSpacing.md),
+              Expanded(
+                child: Obx(() {
+                  final topics = controller.topics;
+                  if (topics.isEmpty) {
+                    return Center(
+                      child: Text(
+                        'No topics yet for this category.',
+                        style: textTheme.bodyMedium,
+                      ),
+                    );
+                  }
+
+                  return ListView.separated(
+                    itemCount: topics.length,
+                    separatorBuilder: (_, __) => const Divider(height: 1),
+                    itemBuilder: (context, index) {
+                      final topic = topics[index];
+
+                      return InkWell(
+                        onTap: () => _openTopicSheet(context, topic),
+                        child: _TopicCard(
+                          topic: topic,
+                          categoryLabel:
+                              controller.categoryLabel(topic.tab).toUpperCase(),
+                          voicesCount: controller.voicesFor(topic).length,
+                        ),
+                      );
+                    },
                   );
                 }),
               ),
@@ -61,6 +96,18 @@ class NormalView extends GetView<NormalController> {
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _openTopicSheet(BuildContext context, NormalTopicItem topic) {
+    return showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.canvas,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => _TopicSheet(topic: topic, controller: controller),
     );
   }
 }
@@ -74,511 +121,296 @@ class _CategoryTabs extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          height: 38,
-          child: Obx(() {
-            final selectedCategory = controller.selectedCategory.value;
+    return SizedBox(
+      height: 36,
+      child: Obx(() {
+        final selected = controller.selectedCategory.value;
 
-            return ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: controller.categories.length,
-              separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.lg),
-              itemBuilder: (context, index) {
-                final category = controller.categories[index];
-                final selected = selectedCategory == category;
+        return ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemCount: controller.categories.length,
+          separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.md),
+          itemBuilder: (context, index) {
+            final category = controller.categories[index];
+            final isSelected = selected == category;
 
-                return InkWell(
-                  onTap: () => controller.selectCategory(category),
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
-                  child: Container(
-                    padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: selected
-                              ? AppColors.primary
-                              : Colors.transparent,
-                          width: 2,
-                        ),
-                      ),
-                    ),
-                    child: Text(
-                      category,
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: selected
-                            ? AppColors.primary
-                            : AppColors.placeholder,
-                        fontWeight:
-                            selected ? FontWeight.w700 : FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                );
-              },
+            return TextButton(
+              onPressed: () => controller.selectCategory(category),
+              style: TextButton.styleFrom(padding: EdgeInsets.zero),
+              child: Text(
+                controller.categoryLabel(category).toLowerCase(),
+                style: textTheme.bodySmall?.copyWith(
+                  color: isSelected ? AppColors.primary : AppColors.placeholder,
+                  decoration: isSelected
+                      ? TextDecoration.underline
+                      : TextDecoration.none,
+                ),
+              ),
             );
-          }),
-        ),
-        const Divider(height: 1, color: AppColors.line),
-      ],
+          },
+        );
+      }),
     );
   }
 }
 
-class _NormalTopicDetail extends StatelessWidget {
-  const _NormalTopicDetail({
-    required this.topic,
-    required this.voices,
-    required this.controller,
-    required this.isEditingVoice,
-    required this.isVoiceConfirmed,
-    required this.canSubmitVoice,
-  });
-
-  final NormalTopicItem topic;
-  final List<String> voices;
-  final NormalController controller;
-  final bool isEditingVoice;
-  final bool isVoiceConfirmed;
-  final bool canSubmitVoice;
-
-  String _formatMetoo(int value) {
-    if (value >= 1000) {
-      return '${(value / 1000).toStringAsFixed(1)}k';
-    }
-
-    return '$value';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(topic.question, style: textTheme.headlineLarge),
-        const SizedBox(height: AppSpacing.md),
-        Row(
-          children: [
-            const Icon(
-              Icons.favorite_rounded,
-              size: 15,
-              color: AppColors.primary,
-            ),
-            const SizedBox(width: AppSpacing.xs),
-            Text(
-              '${_formatMetoo(topic.metoo)} felt this too',
-              style: textTheme.bodyMedium?.copyWith(
-                color: AppColors.primary,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.xl),
-        const Divider(color: AppColors.line),
-        const SizedBox(height: AppSpacing.xl),
-        Text(
-          'EXPERT ANSWER · ${topic.expertByline}',
-          style: textTheme.labelMedium?.copyWith(
-            color: AppColors.placeholder,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 1.6,
-          ),
-        ),
-        const SizedBox(height: AppSpacing.md),
-        Text(
-          topic.expertAnswer,
-          style: textTheme.bodyLarge?.copyWith(
-            color: AppColors.warmDark,
-            height: 1.9,
-          ),
-        ),
-        const SizedBox(height: AppSpacing.xl),
-        const Divider(color: AppColors.line),
-        const SizedBox(height: AppSpacing.xl),
-        Text(
-          'OTHERS ARE SAYING',
-          style: textTheme.labelMedium?.copyWith(
-            color: AppColors.placeholder,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 1.6,
-          ),
-        ),
-        const SizedBox(height: AppSpacing.md),
-        ...List.generate(voices.length, (index) {
-          final voice = voices[index];
-
-          return Padding(
-            padding: EdgeInsets.only(
-              bottom: index == voices.length - 1
-                  ? AppSpacing.lg
-                  : AppSpacing.xl,
-            ),
-            child: _VoiceQuote(
-              text: voice,
-              showDivider: index != voices.length - 1,
-            ),
-          );
-        }),
-        _TopicNavigation(controller: controller),
-        const SizedBox(height: AppSpacing.xl),
-        const Divider(color: AppColors.line),
-        const SizedBox(height: AppSpacing.lg),
-        if (isEditingVoice)
-          _VoiceComposer(
-            controller: controller,
-            canSubmitVoice: canSubmitVoice,
-          )
-        else if (isVoiceConfirmed)
-          _VoiceConfirmation(controller: controller)
-        else
-          _ActionLinks(controller: controller),
-      ],
-    );
-  }
-}
-
-class _VoiceQuote extends StatelessWidget {
-  const _VoiceQuote({
-    required this.text,
-    required this.showDivider,
-  });
-
-  final String text;
-  final bool showDivider;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '"$text"',
-          style: textTheme.bodyLarge?.copyWith(
-            color: AppColors.placeholder,
-            fontStyle: FontStyle.italic,
-            height: 1.85,
-          ),
-        ),
-        const SizedBox(height: AppSpacing.xs),
-        Text(
-          'someone feeling this too',
-          style: textTheme.bodyMedium?.copyWith(
-            color: AppColors.line.withOpacity(0.95),
-          ),
-        ),
-        if (showDivider) ...[
-          const SizedBox(height: AppSpacing.lg),
-          const Divider(color: AppColors.line),
-        ],
-      ],
-    );
-  }
-}
-
-class _TopicNavigation extends StatelessWidget {
-  const _TopicNavigation({required this.controller});
-
-  final NormalController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    final count = controller.topics.length;
-    final currentIndex = controller.currentCardIndex.value;
-    const activeColor = AppColors.primary;
-    final inactiveColor = AppColors.line.withOpacity(0.85);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: List.generate(
-            count,
-            (index) => Container(
-              width: index == currentIndex ? 26 : 10,
-              height: 10,
-              margin: const EdgeInsets.only(right: AppSpacing.xs),
-              decoration: BoxDecoration(
-                color: index == currentIndex ? activeColor : inactiveColor,
-                borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: AppSpacing.md),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _NavLink(
-              label: 'prev',
-              icon: AppIcons.back,
-              enabled: controller.hasPreviousTopic,
-              alignment: MainAxisAlignment.start,
-              onTap: controller.previousTopic,
-            ),
-            _NavLink(
-              label: 'next',
-              icon: AppIcons.forward,
-              enabled: controller.hasNextTopic,
-              alignment: MainAxisAlignment.end,
-              onTap: controller.nextTopic,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _NavLink extends StatelessWidget {
-  const _NavLink({
+class _SortChip extends StatelessWidget {
+  const _SortChip({
     required this.label,
-    required this.icon,
-    required this.enabled,
-    required this.alignment,
+    required this.selected,
     required this.onTap,
   });
 
   final String label;
-  final IconData icon;
-  final bool enabled;
-  final MainAxisAlignment alignment;
+  final bool selected;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final color = enabled ? AppColors.primary : AppColors.line.withOpacity(0.9);
-
     return InkWell(
-      onTap: enabled ? onTap : null,
+      onTap: onTap,
       borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: alignment,
-        children: [
-          if (icon == AppIcons.back) ...[
-            Icon(icon, size: 16, color: color),
-            const SizedBox(width: AppSpacing.xs),
-          ],
-          Text(
-            label,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: color,
-                ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm,
+          vertical: AppSpacing.xs,
+        ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
+          color: selected ? AppColors.primary.withOpacity(0.08) : Colors.white,
+          border: Border.all(
+            color:
+                selected ? AppColors.primary.withOpacity(0.3) : AppColors.line,
           ),
-          if (icon == AppIcons.forward) ...[
-            const SizedBox(width: AppSpacing.xs),
-            Icon(icon, size: 16, color: color),
-          ],
+        ),
+        child: Text(
+          label,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: selected ? AppColors.primary : AppColors.placeholder,
+                letterSpacing: 0.7,
+              ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TopicCard extends StatelessWidget {
+  const _TopicCard({
+    required this.topic,
+    required this.categoryLabel,
+    required this.voicesCount,
+  });
+
+  final NormalTopicItem topic;
+  final String categoryLabel;
+  final int voicesCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        vertical: AppSpacing.md,
+        horizontal: AppSpacing.xs,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            categoryLabel,
+            style: textTheme.labelMedium?.copyWith(
+              color: AppColors.terracotta,
+              letterSpacing: 1.5,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            '"${topic.question}"',
+            style: textTheme.headlineLarge?.copyWith(
+              color: AppColors.warmDark,
+              height: 1.45,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '${topic.metoo} felt this',
+                style: textTheme.bodySmall?.copyWith(
+                  color: AppColors.placeholder,
+                ),
+              ),
+              Text(
+                voicesCount == 0
+                    ? 'be the first voice'
+                    : '$voicesCount voice${voicesCount == 1 ? '' : 's'}',
+                style: textTheme.bodySmall?.copyWith(
+                  color: AppColors.placeholder,
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
 }
 
-class _ActionLinks extends StatelessWidget {
-  const _ActionLinks({required this.controller});
-
-  final NormalController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _ActionRow(
-          label: 'add your voice',
-          emphasized: true,
-          onTap: controller.addYourVoice,
-        ),
-        const Divider(color: AppColors.line),
-        _ActionRow(
-          label: 'ask a different question',
-          onTap: controller.askDifferentQuestion,
-        ),
-      ],
-    );
-  }
-}
-
-class _VoiceConfirmation extends StatelessWidget {
-  const _VoiceConfirmation({required this.controller});
-
-  final NormalController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('your voice is in.', style: textTheme.headlineLarge),
-        const SizedBox(height: AppSpacing.xs),
-        Text(
-          'Shared anonymously. Someone will feel less alone because of it.',
-          style: textTheme.bodyLarge?.copyWith(
-            color: AppColors.placeholder,
-          ),
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        InkWell(
-          onTap: controller.dismissVoiceConfirmation,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'back',
-                style: textTheme.bodyMedium?.copyWith(
-                  color: AppColors.primary,
-                ),
-              ),
-              const SizedBox(width: AppSpacing.xs),
-              const Icon(
-                AppIcons.forward,
-                size: 16,
-                color: AppColors.primary,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _VoiceComposer extends StatelessWidget {
-  const _VoiceComposer({
+class _TopicSheet extends StatefulWidget {
+  const _TopicSheet({
+    required this.topic,
     required this.controller,
-    required this.canSubmitVoice,
   });
 
+  final NormalTopicItem topic;
   final NormalController controller;
-  final bool canSubmitVoice;
+
+  @override
+  State<_TopicSheet> createState() => _TopicSheetState();
+}
+
+class _TopicSheetState extends State<_TopicSheet> {
+  final _voiceController = TextEditingController();
+
+  @override
+  void dispose() {
+    _voiceController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final actionColor =
-        canSubmitVoice ? AppColors.primary : AppColors.placeholder;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'YOUR VOICE · ANONYMOUS',
-          style: textTheme.labelMedium?.copyWith(
-            color: AppColors.primary,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 1.6,
-          ),
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        TextField(
-          controller: controller.voiceInputController,
-          onChanged: controller.updateVoiceDraft,
-          autofocus: true,
-          minLines: 3,
-          maxLines: 5,
-          decoration: const InputDecoration(
-            hintText: 'What has this felt like for you?',
-            border: InputBorder.none,
-            enabledBorder: InputBorder.none,
-            focusedBorder: InputBorder.none,
-            contentPadding: EdgeInsets.zero,
-          ),
-          style: textTheme.bodyLarge?.copyWith(
-            color: AppColors.primary,
-            height: 1.8,
-          ),
-        ),
-        const Divider(color: AppColors.line),
-        const SizedBox(height: AppSpacing.sm),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        MediaQuery.of(context).viewInsets.bottom + AppSpacing.xl,
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            InkWell(
-              onTap: controller.cancelVoiceEntry,
-              borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+            Center(
+              child: Container(
+                width: 34,
+                height: 3,
+                margin: const EdgeInsets.only(bottom: AppSpacing.lg),
+                color: AppColors.line,
+              ),
+            ),
+            Text(
+              widget.controller.categoryLabel(widget.topic.tab).toUpperCase(),
+              style: textTheme.labelMedium?.copyWith(
+                color: AppColors.terracotta,
+                letterSpacing: 1.5,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              '"${widget.topic.question}"',
+              style: textTheme.headlineLarge?.copyWith(
+                color: AppColors.warmDark,
+                height: 1.4,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              '${widget.topic.metoo} people felt this too',
+              style: textTheme.bodySmall,
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: const BoxDecoration(
+                border: Border(
+                  left: BorderSide(color: AppColors.primary, width: 2),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'EXPERT ANSWER · ${widget.topic.expertByline}',
+                    style: textTheme.labelMedium?.copyWith(
+                      color: AppColors.primary,
+                      letterSpacing: 1.4,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    widget.topic.expertAnswer,
+                    style: textTheme.bodyLarge?.copyWith(
+                      color: AppColors.warmDark,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            if (widget.controller.voicesFor(widget.topic).isNotEmpty) ...[
+              Text(
+                'COMMUNITY VOICES',
+                style: textTheme.labelMedium?.copyWith(
+                  color: AppColors.placeholder,
+                  letterSpacing: 1.4,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              ...widget.controller.voicesFor(widget.topic).map(
+                    (voice) => Padding(
+                      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                      child: Text(
+                        '"$voice"',
+                        style: textTheme.bodyLarge?.copyWith(
+                          color: AppColors.placeholder,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ),
+                  ),
+              const SizedBox(height: AppSpacing.md),
+            ],
+            TextField(
+              controller: _voiceController,
+              minLines: 2,
+              maxLines: 4,
+              decoration: const InputDecoration(
+                hintText: 'add your voice (anonymous)',
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () {
+                  widget.controller.addVoiceFor(
+                    topic: widget.topic,
+                    voice: _voiceController.text,
+                  );
+                  Navigator.of(context).pop();
+                },
                 child: Text(
-                  'cancel',
+                  'submit voice',
                   style: textTheme.bodyMedium?.copyWith(
-                    color: AppColors.placeholder,
+                    color: AppColors.primary,
+                    letterSpacing: 1,
                   ),
                 ),
               ),
             ),
-            InkWell(
-              onTap: canSubmitVoice ? controller.submitVoice : null,
-              borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'share anonymously',
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: actionColor,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.xs),
-                    Icon(
-                      AppIcons.forward,
-                      size: 16,
-                      color: actionColor,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _ActionRow extends StatelessWidget {
-  const _ActionRow({
-    required this.label,
-    required this.onTap,
-    this.emphasized = false,
-  });
-
-  final String label;
-  final VoidCallback onTap;
-  final bool emphasized;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final color = emphasized ? AppColors.primary : AppColors.placeholder;
-
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                label,
-                style: textTheme.titleMedium?.copyWith(
-                  color: color,
-                ),
-              ),
-            ),
-            Icon(AppIcons.forward, size: 18, color: color),
           ],
         ),
       ),

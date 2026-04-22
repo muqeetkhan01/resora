@@ -9,11 +9,26 @@ abstract final class MockContent {
 
   static const onboarding = [
     OnboardingItem(
-      title: 'Support for real moments',
-      subtitle: 'Calm, practical guidance when your day gets loud.',
-      caption: 'No noise. No fluff. Just help you can use right away.',
+      title: 'Life gets\nbetter when\nyou do.',
+      subtitle: 'A space to reset, reflect, and return to yourself.',
+      caption: 'ground',
       icon: AppIcons.aiGuidance,
-      accentColor: AppColors.primary,
+      accentColor: AppColors.sage,
+    ),
+    OnboardingItem(
+      title: 'Small shifts.\nReal change.',
+      subtitle:
+          'Gentle prompts, science-backed resets, and a community that gets it.',
+      caption: 'clarity',
+      icon: AppIcons.resets,
+      accentColor: AppColors.warmIvory,
+    ),
+    OnboardingItem(
+      title: 'You already\nknow the way.',
+      subtitle: 'Resora helps you hear yourself more clearly.',
+      caption: 'restore',
+      icon: AppIcons.journal,
+      accentColor: AppColors.softBlueGrey,
     ),
   ];
 
@@ -556,23 +571,22 @@ abstract final class MockContent {
 
   static const profileOptions = [
     ProfileOption(
-      label: 'Journal lock',
-      icon: AppIcons.privacy,
-      trailing: 'Off',
-    ),
-    ProfileOption(
       label: 'Subscription',
       icon: AppIcons.premium,
-      route: AppRoutes.premium,
+      route: AppRoutes.subscription,
     ),
-    ProfileOption(label: 'Privacy policy', icon: AppIcons.privacy),
+    ProfileOption(
+      label: 'Privacy policy',
+      icon: AppIcons.privacy,
+      route: AppRoutes.privacyPolicy,
+    ),
     ProfileOption(
       label: 'Help & support',
       icon: AppIcons.help,
-      route: AppRoutes.chat,
+      route: AppRoutes.helpSupport,
     ),
     ProfileOption(
-      label: 'Logout',
+      label: 'Log out',
       icon: AppIcons.logout,
       route: AppRoutes.welcome,
     ),

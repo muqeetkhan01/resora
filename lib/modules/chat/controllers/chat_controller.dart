@@ -1,9 +1,17 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
+import '../../../core/controllers/app_session_controller.dart';
+import '../../../core/services/resora_ai_service.dart';
 import '../../../data/models/app_models.dart';
 
 class ChatController extends GetxController {
+  ChatController({ResoraAiService? aiService})
+      : _aiService = aiService ?? ResoraAiService();
+
+  final ResoraAiService _aiService;
+  final _session = Get.find<AppSessionController>();
+
   final inputController = TextEditingController();
   final scrollController = ScrollController();
   final messages = <ChatMessageModel>[].obs;
@@ -20,7 +28,7 @@ class ChatController extends GetxController {
     inputController.addListener(_handleDraftChanged);
   }
 
-  void sendMessage([String? preset]) {
+  Future<void> sendMessage([String? preset]) async {
     final text = (preset ?? inputController.text).trim();
     if (text.isEmpty) return;
 
@@ -30,18 +38,31 @@ class ChatController extends GetxController {
     isTyping.value = true;
     _scrollToBottom();
 
-    Future<void>.delayed(const Duration(milliseconds: 700), () {
+    try {
+      final reply = await _aiService.generateReply(
+        messages: messages.toList(),
+        userName: _session.displayName,
+      );
       messages.add(
         ChatMessageModel(
-          text: _buildMockReply(text),
+          text: reply,
           isUser: false,
           time: 'Now',
         ),
       );
+    } catch (error) {
+      messages.add(
+        ChatMessageModel(
+          text: _friendlyError(error),
+          isUser: false,
+          time: 'Now',
+        ),
+      );
+    } finally {
       _pendingReplies = (_pendingReplies - 1).clamp(0, 999);
       isTyping.value = _pendingReplies > 0;
       _scrollToBottom();
-    });
+    }
   }
 
   void _handleDraftChanged() {
@@ -51,28 +72,42 @@ class ChatController extends GetxController {
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!scrollController.hasClients) return;
-      scrollController.animateTo(
-        scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 220),
-        curve: Curves.easeOut,
-      );
+
+      // This controller can be attached to both the dashboard tab chat and
+      // the pushed chat route at the same time. Scroll each attached position
+      // directly to avoid `position` single-client assertion.
+      for (final position in scrollController.positions.toList()) {
+        position.animateTo(
+          position.maxScrollExtent,
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOut,
+        );
+      }
     });
   }
 
-  String _buildMockReply(String text) {
-    final lowered = text.toLowerCase();
+  String _friendlyError(Object error) {
+    final raw = error.toString().trim();
+    final message = raw.startsWith('Exception: ')
+        ? raw.replaceFirst('Exception: ', '').trim()
+        : raw;
 
-    if (lowered.contains('snap') || lowered.contains('overwhelmed')) {
-      return 'Let’s slow this down. That is a normal response to an overloaded moment. Start with one two-minute reset, then come back if you want help with what to say next.';
-    }
-    if (lowered.contains('conversation') || lowered.contains('script')) {
-      return 'It makes sense that you want a cleaner way into this conversation. Keep it short first. Say the point, then the ask. If you want, I can help you rehearse the exact wording.';
-    }
-    if (lowered.contains('journal')) {
-      return 'You do not need a long entry. Write three honest lines, then stop. If it helps, open Journal with the prompt: what helped more than I expected?';
+    if (message.isEmpty) {
+      return 'I could not complete that reply right now. Please try again.';
     }
 
-    return 'That is a normal response to a full moment. Start smaller than your mind wants to. Take one breath, lower the pace, and choose the next helpful step rather than the whole solution.';
+    if (message.contains('not configured')) {
+      return 'Talk to Resora is almost ready. API key is missing.';
+    }
+    if (message.toLowerCase().contains('timeout')) {
+      return 'I could not reach the assistant in time. Try again in a moment.';
+    }
+    if (message.toLowerCase().contains('openai')) {
+      return message;
+    }
+
+    // Keep direct message so setup issues (401/429/model access) are visible.
+    return message;
   }
 
   @override

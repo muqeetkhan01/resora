@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 
 import '../../../core/controllers/app_session_controller.dart';
 import '../../../data/mock/mock_content.dart';
+import '../../ritual_wrap/models/ritual_wrap_args.dart';
 import '../../../routes/app_routes.dart';
 import '../../dashboard/controllers/dashboard_controller.dart';
 
@@ -23,16 +24,24 @@ class HomeController extends GetxController {
   }
 
   void openTalk() {
-    if (Get.isRegistered<DashboardController>()) {
-      Get.find<DashboardController>().switchTab(1);
-      return;
-    }
-
-    Get.offNamed(AppRoutes.dashboard, arguments: 1);
+    Get.toNamed(
+      AppRoutes.ritualWrap,
+      arguments: RitualWrapArgs.entry(
+        feature: RitualWrapFeature.talk,
+        nextRoute: AppRoutes.chat,
+        nextArguments: {'ritualFeature': RitualWrapFeature.talk},
+      ).toMap(),
+    );
   }
 
   void openJournal() {
-    Get.toNamed(AppRoutes.journal);
+    Get.toNamed(
+      AppRoutes.ritualWrap,
+      arguments: RitualWrapArgs.entry(
+        feature: RitualWrapFeature.journal,
+        nextRoute: AppRoutes.journal,
+      ).toMap(),
+    );
   }
 
   void openNormal() {
