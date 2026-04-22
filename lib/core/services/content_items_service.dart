@@ -62,6 +62,45 @@ class ContentItemsService {
     return items.map((item) => item.value).toList();
   }
 
+  Future<List<JournalPrompt>> loadJournalPrompts() async {
+    final snapshot = await _contentItems
+        .where('status', isEqualTo: 'published')
+        .where('type', isEqualTo: 'journal_prompt')
+        .get();
+
+    final items = <_Sortable<JournalPrompt>>[];
+    for (final doc in snapshot.docs) {
+      final data = doc.data();
+      final prompt = _firstNonEmpty([
+        _string(data['title']),
+        _string(data['prompt']),
+        _string(data['question']),
+        _string(data['body']),
+      ]);
+      if (prompt.isEmpty) {
+        continue;
+      }
+
+      final category = _firstNonEmpty([
+        _string(data['category']),
+        'clarity',
+      ]).toLowerCase();
+
+      items.add(
+        _Sortable(
+          sortOrder: _toInt(data['sortOrder']),
+          value: JournalPrompt(
+            category: category,
+            prompt: prompt,
+          ),
+        ),
+      );
+    }
+
+    items.sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+    return items.map((item) => item.value).toList();
+  }
+
   Future<List<KeyTermItem>> loadKeyTerms() async {
     final snapshot = await _contentItems
         .where('status', isEqualTo: 'published')
