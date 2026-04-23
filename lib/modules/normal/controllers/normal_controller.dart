@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -32,36 +34,45 @@ class NormalController extends GetxController {
   final _savedVoices = <String, List<String>>{}.obs;
   final _remoteTopics = <NormalTopicItem>[].obs;
   final _submittedTopics = <NormalTopicItem>[].obs;
+  StreamSubscription<List<NormalTopicItem>>? _remoteTopicsSubscription;
+  StreamSubscription<List<NormalTopicItem>>? _submittedTopicsSubscription;
+  StreamSubscription<Map<String, List<String>>>? _voicesSubscription;
 
   List<NormalTopicItem> get _baseTopics => _remoteTopics;
 
-  List<NormalTopicItem> get _allTopics => [
-        ..._submittedTopics,
-        ..._baseTopics,
-      ];
+  List<NormalTopicItem> get _allTopics {
+    final publishedKeys =
+        _baseTopics.map((item) => _topicKey(item.question)).toSet();
+    final pendingUserTopics = _submittedTopics
+        .where((item) => !publishedKeys.contains(_topicKey(item.question)))
+        .toList();
+
+    return [
+      ...pendingUserTopics,
+      ..._baseTopics,
+    ];
+  }
 
   @override
   void onInit() {
     super.onInit();
-    _loadTopics();
+    _startLiveSync();
   }
 
-  Future<void> _loadTopics() async {
-    try {
-      final topics = await _contentItemsService.loadNormalTopics();
-      _remoteTopics.assignAll(topics);
-    } catch (_) {
-      _remoteTopics.clear();
-    }
+  void _startLiveSync() {
+    _remoteTopicsSubscription?.cancel();
+    _remoteTopicsSubscription = _contentItemsService.watchNormalTopics().listen(
+      (topics) {
+        _remoteTopics.assignAll(topics);
+        _reconcileSubmittedTopics();
+        _ensureCategoryStillValid();
+      },
+      onError: (_) {
+        _remoteTopics.clear();
+        _reconcileSubmittedTopics();
+      },
+    );
 
-    await _loadUserGeneratedContent();
-
-    if (!categories.contains(selectedCategory.value)) {
-      selectedCategory.value = 'all';
-    }
-  }
-
-  Future<void> _loadUserGeneratedContent() async {
     final uid = _session.firebaseUser?.uid;
     if (uid == null) {
       _submittedTopics.clear();
@@ -69,21 +80,44 @@ class NormalController extends GetxController {
       return;
     }
 
-    try {
-      final questions = await _userGeneratedContentService.loadNormalQuestions(
-        uid,
-      );
-      _submittedTopics.assignAll(questions);
-    } catch (_) {
-      _submittedTopics.clear();
-    }
+    _submittedTopicsSubscription?.cancel();
+    _submittedTopicsSubscription =
+        _userGeneratedContentService.watchNormalQuestions(uid).listen(
+      (questions) {
+        _submittedTopics.assignAll(questions);
+        _reconcileSubmittedTopics();
+        _ensureCategoryStillValid();
+      },
+      onError: (_) {
+        _submittedTopics.clear();
+      },
+    );
 
-    try {
-      final voices =
-          await _userGeneratedContentService.loadNormalVoicesByTopic(uid);
-      _savedVoices.assignAll(voices);
-    } catch (_) {
-      _savedVoices.clear();
+    _voicesSubscription?.cancel();
+    _voicesSubscription =
+        _userGeneratedContentService.watchNormalVoicesByTopic(uid).listen(
+      (voices) {
+        _savedVoices.assignAll(voices);
+      },
+      onError: (_) {
+        _savedVoices.clear();
+      },
+    );
+  }
+
+  void _reconcileSubmittedTopics() {
+    final publishedKeys =
+        _baseTopics.map((item) => _topicKey(item.question)).toSet();
+    _submittedTopics.assignAll(
+      _submittedTopics
+          .where((item) => !publishedKeys.contains(_topicKey(item.question)))
+          .toList(),
+    );
+  }
+
+  void _ensureCategoryStillValid() {
+    if (!categories.contains(selectedCategory.value)) {
+      selectedCategory.value = 'all';
     }
   }
 
@@ -240,6 +274,7 @@ class NormalController extends GetxController {
         uid: uid,
         question: text,
         category: category,
+        submittedByName: _session.displayName,
       );
 
       _submittedTopics.insert(
@@ -275,11 +310,22 @@ class NormalController extends GetxController {
   }
 
   static String _topicKey(String value) {
-    return value.trim().toLowerCase().replaceAll(RegExp(r'\s+'), ' ');
+    final normalized = value.trim().toLowerCase();
+    if (normalized.isEmpty) {
+      return '';
+    }
+
+    return normalized
+        .replaceAll(RegExp(r'[^a-z0-9\s]'), ' ')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
   }
 
   @override
   void onClose() {
+    _remoteTopicsSubscription?.cancel();
+    _submittedTopicsSubscription?.cancel();
+    _voicesSubscription?.cancel();
     askController.dispose();
     super.onClose();
   }

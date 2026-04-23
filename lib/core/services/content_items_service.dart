@@ -371,6 +371,45 @@ class ContentItemsService {
       aliases: const ['normal_topics', 'normal'],
     );
 
+    return _mapNormalTopics(rows);
+  }
+
+  Stream<List<NormalTopicItem>> watchNormalTopics() {
+    final allowedTypes = <String>{
+      _normalizeToken('normal_topic'),
+      _normalizeToken('normal_topics'),
+      _normalizeToken('normal'),
+    };
+
+    return _contentItems.snapshots().map((snapshot) {
+      final sortable = <_Sortable<Map<String, dynamic>>>[];
+
+      for (final doc in snapshot.docs) {
+        final data = doc.data();
+        final rowType = _normalizeToken(data['type']);
+        if (!allowedTypes.contains(rowType)) {
+          continue;
+        }
+
+        if (!_isPublished(data)) {
+          continue;
+        }
+
+        sortable.add(
+          _Sortable(
+            sortOrder: _toInt(data['sortOrder']),
+            value: data,
+          ),
+        );
+      }
+
+      sortable.sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+      final rows = sortable.map((item) => item.value).toList();
+      return _mapNormalTopics(rows);
+    });
+  }
+
+  List<NormalTopicItem> _mapNormalTopics(List<Map<String, dynamic>> rows) {
     final items = <NormalTopicItem>[];
     for (final data in rows) {
       final question = _firstNonEmpty([

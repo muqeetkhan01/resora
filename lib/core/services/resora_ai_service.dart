@@ -11,9 +11,11 @@ class ResoraAiService {
 
   final http.Client _client;
 
+  // Fallback key for local development. Environment define still takes priority.
+  static const String _embeddedApiKey = '';
   static const String _apiKey = String.fromEnvironment(
     'OPENAI_API_KEY',
-    defaultValue: '',
+    defaultValue: _embeddedApiKey,
   );
   static const String _model =
       String.fromEnvironment('OPENAI_MODEL', defaultValue: 'gpt-4.1-mini');

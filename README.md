@@ -24,3 +24,12 @@ flutter run \
   - one clear next step
   - no diagnosis or fabricated claims
   - safety escalation language for crisis cues
+
+
+How to use now
+
+User submits question in app (ask anonymously).
+In admin: Content page.
+Set Content type = Normal topics.
+Set Normal topic source = Community submissions.
+Open item, add expert answer, set Status = Published, save.
