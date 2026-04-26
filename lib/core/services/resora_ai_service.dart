@@ -12,8 +12,7 @@ class ResoraAiService {
   final http.Client _client;
 
   // Fallback key for local development. Environment define still takes priority.
-  static const String _embeddedApiKey =
-      '';
+  static const String _embeddedApiKey = '';
   static const String _apiKey = String.fromEnvironment(
     'OPENAI_API_KEY',
     defaultValue: _embeddedApiKey,
