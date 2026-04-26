@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 
 import '../../../core/constants/app_assets.dart';
+import '../../../core/navigation/app_navigation.dart';
 import '../../../core/services/content_items_service.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
@@ -72,25 +73,21 @@ class RehearseController extends GetxController {
 
   void openScenario(RehearsalScenario scenario) {
     Get.toNamed(
-      AppRoutes.ritualWrap,
-      arguments: RitualWrapArgs.entry(
-        feature: RitualWrapFeature.visualization,
-        nextRoute: AppRoutes.audioPlayer,
-        nextArguments: {
-          'track': AudioTrack(
-            title: scenario.title,
-            category: scenario.category,
-            description: scenario.reframe,
-            duration: '7 min',
-            assetPath: scenario.audioPath.isEmpty
-                ? AppAssets.rehearseAskForNeed
-                : scenario.audioPath,
-          ),
-          'imagePath': AppAssets.curtainLight,
-          'minimal': true,
-          'ritualFeature': RitualWrapFeature.visualization,
-        },
-      ).toMap(),
+      AppRoutes.audioPlayer,
+      arguments: {
+        'track': AudioTrack(
+          title: scenario.title,
+          category: scenario.category,
+          description: scenario.reframe,
+          duration: '7 min',
+          assetPath: scenario.audioPath.isEmpty
+              ? AppAssets.rehearseAskForNeed
+              : scenario.audioPath,
+        ),
+        'imagePath': AppAssets.curtainLight,
+        'minimal': true,
+        'ritualFeature': RitualWrapFeature.visualization,
+      },
     );
   }
 
@@ -107,6 +104,6 @@ class RehearseController extends GetxController {
   }
 
   void practiceAgain(RehearsalScenario scenario) {
-    Get.toNamed(AppRoutes.chat);
+    AppNavigation.openTalkTab();
   }
 }

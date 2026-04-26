@@ -44,6 +44,20 @@ class UserGeneratedContentService {
     );
   }
 
+  Future<List<JournalEntry>> loadJournalEntries(String uid) async {
+    final snapshot = await _journalEntries(uid).get();
+    final rows = snapshot.docs.map((doc) => doc.data()).toList();
+    return _mapJournalEntries(rows);
+  }
+
+  Stream<List<JournalEntry>> watchJournalEntries(String uid) {
+    return _journalEntries(uid).snapshots().map(
+          (snapshot) => _mapJournalEntries(
+            snapshot.docs.map((doc) => doc.data()),
+          ),
+        );
+  }
+
   Future<void> submitNormalQuestion({
     required String uid,
     required String question,
@@ -344,4 +358,97 @@ class UserGeneratedContentService {
 
     return '';
   }
+
+  static List<JournalEntry> _mapJournalEntries(
+    Iterable<Map<String, dynamic>> rows,
+  ) {
+    final mapped =
+        rows.map(_journalEntryFromData).whereType<_DatedEntry>().toList();
+    mapped.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return mapped.map((entry) => entry.entry).toList();
+  }
+
+  static _DatedEntry? _journalEntryFromData(Map<String, dynamic> data) {
+    final body = _string(data['body']);
+    if (body.isEmpty) {
+      return null;
+    }
+
+    final prompt = _string(data['prompt']);
+    final createdAt = _toDateTime(data['createdAt']) ??
+        _toDateTime(data['updatedAt']) ??
+        DateTime.now();
+
+    final entry = JournalEntry(
+      title: prompt.isNotEmpty ? prompt : _inferTitleFromBody(body),
+      preview: body,
+      date: _formatJournalDate(createdAt),
+      wordCount: _toInt(data['wordCount']) > 0
+          ? _toInt(data['wordCount'])
+          : _wordCount(body),
+      prompt: prompt.isEmpty ? null : prompt,
+    );
+    return _DatedEntry(createdAt: createdAt, entry: entry);
+  }
+
+  static DateTime? _toDateTime(dynamic value) {
+    if (value is Timestamp) {
+      return value.toDate();
+    }
+    if (value is DateTime) {
+      return value;
+    }
+    if (value is int) {
+      return DateTime.fromMillisecondsSinceEpoch(value);
+    }
+    if (value is num) {
+      return DateTime.fromMillisecondsSinceEpoch(value.toInt());
+    }
+    return null;
+  }
+
+  static String _inferTitleFromBody(String body) {
+    final clean = body.trim();
+    if (clean.isEmpty) {
+      return 'Journal entry';
+    }
+    final firstLine = clean.split('\n').first.trim();
+    if (firstLine.length <= 52) {
+      return firstLine;
+    }
+    return '${firstLine.substring(0, 49).trim()}...';
+  }
+
+  static String _formatJournalDate(DateTime date) {
+    const months = <String>[
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+
+    final local = date.toLocal();
+    final month = months[local.month - 1];
+    final day = local.day;
+    final year = local.year;
+    return '$month $day, $year';
+  }
+}
+
+class _DatedEntry {
+  const _DatedEntry({
+    required this.createdAt,
+    required this.entry,
+  });
+
+  final DateTime createdAt;
+  final JournalEntry entry;
 }

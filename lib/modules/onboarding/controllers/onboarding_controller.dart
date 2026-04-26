@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 import '../../../core/controllers/app_session_controller.dart';
@@ -13,15 +12,12 @@ class OnboardingController extends GetxController {
   final _session = Get.find<AppSessionController>();
   final ContentItemsService _contentItemsService;
 
-  final nameController = TextEditingController();
   final currentIndex = 0.obs;
   final _remoteSlides = <OnboardingItem>[].obs;
 
   List<OnboardingItem> get slides => _remoteSlides;
-
-  bool get isNameStep => currentIndex.value >= slides.length;
-
-  int get stepCount => slides.length + 1;
+  bool get hasSlides => slides.isNotEmpty;
+  bool get isLastSlide => !hasSlides || currentIndex.value >= slides.length - 1;
 
   @override
   void onInit() {
@@ -30,49 +26,48 @@ class OnboardingController extends GetxController {
   }
 
   Future<void> _loadSlides() async {
+    if (_session.isAuthenticated) {
+      Get.offAllNamed(AppRoutes.dashboard);
+      return;
+    }
+
     try {
-      final slides = await _contentItemsService.loadOnboardingItems();
-      _remoteSlides.assignAll(slides);
+      final items = await _contentItemsService.loadOnboardingItems();
+      _remoteSlides.assignAll(items);
     } catch (_) {
       _remoteSlides.clear();
+    }
+
+    if (!hasSlides) {
+      Get.offAllNamed(AppRoutes.welcome);
+      return;
+    }
+
+    if (currentIndex.value >= slides.length) {
+      currentIndex.value = 0;
     }
   }
 
   void next() {
-    if (isNameStep) {
-      finish();
+    if (isLastSlide) {
+      continueToAuth();
       return;
     }
-
     currentIndex.value += 1;
   }
 
   void back() {
-    if (currentIndex.value > 0) {
-      currentIndex.value -= 1;
-    }
-  }
-
-  Future<void> finish() async {
-    final value = nameController.text.trim();
-    if (value.isEmpty) {
+    if (currentIndex.value <= 0) {
       return;
     }
-
-    await _session.saveName(value);
-    Get.offAllNamed(AppRoutes.dashboard);
+    currentIndex.value -= 1;
   }
 
-  Future<void> skip() async {
-    final fallback =
-        _session.displayName == 'there' ? 'friend' : _session.displayName;
-    await _session.saveName(fallback);
-    Get.offAllNamed(AppRoutes.dashboard);
+  void skip() {
+    continueToAuth();
   }
 
-  @override
-  void onClose() {
-    nameController.dispose();
-    super.onClose();
+  void continueToAuth() {
+    Get.offAllNamed(AppRoutes.welcome);
   }
 }

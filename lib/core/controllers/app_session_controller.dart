@@ -289,11 +289,6 @@ class AppSessionController extends GetxController {
       return;
     }
 
-    if (isNewUser) {
-      Get.offAllNamed(AppRoutes.onboarding);
-      return;
-    }
-
     Get.offAllNamed(AppRoutes.dashboard);
   }
 

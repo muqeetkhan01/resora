@@ -12,105 +12,142 @@ import '../controllers/home_controller.dart';
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
 
+  static const double _imageHeight = 340;
+  static const double _offset = 36;
+
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       backgroundColor: AppColors.canvas,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(
-            0,
-            AppSpacing.lg,
-            0,
-            140,
-          ),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-                child: Text(
-                  'R E S O R A',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.primary.withOpacity(0.78),
-                        letterSpacing: 4,
-                      ),
-                ),
+        child: Obx(() {
+          final slots = [
+            _resolveSlot(
+              spec: const _HomeCardSpec(
+                route: AppRoutes.chat,
+                titleHint: 'talk',
+                defaultTitle: 'talk to resora',
+                defaultSubtitle:
+                    'Ask anything. Get a clear next step, not a list of suggestions.',
+                defaultImage: AppAssets.homeTalkOcean,
+                cta: 'talk',
+                alignRight: false,
               ),
-              const SizedBox(height: AppSpacing.xxl),
-              Obx(() {
-                final talk = _resolveSlot(
-                  route: AppRoutes.chat,
-                  titleHint: 'talk',
-                  defaultTitle: 'talk to resora',
-                  defaultSubtitle:
-                      'Ask anything. Get a clear next step, not a list of suggestions.',
-                  defaultImage: AppAssets.homeTalkOcean,
-                );
-                final normal = _resolveSlot(
-                  route: AppRoutes.normal,
-                  titleHint: 'normal',
-                  defaultTitle: 'is this normal?',
-                  defaultSubtitle:
-                      'Short, reassuring answers when you need a steadier read on the moment.',
-                  defaultImage: AppAssets.homeNormalStem,
-                );
-                final journal = _resolveSlot(
-                  route: AppRoutes.journal,
-                  titleHint: 'journal',
-                  defaultTitle: 'journal',
-                  defaultSubtitle: 'Reflect gently after the moment passes.',
-                  defaultImage: AppAssets.homeJournalBed,
-                );
-                final comingSoon = _resolveSlot(
-                  route: '',
-                  titleHint: 'coming',
-                  defaultTitle: 'coming soon',
-                  defaultSubtitle:
-                      'More space, more tools, and more support screens soon.',
-                  defaultImage: AppAssets.homeComingSoonFlower,
-                );
+            ),
+            _resolveSlot(
+              spec: const _HomeCardSpec(
+                route: AppRoutes.journal,
+                titleHint: 'journal',
+                defaultTitle: 'journal',
+                defaultSubtitle: 'Reflect gently after the moment passes.',
+                defaultImage: AppAssets.homeJournalBed,
+                cta: 'write',
+                alignRight: true,
+              ),
+            ),
+            _resolveSlot(
+              spec: const _HomeCardSpec(
+                route: AppRoutes.normal,
+                titleHint: 'normal',
+                defaultTitle: 'is this normal?',
+                defaultSubtitle:
+                    'Real moments from people figuring it out too.',
+                defaultImage: AppAssets.homeNormalStem,
+                cta: 'explore',
+                alignRight: false,
+              ),
+            ),
+            _resolveSlot(
+              spec: const _HomeCardSpec(
+                route: AppRoutes.resets,
+                titleHint: 'reset',
+                defaultTitle: 'gentle resets',
+                defaultSubtitle: '30 seconds back to yourself, any time.',
+                defaultImage: AppAssets.spaceGarden,
+                cta: 'begin',
+                alignRight: true,
+              ),
+            ),
+          ];
 
-                return Column(
-                  children: [
-                    _HomeFeatureCard(slot: talk),
-                    _HomeFeatureCard(slot: normal),
-                    _HomeFeatureCard(slot: journal),
-                    _HomeFeatureCard(slot: comingSoon),
-                  ],
-                );
-              }),
-            ],
-          ),
-        ),
+          return SingleChildScrollView(
+            physics: const ClampingScrollPhysics(),
+            padding: EdgeInsets.zero,
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: AppColors.line),
+                    ),
+                  ),
+                  child: Text(
+                    'R E S O R A',
+                    style: textTheme.bodySmall?.copyWith(
+                      color: AppColors.primary.withOpacity(0.84),
+                      letterSpacing: 4.2,
+                    ),
+                  ),
+                ),
+                for (var i = 0; i < slots.length; i++)
+                  _HomeFeatureCard(
+                    slot: slots[i],
+                    imageHeight: _imageHeight,
+                    offset: _offset,
+                    isLast: i == slots.length - 1,
+                  ),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.fromLTRB(
+                    _offset,
+                    AppSpacing.xxl,
+                    _offset,
+                    AppSpacing.lg,
+                  ),
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      top: BorderSide(color: AppColors.line),
+                    ),
+                  ),
+                  child: Text(
+                    'Life gets better when you do.',
+                    style: textTheme.bodyLarge?.copyWith(
+                      color: AppColors.primary.withOpacity(0.34),
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
       ),
     );
   }
 
-  _HomeSlot _resolveSlot({
-    required String route,
-    required String titleHint,
-    required String defaultTitle,
-    required String defaultSubtitle,
-    required String defaultImage,
-  }) {
-    final item = route.isEmpty
-        ? controller.findActionByTitle(titleHint)
-        : controller.findActionByRoute(route);
+  _HomeSlot _resolveSlot({required _HomeCardSpec spec}) {
+    final item = controller.findActionByRoute(spec.route) ??
+        controller.findActionByTitle(spec.titleHint);
     if (item == null) {
-      final hasRouteContent = controller.hasContentForRoute(route);
+      final hasRouteContent = controller.hasContentForRoute(spec.route);
       return _HomeSlot(
-        title: defaultTitle.toLowerCase(),
-        subtitle: hasRouteContent ? defaultSubtitle : 'No content yet.',
-        imagePath: defaultImage,
-        actionLabel: hasRouteContent ? 'open' : 'no content',
+        title: spec.defaultTitle.toLowerCase(),
+        subtitle: hasRouteContent ? spec.defaultSubtitle : 'No content yet.',
+        imagePath: spec.defaultImage,
+        actionLabel: hasRouteContent ? spec.cta : 'no content',
+        alignRight: spec.alignRight,
         onTap: hasRouteContent
             ? () => controller.openAction(
                   QuickActionItem(
-                    title: defaultTitle,
-                    subtitle: defaultSubtitle,
+                    title: spec.defaultTitle,
+                    subtitle: spec.defaultSubtitle,
                     icon: AppIcons.forward,
                     accentColor: AppColors.primary,
-                    route: route,
+                    route: spec.route,
                   ),
                 )
             : null,
@@ -119,12 +156,34 @@ class HomeView extends GetView<HomeController> {
 
     return _HomeSlot(
       title: item.title.toLowerCase(),
-      subtitle: item.subtitle,
-      imagePath: item.imagePath ?? defaultImage,
-      actionLabel: 'open',
+      subtitle:
+          item.subtitle.trim().isEmpty ? spec.defaultSubtitle : item.subtitle,
+      imagePath: item.imagePath ?? spec.defaultImage,
+      actionLabel: spec.cta,
+      alignRight: spec.alignRight,
       onTap: () => controller.openAction(item),
     );
   }
+}
+
+class _HomeCardSpec {
+  const _HomeCardSpec({
+    required this.route,
+    required this.titleHint,
+    required this.defaultTitle,
+    required this.defaultSubtitle,
+    required this.defaultImage,
+    required this.cta,
+    required this.alignRight,
+  });
+
+  final String route;
+  final String titleHint;
+  final String defaultTitle;
+  final String defaultSubtitle;
+  final String defaultImage;
+  final String cta;
+  final bool alignRight;
 }
 
 class _HomeSlot {
@@ -133,6 +192,7 @@ class _HomeSlot {
     required this.subtitle,
     required this.imagePath,
     required this.actionLabel,
+    required this.alignRight,
     required this.onTap,
   });
 
@@ -140,54 +200,79 @@ class _HomeSlot {
   final String subtitle;
   final String imagePath;
   final String actionLabel;
+  final bool alignRight;
   final VoidCallback? onTap;
 }
 
 class _HomeFeatureCard extends StatelessWidget {
   const _HomeFeatureCard({
     required this.slot,
+    required this.imageHeight,
+    required this.offset,
+    required this.isLast,
   });
 
   final _HomeSlot slot;
+  final double imageHeight;
+  final double offset;
+  final bool isLast;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final textAlign = slot.alignRight ? TextAlign.right : TextAlign.left;
 
     return InkWell(
       onTap: slot.onTap,
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: AppSpacing.xxl),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: isLast ? Colors.transparent : AppColors.line,
+            ),
+          ),
+        ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            AspectRatio(
-              aspectRatio: 0.9,
+            Container(
+              height: imageHeight,
+              margin: EdgeInsets.only(
+                left: slot.alignRight ? offset : 0,
+                right: slot.alignRight ? 0 : offset,
+              ),
               child: _HomeImage(imagePath: slot.imagePath),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(
+              padding: EdgeInsets.fromLTRB(
+                offset,
                 AppSpacing.xl,
-                AppSpacing.xl,
-                AppSpacing.xl,
-                0,
+                offset,
+                AppSpacing.xxl,
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: slot.alignRight
+                    ? CrossAxisAlignment.end
+                    : CrossAxisAlignment.start,
                 children: [
                   Text(
                     slot.title,
-                    style: textTheme.displayMedium?.copyWith(
-                      fontSize: 30,
-                      color: AppColors.primary.withOpacity(0.86),
+                    textAlign: textAlign,
+                    style: textTheme.displayLarge?.copyWith(
+                      fontSize: 40,
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.w300,
+                      color: AppColors.primary.withOpacity(0.9),
+                      height: 1.02,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   Text(
                     slot.subtitle,
+                    textAlign: textAlign,
                     style: textTheme.bodySmall?.copyWith(
                       color: AppColors.placeholder,
-                      height: 1.8,
+                      height: 1.7,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.lg),
@@ -195,11 +280,9 @@ class _HomeFeatureCard extends StatelessWidget {
                     slot.actionLabel,
                     style: textTheme.bodySmall?.copyWith(
                       color: AppColors.terracotta,
-                      fontWeight: FontWeight.w400,
+                      letterSpacing: 1.4,
                     ),
                   ),
-                  const SizedBox(height: AppSpacing.xl),
-                  const Divider(height: 1, color: AppColors.line),
                 ],
               ),
             ),
@@ -217,23 +300,44 @@ class _HomeImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-      return Image.network(
-        imagePath,
-        fit: BoxFit.cover,
-        alignment: Alignment.center,
-        errorBuilder: (_, __, ___) => Image.asset(
-          AppAssets.homeComingSoonFlower,
-          fit: BoxFit.cover,
-          alignment: Alignment.center,
-        ),
-      );
-    }
-
-    return Image.asset(
-      imagePath,
+    final fallback = Image.asset(
+      AppAssets.homeComingSoonFlower,
       fit: BoxFit.cover,
       alignment: Alignment.center,
+    );
+
+    final image =
+        imagePath.startsWith('http://') || imagePath.startsWith('https://')
+            ? Image.network(
+                imagePath,
+                fit: BoxFit.cover,
+                alignment: Alignment.center,
+                errorBuilder: (_, __, ___) => fallback,
+              )
+            : Image.asset(
+                imagePath,
+                fit: BoxFit.cover,
+                alignment: Alignment.center,
+                errorBuilder: (_, __, ___) => fallback,
+              );
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        image,
+        DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.black.withOpacity(0.06),
+                Colors.black.withOpacity(0.14),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

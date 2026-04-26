@@ -7,7 +7,6 @@ import '../../../core/controllers/app_session_controller.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
-import '../../../widgets/centered_back_header.dart';
 import '../controllers/chat_controller.dart';
 import '../../ritual_wrap/models/ritual_wrap_args.dart';
 
@@ -72,28 +71,20 @@ class _ChatContent extends GetView<ChatController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Obx(
-          () => _ChatHeader(
-            rootTab: rootTab,
-            showConversationHeader: controller.messages.isNotEmpty,
-            onBack: onBack,
-          ),
+        _ChatHeader(
+          rootTab: rootTab,
+          onBack: onBack,
         ),
         const SizedBox(height: AppSpacing.md),
         Expanded(
           child: Obx(() {
-            final showWatermark = rootTab &&
-                controller.messages.isEmpty &&
-                !controller.isTyping.value;
+            final showWatermark =
+                controller.messages.isEmpty && !controller.isTyping.value;
             final totalCount = controller.messages.length +
                 (controller.isTyping.value ? 1 : 0);
 
             if (showWatermark) {
-              return const _TalkEmptyState();
-            }
-
-            if (totalCount == 0) {
-              return const _ChatPromptState();
+              return const _TalkEmptyStateWithPrompt();
             }
 
             return ListView.builder(
@@ -115,7 +106,7 @@ class _ChatContent extends GetView<ChatController> {
           }),
         ),
         const SizedBox(height: AppSpacing.sm),
-        _ChatInputBar(rootTab: rootTab),
+        const _ChatInputBar(),
         if (rootTab) ...[
           const SizedBox(height: AppSpacing.sm),
           const Divider(height: 1, color: AppColors.line),
@@ -129,71 +120,82 @@ class _ChatContent extends GetView<ChatController> {
 class _ChatHeader extends StatelessWidget {
   const _ChatHeader({
     required this.rootTab,
-    required this.showConversationHeader,
     required this.onBack,
   });
 
   final bool rootTab;
-  final bool showConversationHeader;
   final VoidCallback onBack;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    if (rootTab) {
-      return Padding(
-        padding: const EdgeInsets.only(top: AppSpacing.lg),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'resora',
-              style: textTheme.bodySmall?.copyWith(
-                color: AppColors.terracotta,
-                letterSpacing: 1.5,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              'what\'s on your mind?',
-              style: textTheme.displayLarge?.copyWith(
-                fontSize: 30,
-                height: 1.02,
-              ),
-              maxLines: 1,
-              softWrap: false,
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              '3 free messages left today',
-              style: textTheme.bodySmall?.copyWith(
-                color: AppColors.placeholder,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
     return Padding(
       padding: const EdgeInsets.only(top: AppSpacing.lg),
-      child: CenteredBackHeader(
-        onBack: onBack,
-        title:
-            showConversationHeader ? 'what\'s on your mind?' : 'talk to resora',
-        trailing: IconButton(
-          onPressed: () => Get.toNamed(AppRoutes.profile),
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints.tightFor(width: 30, height: 30),
-          iconSize: 16,
-          icon: const Icon(
-            Icons.settings_outlined,
-            color: AppColors.primary,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (!rootTab)
+            IconButton(
+              onPressed: onBack,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints.tightFor(width: 28, height: 28),
+              icon: const Icon(
+                Icons.arrow_back_ios_rounded,
+                size: 15,
+                color: AppColors.terracotta,
+              ),
+            ),
+          if (!rootTab) const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'resora',
+                  style: textTheme.bodySmall?.copyWith(
+                    color: AppColors.terracotta,
+                    letterSpacing: 1.5,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  'what\'s on your mind?',
+                  style: textTheme.displayLarge?.copyWith(
+                    fontSize: 30,
+                    height: 1.02,
+                  ),
+                  maxLines: 1,
+                  softWrap: false,
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  '3 free messages left today',
+                  style: textTheme.bodySmall?.copyWith(
+                    color: AppColors.placeholder,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
+    );
+  }
+}
+
+class _TalkEmptyStateWithPrompt extends StatelessWidget {
+  const _TalkEmptyStateWithPrompt();
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        const _TalkEmptyState(),
+        const _ChatPromptState(),
+      ],
     );
   }
 }
@@ -255,9 +257,7 @@ class _ChatPromptState extends StatelessWidget {
 }
 
 class _ChatInputBar extends GetView<ChatController> {
-  const _ChatInputBar({required this.rootTab});
-
-  final bool rootTab;
+  const _ChatInputBar();
 
   @override
   Widget build(BuildContext context) {
@@ -296,9 +296,7 @@ class _ChatInputBar extends GetView<ChatController> {
                   border: InputBorder.none,
                   focusedBorder: InputBorder.none,
                   enabledBorder: InputBorder.none,
-                  hintText: rootTab
-                      ? 'share what is happening...'
-                      : 'share what is happening...',
+                  hintText: 'share what is happening...',
                   hintStyle: textTheme.bodyLarge?.copyWith(
                     color: AppColors.placeholder,
                     fontStyle: FontStyle.italic,

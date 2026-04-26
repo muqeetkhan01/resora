@@ -18,11 +18,6 @@ class SplashController extends GetxController {
         await _session.waitUntilReady();
 
         if (!_session.isAuthenticated) {
-          Get.offNamed(AppRoutes.welcome);
-          return;
-        }
-
-        if (_session.isNewUser) {
           Get.offNamed(AppRoutes.onboarding);
           return;
         }

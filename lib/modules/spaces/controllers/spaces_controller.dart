@@ -1,10 +1,10 @@
 import 'package:get/get.dart';
 
+import '../../../core/navigation/app_navigation.dart';
 import '../../../core/services/content_items_service.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 import '../../profile/controllers/profile_controller.dart';
-import '../../ritual_wrap/models/ritual_wrap_args.dart';
 import '../../dashboard/controllers/dashboard_controller.dart';
 
 class SpacesController extends GetxController {
@@ -93,6 +93,10 @@ class SpacesController extends GetxController {
     if (item.route.trim().isEmpty) {
       return;
     }
+    if (item.route == AppRoutes.chat) {
+      AppNavigation.openTalkTab();
+      return;
+    }
     if (item.route == AppRoutes.journal) {
       final profile = Get.isRegistered<ProfileController>()
           ? Get.find<ProfileController>()
@@ -102,13 +106,7 @@ class SpacesController extends GetxController {
         return;
       }
 
-      Get.toNamed(
-        AppRoutes.ritualWrap,
-        arguments: RitualWrapArgs.entry(
-          feature: RitualWrapFeature.journal,
-          nextRoute: AppRoutes.journal,
-        ).toMap(),
-      );
+      Get.toNamed(AppRoutes.journal);
       return;
     }
 

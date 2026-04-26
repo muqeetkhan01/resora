@@ -1,10 +1,10 @@
 import 'package:get/get.dart';
 
 import '../../../core/controllers/app_session_controller.dart';
+import '../../../core/navigation/app_navigation.dart';
 import '../../../core/services/content_items_service.dart';
 import '../../../data/models/app_models.dart';
 import '../../profile/controllers/profile_controller.dart';
-import '../../ritual_wrap/models/ritual_wrap_args.dart';
 import '../../../routes/app_routes.dart';
 import '../../dashboard/controllers/dashboard_controller.dart';
 
@@ -36,7 +36,8 @@ class HomeController extends GetxController {
     }
 
     try {
-      dailyAffirmation.value = await _contentItemsService.loadDailyAffirmation();
+      dailyAffirmation.value =
+          await _contentItemsService.loadDailyAffirmation();
     } catch (_) {
       dailyAffirmation.value = '';
     }
@@ -52,7 +53,7 @@ class HomeController extends GetxController {
   }
 
   void openHelpNow() {
-    Get.toNamed(AppRoutes.chat);
+    AppNavigation.openTalkTab();
   }
 
   void openAction(QuickActionItem item) {
@@ -115,17 +116,12 @@ class HomeController extends GetxController {
         await has(_contentItemsService.loadNormalTopics);
     _routeHasContent[AppRoutes.journal] =
         await has(_contentItemsService.loadJournalPrompts);
+    _routeHasContent[AppRoutes.resets] =
+        await has(_contentItemsService.loadResetOptions);
   }
 
   void openTalk() {
-    Get.toNamed(
-      AppRoutes.ritualWrap,
-      arguments: RitualWrapArgs.entry(
-        feature: RitualWrapFeature.talk,
-        nextRoute: AppRoutes.chat,
-        nextArguments: {'ritualFeature': RitualWrapFeature.talk},
-      ).toMap(),
-    );
+    AppNavigation.openTalkTab();
   }
 
   Future<void> openJournal() async {
@@ -137,13 +133,7 @@ class HomeController extends GetxController {
       return;
     }
 
-    Get.toNamed(
-      AppRoutes.ritualWrap,
-      arguments: RitualWrapArgs.entry(
-        feature: RitualWrapFeature.journal,
-        nextRoute: AppRoutes.journal,
-      ).toMap(),
-    );
+    Get.toNamed(AppRoutes.journal);
   }
 
   void openNormal() {

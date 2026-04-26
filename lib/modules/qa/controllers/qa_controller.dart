@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
+import '../../../core/navigation/app_navigation.dart';
 import '../../../core/services/content_items_service.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
@@ -72,7 +73,7 @@ class QaController extends GetxController {
   }
 
   void openChat() {
-    Get.toNamed(AppRoutes.chat);
+    AppNavigation.openTalkTab();
   }
 
   void openPremium() {
@@ -89,7 +90,7 @@ class QaController extends GetxController {
         Get.toNamed(AppRoutes.resets);
         break;
       case 'Relationships':
-        Get.toNamed(AppRoutes.chat);
+        AppNavigation.openTalkTab();
         break;
       default:
         Get.toNamed(AppRoutes.spaces);

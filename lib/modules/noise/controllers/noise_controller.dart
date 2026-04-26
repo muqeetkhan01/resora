@@ -15,6 +15,7 @@ class NoiseController extends GetxController {
   final _remoteTracks = <AudioTrack>[].obs;
 
   List<AudioTrack> get _sourceTracks => _remoteTracks;
+  int get totalTrackCount => _sourceTracks.length;
 
   @override
   void onInit() {

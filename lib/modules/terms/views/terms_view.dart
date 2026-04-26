@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 
 import '../../../core/constants/app_spacing.dart';
 import '../../../theme/app_colors.dart';
-import '../../../widgets/centered_back_header.dart';
 import '../controllers/terms_controller.dart';
 
 class TermsView extends GetView<TermsController> {
@@ -12,86 +11,139 @@ class TermsView extends GetView<TermsController> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    const alphabet = ['A', 'C', 'E', 'R', 'S', 'W'];
 
     return Scaffold(
       backgroundColor: AppColors.canvas,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg,
-            AppSpacing.lg,
-            AppSpacing.lg,
-            AppSpacing.xl,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const CenteredBackHeader(title: 'key terms'),
-              const SizedBox(height: AppSpacing.lg),
-              TextField(
+        child: Column(
+          children: [
+            const _TermsHero(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.sm,
+                AppSpacing.lg,
+                AppSpacing.sm,
+              ),
+              child: TextField(
                 controller: controller.searchController,
                 onChanged: controller.onSearch,
-                decoration: const InputDecoration(hintText: 'Search key terms'),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: alphabet
-                      .map(
-                        (letter) => Padding(
-                          padding: const EdgeInsets.only(right: AppSpacing.md),
-                          child: Text(
-                            letter,
-                            style: textTheme.bodySmall
-                                ?.copyWith(color: AppColors.muted),
-                          ),
-                        ),
-                      )
-                      .toList(),
+                decoration: const InputDecoration(
+                  hintText: 'Search key terms',
                 ),
               ),
-              const SizedBox(height: AppSpacing.xl),
-              Obx(
+            ),
+            const Divider(height: 1, color: AppColors.line),
+            Expanded(
+              child: Obx(
                 () {
                   final terms = controller.terms;
                   if (terms.isEmpty) {
-                    return Text(
-                      'No key terms published yet.',
-                      style: textTheme.bodyMedium,
+                    return Center(
+                      child: Text(
+                        'No key terms published yet.',
+                        style: textTheme.bodyMedium,
+                      ),
                     );
                   }
 
-                  return Column(
-                    children: terms
-                        .map(
-                          (term) => Padding(
-                            padding:
-                                const EdgeInsets.only(bottom: AppSpacing.lg),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(term.term, style: textTheme.titleLarge),
-                                const SizedBox(height: AppSpacing.xs),
-                                Text(
-                                  term.definition,
-                                  style: textTheme.bodyLarge
-                                      ?.copyWith(color: AppColors.primary),
-                                ),
-                                const SizedBox(height: AppSpacing.md),
-                                const Divider(height: 1),
-                              ],
-                            ),
+                  return ListView.builder(
+                    itemCount: terms.length,
+                    itemBuilder: (context, index) {
+                      final item = terms[index];
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                          vertical: AppSpacing.md,
+                        ),
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(color: AppColors.line),
                           ),
-                        )
-                        .toList(),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item.term,
+                              style: textTheme.displayMedium?.copyWith(
+                                color: AppColors.primary,
+                                fontSize: 28,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.xs),
+                            Text(
+                              item.definition,
+                              style: textTheme.bodyMedium?.copyWith(
+                                color: AppColors.placeholder,
+                                height: 1.7,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   );
                 },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
+      ),
+    );
+  }
+}
+
+class _TermsHero extends StatelessWidget {
+  const _TermsHero();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 190,
+      width: double.infinity,
+      color: AppColors.primary,
+      child: Stack(
+        children: [
+          Positioned(
+            top: AppSpacing.sm,
+            left: AppSpacing.sm,
+            child: IconButton(
+              onPressed: Get.back,
+              icon: const Icon(
+                Icons.arrow_back_ios_rounded,
+                size: 16,
+                color: AppColors.white,
+              ),
+            ),
+          ),
+          Positioned(
+            left: AppSpacing.lg,
+            right: AppSpacing.lg,
+            bottom: AppSpacing.lg,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'key terms',
+                  style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                        color: AppColors.white,
+                        fontSize: 34,
+                        fontStyle: FontStyle.italic,
+                      ),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  'Plain language definitions',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.white.withOpacity(0.66),
+                      ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

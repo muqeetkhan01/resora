@@ -12,7 +12,9 @@ import '../modules/dashboard/controllers/dashboard_controller.dart';
 import '../modules/dashboard/views/dashboard_view.dart';
 import '../modules/home/controllers/home_controller.dart';
 import '../modules/journal/controllers/journal_controller.dart';
+import '../modules/journal/controllers/journal_history_controller.dart';
 import '../modules/journal/views/journal_editor_view.dart';
+import '../modules/journal/views/journal_history_view.dart';
 import '../modules/journal/views/journal_view.dart';
 import '../modules/mindfulness/controllers/mindfulness_controller.dart';
 import '../modules/mindfulness/views/mindfulness_detail_view.dart';
@@ -98,6 +100,13 @@ abstract final class AppPages {
       page: JournalView.new,
       binding: BindingsBuilder(() {
         Get.lazyPut(JournalController.new);
+      }),
+    ),
+    GetPage(
+      name: AppRoutes.journalHistory,
+      page: JournalHistoryView.new,
+      binding: BindingsBuilder(() {
+        Get.lazyPut(JournalHistoryController.new);
       }),
     ),
     GetPage(

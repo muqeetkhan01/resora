@@ -5,6 +5,7 @@ abstract final class AppRoutes {
   static const emailAuth = '/email-auth';
   static const dashboard = '/dashboard';
   static const journal = '/journal';
+  static const journalHistory = '/journal-history';
   static const journalEditor = '/journal-editor';
   static const chat = '/chat';
   static const spaces = '/spaces';

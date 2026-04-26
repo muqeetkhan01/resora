@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -6,11 +8,10 @@ import '../../../core/constants/app_spacing.dart';
 import '../../../core/controllers/app_session_controller.dart';
 import '../../../core/services/user_generated_content_service.dart';
 import '../../../data/models/app_models.dart';
-import '../../ritual_wrap/models/ritual_wrap_args.dart';
 import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
-import '../../../widgets/app_background.dart';
 import '../../../widgets/app_snackbar.dart';
+import '../../ritual_wrap/models/ritual_wrap_args.dart';
 
 class JournalEditorView extends StatefulWidget {
   const JournalEditorView({super.key});
@@ -36,7 +37,7 @@ class _JournalEditorViewState extends State<JournalEditorView> {
       _prompt = argument.prompt ?? 'What helped more than you expected today?';
       _controller = TextEditingController(text: argument.preview);
     } else if (argument is String) {
-      _prompt = argument;
+      _prompt = argument.trim();
       _controller = TextEditingController();
     } else {
       _prompt = 'What helped more than you expected today?';
@@ -54,49 +55,115 @@ class _JournalEditorViewState extends State<JournalEditorView> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return AppBackground(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return Scaffold(
+      backgroundColor: const Color(0xFFF5F4F0),
+      body: Stack(
         children: [
-          const SizedBox(height: AppSpacing.md),
-          Row(
-            children: [
-              IconButton(
-                onPressed: Get.back,
-                icon: const Icon(AppIcons.back, color: AppColors.primary),
-              ),
-              const Spacer(),
-              TextButton(
-                onPressed: _isSaving ? null : _onDonePressed,
-                child: Text(
-                  _isSaving ? 'saving...' : 'done',
-                  style:
-                      textTheme.bodyMedium?.copyWith(color: AppColors.primary),
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: const BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment(-0.82, -0.9),
+                  radius: 1.2,
+                  colors: [
+                    Color(0x44F5EEDE),
+                    Colors.transparent,
+                  ],
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.xl),
-          Text(
-            _prompt,
-            style: textTheme.headlineLarge?.copyWith(
-              color: AppColors.primary.withOpacity(0.26),
             ),
           ),
-          const SizedBox(height: AppSpacing.xl),
-          Expanded(
-            child: TextField(
-              controller: _controller,
-              autofocus: true,
-              maxLines: null,
-              expands: true,
-              style: textTheme.bodyLarge?.copyWith(color: AppColors.primary),
-              textAlignVertical: TextAlignVertical.top,
-              decoration: const InputDecoration(
-                hintText: 'start here',
-                border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                focusedBorder: InputBorder.none,
+          const Positioned.fill(
+            child: IgnorePointer(child: _PaperTextureLayer()),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.md,
+                AppSpacing.lg,
+                AppSpacing.lg,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: Get.back,
+                        icon:
+                            const Icon(AppIcons.back, color: AppColors.primary),
+                      ),
+                      const Spacer(),
+                      TextButton(
+                        onPressed: _isSaving ? null : _onDonePressed,
+                        child: Text(
+                          _isSaving ? 'saving...' : 'done',
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.xl),
+                  if (_prompt.isNotEmpty) ...[
+                    Text(
+                      _prompt,
+                      style: textTheme.displayMedium?.copyWith(
+                        color: AppColors.primary.withOpacity(0.45),
+                        fontSize: 40,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                  ],
+                  Container(
+                    height: 0.8,
+                    color: AppColors.primary.withOpacity(0.12),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  Expanded(
+                    child: TextField(
+                      controller: _controller,
+                      autofocus: true,
+                      maxLines: null,
+                      expands: true,
+                      style: textTheme.bodyLarge?.copyWith(
+                        color: AppColors.warmDark,
+                        fontSize: 20,
+                        height: 1.8,
+                      ),
+                      textAlignVertical: TextAlignVertical.top,
+                      decoration: const InputDecoration(
+                        hintText: 'start here',
+                        border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                  ValueListenableBuilder<TextEditingValue>(
+                    valueListenable: _controller,
+                    builder: (context, value, _) {
+                      final trimmed = value.text.trim();
+                      if (trimmed.isEmpty) {
+                        return const SizedBox.shrink();
+                      }
+                      final words = trimmed.split(RegExp(r'\s+')).length;
+                      return Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          '$words words',
+                          style: textTheme.labelMedium?.copyWith(
+                            color: AppColors.primary.withOpacity(0.3),
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
           ),
@@ -157,4 +224,43 @@ class _JournalEditorViewState extends State<JournalEditorView> {
       ).toMap(),
     );
   }
+}
+
+class _PaperTextureLayer extends StatelessWidget {
+  const _PaperTextureLayer();
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      painter: _PaperTexturePainter(),
+    );
+  }
+}
+
+class _PaperTexturePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final grainPaint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = const Color(0xFF0F4438).withOpacity(0.035);
+
+    final softPaint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = const Color(0xFFB89470).withOpacity(0.028);
+
+    const step = 7.0;
+    for (double y = 0; y < size.height; y += step) {
+      for (double x = 0; x < size.width; x += step) {
+        final noise = math.sin((x * 0.37) + (y * 0.53));
+        if (noise > 0.7) {
+          canvas.drawRect(Rect.fromLTWH(x, y, 1, 1), grainPaint);
+        } else if (noise < -0.72) {
+          canvas.drawRect(Rect.fromLTWH(x, y, 1, 1), softPaint);
+        }
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

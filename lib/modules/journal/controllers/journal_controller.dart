@@ -5,6 +5,7 @@ import '../../../core/services/content_items_service.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 import '../../profile/controllers/profile_controller.dart';
+import '../../ritual_wrap/models/ritual_wrap_args.dart';
 
 class JournalController extends GetxController {
   JournalController({ContentItemsService? contentItemsService})
@@ -87,7 +88,26 @@ class JournalController extends GetxController {
       return;
     }
 
-    Get.toNamed(AppRoutes.journalEditor, arguments: entry ?? prompt);
+    Get.toNamed(
+      AppRoutes.ritualWrap,
+      arguments: RitualWrapArgs.entry(
+        feature: RitualWrapFeature.journal,
+        nextRoute: AppRoutes.journalEditor,
+        nextArguments: entry ?? prompt,
+      ).toMap(),
+    );
+  }
+
+  Future<void> openHistory() async {
+    final profile = Get.isRegistered<ProfileController>()
+        ? Get.find<ProfileController>()
+        : Get.put(ProfileController());
+    final unlocked = await profile.ensureJournalUnlocked();
+    if (!unlocked) {
+      return;
+    }
+
+    Get.toNamed(AppRoutes.journalHistory);
   }
 
   Future<void> _ensureUnlockedForRoute() async {
