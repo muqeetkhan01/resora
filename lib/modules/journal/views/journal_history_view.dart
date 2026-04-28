@@ -40,7 +40,6 @@ class JournalHistoryView extends GetView<JournalHistoryController> {
                 children: [
                   _HistoryHeader(
                     onBack: Get.back,
-                    onNewEntry: controller.startNewEntry,
                   ),
                   const Spacer(),
                   Center(
@@ -61,7 +60,6 @@ class JournalHistoryView extends GetView<JournalHistoryController> {
               children: [
                 _HistoryHeader(
                   onBack: Get.back,
-                  onNewEntry: controller.startNewEntry,
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 if (entries.isEmpty)
@@ -100,11 +98,9 @@ class JournalHistoryView extends GetView<JournalHistoryController> {
 class _HistoryHeader extends StatelessWidget {
   const _HistoryHeader({
     required this.onBack,
-    required this.onNewEntry,
   });
 
   final VoidCallback onBack;
-  final VoidCallback onNewEntry;
 
   @override
   Widget build(BuildContext context) {
@@ -125,19 +121,9 @@ class _HistoryHeader extends StatelessWidget {
           child: Text(
             'journal history',
             style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                  fontSize: 34,
+                  fontSize: 26,
                   color: AppColors.primary,
                   fontStyle: FontStyle.italic,
-                ),
-          ),
-        ),
-        TextButton(
-          onPressed: onNewEntry,
-          child: Text(
-            'new',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.primary,
-                  letterSpacing: 1.4,
                 ),
           ),
         ),
@@ -196,13 +182,6 @@ class _HistoryCard extends StatelessWidget {
               children: [
                 Text(
                   entry.date,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: AppColors.placeholder,
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.sm),
-                Text(
-                  '${entry.wordCount} words',
                   style: textTheme.bodySmall?.copyWith(
                     color: AppColors.placeholder,
                   ),

@@ -71,22 +71,28 @@ class ResetsController extends GetxController {
   }
 
   void openReset(ResetOption option) {
+    final playerArgs = {
+      'track': AudioTrack(
+        title: option.title,
+        category: option.category,
+        description: option.subtitle,
+        duration: option.duration,
+        assetPath: option.audioPath.isEmpty
+            ? AppAssets.resetBreathReset
+            : option.audioPath,
+      ),
+      'imagePath': AppAssets.archway,
+      'minimal': true,
+      'ritualFeature': RitualWrapFeature.meditation,
+    };
+
     Get.toNamed(
-      AppRoutes.audioPlayer,
-      arguments: {
-        'track': AudioTrack(
-          title: option.title,
-          category: option.category,
-          description: option.subtitle,
-          duration: option.duration,
-          assetPath: option.audioPath.isEmpty
-              ? AppAssets.resetBreathReset
-              : option.audioPath,
-        ),
-        'imagePath': AppAssets.archway,
-        'minimal': true,
-        'ritualFeature': RitualWrapFeature.meditation,
-      },
+      AppRoutes.ritualWrap,
+      arguments: RitualWrapArgs.entry(
+        feature: RitualWrapFeature.meditation,
+        nextRoute: AppRoutes.audioPlayer,
+        nextArguments: playerArgs,
+      ).toMap(),
     );
   }
 }

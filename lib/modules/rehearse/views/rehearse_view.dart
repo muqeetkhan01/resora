@@ -27,7 +27,7 @@ class RehearseView extends GetView<RehearseController> {
         child: Obx(() {
           final scenarios = controller.filteredScenarios;
           if (scenarios.isEmpty) {
-            return _EditorialEmptyState(
+            return const _EditorialEmptyState(
               title: 'rehearse the moment',
               message: 'No rehearsal scenarios published yet.',
             );
@@ -108,6 +108,7 @@ class RehearseView extends GetView<RehearseController> {
                                 style: textTheme.labelMedium?.copyWith(
                                   color: AppColors.terracotta.withOpacity(0.9),
                                   letterSpacing: 3.2,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
@@ -174,7 +175,7 @@ class RehearseView extends GetView<RehearseController> {
   ) {
     return showModalBottomSheet<String>(
       context: context,
-      backgroundColor: const Color(0xFF0F4438),
+      backgroundColor: AppColors.canvas,
       useSafeArea: true,
       builder: (context) {
         return Column(
@@ -184,7 +185,7 @@ class RehearseView extends GetView<RehearseController> {
             Container(
               width: 32,
               height: 3,
-              color: AppColors.white.withOpacity(0.24),
+              color: AppColors.primary.withOpacity(0.18),
             ),
             const SizedBox(height: AppSpacing.sm),
             for (final category in controller.categories)
@@ -210,8 +211,8 @@ class RehearseView extends GetView<RehearseController> {
                                   .displayMedium
                                   ?.copyWith(
                                     color: selected == category
-                                        ? AppColors.white
-                                        : AppColors.white.withOpacity(0.72),
+                                        ? AppColors.primary
+                                        : AppColors.primary.withOpacity(0.72),
                                     fontSize: 24,
                                     fontStyle: FontStyle.italic,
                                   ),
@@ -223,7 +224,7 @@ class RehearseView extends GetView<RehearseController> {
                                   .textTheme
                                   .bodySmall
                                   ?.copyWith(
-                                    color: AppColors.white.withOpacity(0.34),
+                                    color: AppColors.placeholder,
                                   ),
                             ),
                           ],
@@ -248,11 +249,11 @@ class RehearseView extends GetView<RehearseController> {
 
   double _titleSizeFor(String value) {
     final length = value.trim().length;
-    if (length > 90) return 34;
-    if (length > 70) return 38;
-    if (length > 52) return 44;
-    if (length > 38) return 48;
-    return 54;
+    if (length > 90) return 30;
+    if (length > 70) return 33;
+    if (length > 52) return 36;
+    if (length > 38) return 40;
+    return 44;
   }
 }
 
@@ -395,7 +396,7 @@ class _BottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 72,
+      height: 96,
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(color: AppColors.white.withOpacity(0.12)),
@@ -403,11 +404,12 @@ class _BottomBar extends StatelessWidget {
       ),
       child: Row(
         children: [
+          const SizedBox(width: AppSpacing.sm),
           TextButton(
             onPressed: onBegin,
             child: Text(
               beginLabel,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: AppColors.white.withOpacity(0.86),
                     letterSpacing: 2.3,
                   ),
@@ -449,8 +451,8 @@ class _SquareButton extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        width: 30,
-        height: 30,
+        width: 40,
+        height: 40,
         decoration: BoxDecoration(
           border: Border.all(
             color: AppColors.white.withOpacity(disabled ? 0.08 : 0.24),
@@ -461,7 +463,7 @@ class _SquareButton extends StatelessWidget {
         child: Icon(
           icon,
           color: AppColors.white.withOpacity(disabled ? 0.26 : 0.75),
-          size: 16,
+          size: 21,
         ),
       ),
     );

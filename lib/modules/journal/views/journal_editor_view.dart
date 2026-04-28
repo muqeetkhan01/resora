@@ -59,9 +59,9 @@ class _JournalEditorViewState extends State<JournalEditorView> {
       backgroundColor: const Color(0xFFF5F4F0),
       body: Stack(
         children: [
-          Positioned.fill(
+          const Positioned.fill(
             child: DecoratedBox(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 gradient: RadialGradient(
                   center: Alignment(-0.82, -0.9),
                   radius: 1.2,
@@ -112,7 +112,7 @@ class _JournalEditorViewState extends State<JournalEditorView> {
                       _prompt,
                       style: textTheme.displayMedium?.copyWith(
                         color: AppColors.primary.withOpacity(0.45),
-                        fontSize: 40,
+                        fontSize: 34,
                         fontStyle: FontStyle.italic,
                       ),
                     ),
@@ -142,26 +142,6 @@ class _JournalEditorViewState extends State<JournalEditorView> {
                         focusedBorder: InputBorder.none,
                       ),
                     ),
-                  ),
-                  ValueListenableBuilder<TextEditingValue>(
-                    valueListenable: _controller,
-                    builder: (context, value, _) {
-                      final trimmed = value.text.trim();
-                      if (trimmed.isEmpty) {
-                        return const SizedBox.shrink();
-                      }
-                      final words = trimmed.split(RegExp(r'\s+')).length;
-                      return Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          '$words words',
-                          style: textTheme.labelMedium?.copyWith(
-                            color: AppColors.primary.withOpacity(0.3),
-                            letterSpacing: 1.2,
-                          ),
-                        ),
-                      );
-                    },
                   ),
                 ],
               ),

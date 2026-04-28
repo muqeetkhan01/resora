@@ -179,6 +179,16 @@ class _ChatHeader extends StatelessWidget {
               ],
             ),
           ),
+          IconButton(
+            onPressed: () => Get.toNamed(AppRoutes.profile),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints.tightFor(width: 28, height: 28),
+            icon: const Icon(
+              AppIcons.profileOutline,
+              size: 18,
+              color: AppColors.primary,
+            ),
+          ),
         ],
       ),
     );
@@ -190,11 +200,11 @@ class _TalkEmptyStateWithPrompt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return const Stack(
       fit: StackFit.expand,
-      children: [
-        const _TalkEmptyState(),
-        const _ChatPromptState(),
+      children: <Widget>[
+        _TalkEmptyState(),
+        _ChatPromptState(),
       ],
     );
   }

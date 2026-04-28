@@ -4,7 +4,6 @@ import '../../../core/navigation/app_navigation.dart';
 import '../../../core/services/content_items_service.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
-import '../../profile/controllers/profile_controller.dart';
 import '../../dashboard/controllers/dashboard_controller.dart';
 
 class SpacesController extends GetxController {
@@ -89,7 +88,7 @@ class SpacesController extends GetxController {
     return _routeHasContent[route] ?? false;
   }
 
-  Future<void> openSpace(QuickActionItem item) async {
+  void openSpace(QuickActionItem item) {
     if (item.route.trim().isEmpty) {
       return;
     }
@@ -98,14 +97,6 @@ class SpacesController extends GetxController {
       return;
     }
     if (item.route == AppRoutes.journal) {
-      final profile = Get.isRegistered<ProfileController>()
-          ? Get.find<ProfileController>()
-          : Get.put(ProfileController());
-      final unlocked = await profile.ensureJournalUnlocked();
-      if (!unlocked) {
-        return;
-      }
-
       Get.toNamed(AppRoutes.journal);
       return;
     }

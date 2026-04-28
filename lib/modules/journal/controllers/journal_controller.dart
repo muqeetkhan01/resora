@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import '../../../core/services/content_items_service.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
-import '../../profile/controllers/profile_controller.dart';
 import '../../ritual_wrap/models/ritual_wrap_args.dart';
 
 class JournalController extends GetxController {
@@ -24,12 +23,6 @@ class JournalController extends GetxController {
   void onInit() {
     super.onInit();
     _loadPrompts();
-  }
-
-  @override
-  void onReady() {
-    super.onReady();
-    _ensureUnlockedForRoute();
   }
 
   Future<void> _loadPrompts() async {
@@ -79,15 +72,7 @@ class JournalController extends GetxController {
     currentPage.value = index;
   }
 
-  Future<void> openEditor({JournalEntry? entry, String? prompt}) async {
-    final profile = Get.isRegistered<ProfileController>()
-        ? Get.find<ProfileController>()
-        : Get.put(ProfileController());
-    final unlocked = await profile.ensureJournalUnlocked();
-    if (!unlocked) {
-      return;
-    }
-
+  void openEditor({JournalEntry? entry, String? prompt}) {
     Get.toNamed(
       AppRoutes.ritualWrap,
       arguments: RitualWrapArgs.entry(
@@ -98,26 +83,8 @@ class JournalController extends GetxController {
     );
   }
 
-  Future<void> openHistory() async {
-    final profile = Get.isRegistered<ProfileController>()
-        ? Get.find<ProfileController>()
-        : Get.put(ProfileController());
-    final unlocked = await profile.ensureJournalUnlocked();
-    if (!unlocked) {
-      return;
-    }
-
+  void openHistory() {
     Get.toNamed(AppRoutes.journalHistory);
-  }
-
-  Future<void> _ensureUnlockedForRoute() async {
-    final profile = Get.isRegistered<ProfileController>()
-        ? Get.find<ProfileController>()
-        : Get.put(ProfileController());
-    final unlocked = await profile.ensureJournalUnlocked();
-    if (!unlocked && Get.currentRoute == AppRoutes.journal) {
-      Get.back<void>();
-    }
   }
 
   @override

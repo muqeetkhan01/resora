@@ -23,7 +23,10 @@ class ContentItemsService {
       _firestore.collection('premium_plans');
 
   Future<List<OnboardingItem>> loadOnboardingItems() async {
-    final rows = await _loadPublishedContentByType('onboarding');
+    final rows = await _loadPublishedContentByType(
+      'onboarding',
+      aliases: const ['onboarding_slide', 'onboarding_slides'],
+    );
 
     final items = <OnboardingItem>[];
     for (var index = 0; index < rows.length; index += 1) {

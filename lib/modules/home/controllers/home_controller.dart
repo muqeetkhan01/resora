@@ -4,7 +4,6 @@ import '../../../core/controllers/app_session_controller.dart';
 import '../../../core/navigation/app_navigation.dart';
 import '../../../core/services/content_items_service.dart';
 import '../../../data/models/app_models.dart';
-import '../../profile/controllers/profile_controller.dart';
 import '../../../routes/app_routes.dart';
 import '../../dashboard/controllers/dashboard_controller.dart';
 
@@ -124,15 +123,7 @@ class HomeController extends GetxController {
     AppNavigation.openTalkTab();
   }
 
-  Future<void> openJournal() async {
-    final profile = Get.isRegistered<ProfileController>()
-        ? Get.find<ProfileController>()
-        : Get.put(ProfileController());
-    final unlocked = await profile.ensureJournalUnlocked();
-    if (!unlocked) {
-      return;
-    }
-
+  void openJournal() {
     Get.toNamed(AppRoutes.journal);
   }
 
