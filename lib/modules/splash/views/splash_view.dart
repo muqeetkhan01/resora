@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../theme/app_colors.dart';
 import '../controllers/splash_controller.dart';
@@ -76,11 +77,10 @@ class _SplashWordmarkState extends State<_SplashWordmark>
                 child: Text(
                   'resora',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontFamily: 'Cormorant Garamond Regular',
+                  style: GoogleFonts.cormorantGaramond(
                     fontSize: fontSize,
                     height: 1,
-                    fontWeight: FontWeight.w100,
+                    fontWeight: FontWeight.w300,
                     letterSpacing: 7.6,
                     color: AppColors.primary,
                   ),

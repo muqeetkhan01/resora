@@ -139,16 +139,7 @@ class _FlowScreen extends StatelessWidget {
                       else
                         const SizedBox.shrink(),
                       const Spacer(),
-                      Text(
-                        'Issue No. 01',
-                        style:
-                            Theme.of(context).textTheme.labelMedium?.copyWith(
-                                  color: muted,
-                                  letterSpacing: 3.0,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                      ),
+                      const SizedBox.shrink(),
                     ],
                   ),
                 ),
@@ -203,7 +194,7 @@ class _CoverScreen extends StatelessWidget {
                     style: textTheme.displayMedium?.copyWith(
                       color: _OnboardingTokens.off,
                       fontSize: 40,
-                      fontWeight: FontWeight.w400,
+                      fontWeight: FontWeight.w300,
                       letterSpacing: 0.2,
                     ),
                   ),
@@ -213,28 +204,37 @@ class _CoverScreen extends StatelessWidget {
                     style: textTheme.displayLarge?.copyWith(
                       color: _OnboardingTokens.off,
                       fontSize: 68,
-                      fontWeight: FontWeight.w400,
+                      fontWeight: FontWeight.w300,
                       height: 0.98,
                     ),
                   ),
                   const Spacer(),
-                  TextButton(
-                    onPressed: onNext,
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      foregroundColor: _OnboardingTokens.off,
-                      side: const BorderSide(
-                          color: _OnboardingTokens.off, width: 0.5),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
+                  SizedBox(
+                    width: 136,
+                    height: 56,
+                    child: OutlinedButton(
+                      onPressed: onNext,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: _OnboardingTokens.off,
+                        side: const BorderSide(
+                          color: _OnboardingTokens.off,
+                          width: 0.5,
+                        ),
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.zero,
+                        ),
+                        padding: EdgeInsets.zero,
+                        alignment: Alignment.center,
                       ),
-                    ),
-                    child: Text(
-                      'Open Issue No. 01',
-                      style: textTheme.displaySmall?.copyWith(
-                        color: _OnboardingTokens.off,
-                        fontSize: 34,
-                        fontWeight: FontWeight.w400,
+                      child: Text(
+                        'Begin',
+                        textAlign: TextAlign.center,
+                        style: textTheme.labelLarge?.copyWith(
+                          color: _OnboardingTokens.off,
+                          fontSize: 13,
+                          letterSpacing: 0.05,
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
                     ),
                   ),
@@ -316,14 +316,12 @@ class _StateScreen extends StatelessWidget {
                       Expanded(
                         child: Text(
                           item.label,
-                          style: textTheme.displaySmall?.copyWith(
+                          style: textTheme.bodyLarge?.copyWith(
                             color: isSelected
                                 ? _OnboardingTokens.green
                                 : _OnboardingTokens.dark,
-                            fontSize: 30,
-                            fontStyle: isSelected
-                                ? FontStyle.italic
-                                : FontStyle.normal,
+                            fontSize: 13,
+                            letterSpacing: 0.05,
                             fontWeight: FontWeight.w400,
                           ),
                         ),
@@ -405,13 +403,12 @@ class _ReasonsScreen extends StatelessWidget {
                       Expanded(
                         child: Text(
                           reason,
-                          style: textTheme.displaySmall?.copyWith(
+                          style: textTheme.bodyLarge?.copyWith(
                             color: selected
                                 ? _OnboardingTokens.green
                                 : _OnboardingTokens.dark,
-                            fontSize: 28,
-                            fontStyle:
-                                selected ? FontStyle.italic : FontStyle.normal,
+                            fontSize: 13,
+                            letterSpacing: 0.05,
                             fontWeight: FontWeight.w400,
                           ),
                         ),
@@ -541,9 +538,9 @@ class _PaywallScreen extends StatelessWidget {
                         children: [
                           Text(
                             item.title,
-                            style: textTheme.displaySmall?.copyWith(
+                            style: textTheme.titleMedium?.copyWith(
                               color: _OnboardingTokens.dark,
-                              fontSize: 24,
+                              fontSize: 15,
                               fontWeight: FontWeight.w400,
                             ),
                           ),
@@ -591,14 +588,12 @@ class _PaywallScreen extends StatelessWidget {
                               children: [
                                 Text(
                                   plan.label,
-                                  style: textTheme.displaySmall?.copyWith(
+                                  style: textTheme.bodyLarge?.copyWith(
                                     color: isSelected
                                         ? _OnboardingTokens.green
                                         : _OnboardingTokens.dark,
-                                    fontSize: 30,
-                                    fontStyle: isSelected
-                                        ? FontStyle.italic
-                                        : FontStyle.normal,
+                                    fontSize: 20,
+                                    letterSpacing: 0,
                                     fontWeight: FontWeight.w400,
                                   ),
                                 ),
@@ -630,14 +625,13 @@ class _PaywallScreen extends StatelessWidget {
                       const SizedBox(width: AppSpacing.sm),
                       Text(
                         plan.price,
-                        style: textTheme.displaySmall?.copyWith(
+                        style: textTheme.bodyLarge?.copyWith(
                           color: isSelected
                               ? _OnboardingTokens.green
                               : _OnboardingTokens.dark,
-                          fontSize: 30,
-                          fontStyle:
-                              isSelected ? FontStyle.italic : FontStyle.normal,
-                          fontWeight: FontWeight.w400,
+                          fontSize: 22,
+                          letterSpacing: 0,
+                          fontWeight: FontWeight.w300,
                         ),
                       ),
                     ],
@@ -739,7 +733,7 @@ class _IntentionScreen extends StatelessWidget {
               color: _OnboardingTokens.taupe,
               fontSize: 30,
               fontStyle: FontStyle.italic,
-              fontWeight: FontWeight.w400,
+              fontWeight: FontWeight.w300,
               height: 1.35,
             ),
           ),
@@ -1018,7 +1012,7 @@ class _GlimpseBreathState extends State<_GlimpseBreath> {
                     color: _OnboardingTokens.off,
                     fontSize: 42,
                     height: 1.2,
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.w300,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -1030,7 +1024,7 @@ class _GlimpseBreathState extends State<_GlimpseBreath> {
                     fontSize: 28,
                     fontStyle: FontStyle.italic,
                     height: 1.35,
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.w300,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -1126,8 +1120,8 @@ class _ContinueButton extends StatelessWidget {
       child: Text(
         label,
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              fontSize: 14,
-              letterSpacing: 3.0,
+              fontSize: 13,
+              letterSpacing: 0.05,
               fontWeight: FontWeight.w500,
               color: onTap == null ? color.withOpacity(0.3) : color,
             ),
@@ -1184,11 +1178,11 @@ class _ProviderButton extends StatelessWidget {
             // const SizedBox(width: AppSpacing.sm),
             Text(
               label,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: foreground,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: 0.2,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                    letterSpacing: 0.05,
                   ),
             ),
           ],

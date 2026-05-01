@@ -492,14 +492,13 @@ class _MessageAvatar extends StatelessWidget {
                 size: 16,
                 color: AppColors.primary,
               )
-            : const Text(
+            : Text(
                 'R',
-                style: TextStyle(
-                  fontFamily: 'Cormorant Garamond',
-                  fontSize: 18,
-                  color: AppColors.primary,
-                  height: 1,
-                ),
+                style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                      fontSize: 18,
+                      color: AppColors.primary,
+                      height: 1,
+                    ),
               ),
       ),
     );

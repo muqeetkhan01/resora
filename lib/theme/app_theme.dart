@@ -5,12 +5,45 @@ import 'app_colors.dart';
 
 abstract final class AppTheme {
   static ThemeData get lightTheme {
-    final heading = GoogleFonts.cormorantGaramondTextTheme();
-    final body = GoogleFonts.merriweatherTextTheme();
+    TextStyle display({
+      required double size,
+      double height = 1.08,
+      double letterSpacing = -0.01,
+      FontStyle style = FontStyle.normal,
+      Color color = AppColors.primary,
+    }) {
+      return GoogleFonts.cormorantGaramond(
+        fontSize: size,
+        fontWeight: FontWeight.w300,
+        height: height,
+        letterSpacing: letterSpacing,
+        fontStyle: style,
+        color: color,
+      );
+    }
+
+    TextStyle ui({
+      required double size,
+      FontWeight weight = FontWeight.w400,
+      double height = 1.6,
+      double letterSpacing = 0.02,
+      Color color = AppColors.text,
+      FontStyle style = FontStyle.normal,
+    }) {
+      return GoogleFonts.jost(
+        fontSize: size,
+        fontWeight: weight,
+        height: height,
+        letterSpacing: letterSpacing,
+        color: color,
+        fontStyle: style,
+      );
+    }
 
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
+      fontFamily: GoogleFonts.jost().fontFamily,
       scaffoldBackgroundColor: AppColors.canvas,
       colorScheme: const ColorScheme.light(
         primary: AppColors.primary,
@@ -20,73 +53,58 @@ abstract final class AppTheme {
         error: AppColors.error,
       ),
       textTheme: TextTheme(
-        displayLarge: heading.displayLarge?.copyWith(
-          fontSize: 32,
-          fontWeight: FontWeight.w400,
-          height: 1.05,
-          letterSpacing: 0.2,
-          color: AppColors.primary,
-        ),
-        displayMedium: heading.displayMedium?.copyWith(
-          fontSize: 26,
-          fontWeight: FontWeight.w400,
-          height: 1.08,
-          letterSpacing: 0.2,
-          color: AppColors.primary,
-        ),
-        headlineLarge: heading.headlineLarge?.copyWith(
-          fontSize: 20,
-          fontWeight: FontWeight.w400,
-          height: 1.15,
-          letterSpacing: 0.2,
-          color: AppColors.primary,
-        ),
-        headlineMedium: heading.headlineMedium?.copyWith(
-          fontSize: 20,
-          fontWeight: FontWeight.w400,
-          height: 1.15,
-          color: AppColors.primary,
-        ),
-        titleLarge: heading.titleLarge?.copyWith(
-          fontSize: 18,
-          fontWeight: FontWeight.w400,
-          height: 1.15,
-          color: AppColors.primary,
-        ),
-        titleMedium: body.titleMedium?.copyWith(
-          fontSize: 14,
-          fontWeight: FontWeight.w300,
+        displayLarge: display(size: 48, height: 1.05),
+        displayMedium: display(size: 34, height: 1.08),
+        displaySmall: display(size: 28, height: 1.1, letterSpacing: 0),
+        headlineLarge: display(size: 24, height: 1.12, letterSpacing: 0),
+        headlineMedium: display(size: 22, height: 1.12, letterSpacing: 0),
+        titleLarge: ui(
+          size: 18,
+          weight: FontWeight.w400,
+          height: 1.35,
+          letterSpacing: 0,
           color: AppColors.text,
         ),
-        bodyLarge: body.bodyLarge?.copyWith(
-          fontSize: 14,
-          fontWeight: FontWeight.w300,
-          height: 1.7,
+        titleMedium: ui(
+          size: 14,
+          weight: FontWeight.w400,
+          height: 1.45,
+          letterSpacing: 0.02,
           color: AppColors.text,
         ),
-        bodyMedium: body.bodyMedium?.copyWith(
-          fontSize: 13,
-          fontWeight: FontWeight.w300,
-          height: 1.7,
-          color: AppColors.muted,
-        ),
-        bodySmall: const TextStyle(
-          fontFamily: 'Merriweather',
-          fontSize: 12,
-          fontWeight: FontWeight.w300,
-          height: 1.5,
-          color: AppColors.muted,
-        ),
-        labelLarge: body.labelLarge?.copyWith(
-          fontSize: 14,
-          fontWeight: FontWeight.w300,
-          color: AppColors.primary,
-        ),
-        labelMedium: const TextStyle(
-          fontFamily: 'Merriweather',
-          fontSize: 11,
-          fontWeight: FontWeight.w300,
+        bodyLarge: ui(
+          size: 13,
+          weight: FontWeight.w400,
           height: 1.6,
+          letterSpacing: 0.02,
+          color: AppColors.text,
+        ),
+        bodyMedium: ui(
+          size: 13,
+          weight: FontWeight.w400,
+          height: 1.6,
+          letterSpacing: 0.02,
+          color: AppColors.muted,
+        ),
+        bodySmall: ui(
+          size: 11,
+          weight: FontWeight.w300,
+          height: 1.6,
+          letterSpacing: 0.12,
+          color: AppColors.muted,
+        ),
+        labelLarge: ui(
+          size: 13,
+          weight: FontWeight.w500,
+          height: 1.3,
+          letterSpacing: 0.05,
+          color: AppColors.primary,
+        ),
+        labelMedium: ui(
+          size: 11,
+          weight: FontWeight.w400,
+          height: 1.35,
+          letterSpacing: 0.14,
           color: AppColors.muted,
         ),
       ),
@@ -108,7 +126,13 @@ abstract final class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: false,
         contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 12),
-        hintStyle: body.bodyMedium?.copyWith(color: AppColors.placeholder),
+        hintStyle: ui(
+          size: 13,
+          weight: FontWeight.w300,
+          height: 1.6,
+          letterSpacing: 0.02,
+          color: AppColors.placeholder,
+        ),
         enabledBorder: const UnderlineInputBorder(
           borderSide: BorderSide(color: AppColors.line),
         ),
