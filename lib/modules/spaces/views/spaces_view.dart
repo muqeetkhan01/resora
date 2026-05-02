@@ -146,22 +146,19 @@ class SpacesView extends GetView<SpacesController> {
     final item = controller.findSpaceByRoute(route) ??
         controller.findSpaceByTitle(titleHint);
     if (item == null) {
-      final hasRouteContent = controller.hasContentForRoute(route);
       return _SpaceSlot(
         title: defaultTitle.toLowerCase(),
-        subtitle: hasRouteContent ? defaultSubtitle : 'No content yet.',
+        subtitle: defaultSubtitle,
         imagePath: defaultImage,
-        onTap: hasRouteContent
-            ? () => controller.openSpace(
-                  QuickActionItem(
-                    title: defaultTitle,
-                    subtitle: defaultSubtitle,
-                    icon: AppIcons.forward,
-                    accentColor: AppColors.primary,
-                    route: route,
-                  ),
-                )
-            : null,
+        onTap: () => controller.openSpace(
+          QuickActionItem(
+            title: defaultTitle,
+            subtitle: defaultSubtitle,
+            icon: AppIcons.forward,
+            accentColor: AppColors.primary,
+            route: route,
+          ),
+        ),
       );
     }
 

@@ -11,7 +11,7 @@ class OnboardingController extends GetxController {
   final selectedReasons = <String>[].obs;
   final intention = ''.obs;
   final name = ''.obs;
-  final selectedPlan = 'year'.obs; // year | month
+  final selectedPlan = 'year'.obs; // year | month | lifetime
 
   static const totalStepsAfterCover = 6;
 
@@ -72,6 +72,13 @@ class OnboardingController extends GetxController {
       meta: 'Billed monthly',
       note: null
     ),
+    (
+      key: 'lifetime',
+      label: 'Lifetime',
+      price: '\$250',
+      meta: 'One payment. Full access. No renewals.',
+      note: 'Yours forever'
+    ),
   ];
 
   @override
@@ -121,7 +128,7 @@ class OnboardingController extends GetxController {
   }
 
   void selectPlan(String key) {
-    if (key != 'year' && key != 'month') {
+    if (key != 'year' && key != 'month' && key != 'lifetime') {
       return;
     }
     selectedPlan.value = key;

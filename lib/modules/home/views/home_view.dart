@@ -133,24 +133,21 @@ class HomeView extends GetView<HomeController> {
     final item = controller.findActionByRoute(spec.route) ??
         controller.findActionByTitle(spec.titleHint);
     if (item == null) {
-      final hasRouteContent = controller.hasContentForRoute(spec.route);
       return _HomeSlot(
         title: spec.defaultTitle.toLowerCase(),
-        subtitle: hasRouteContent ? spec.defaultSubtitle : 'No content yet.',
+        subtitle: spec.defaultSubtitle,
         imagePath: spec.defaultImage,
-        actionLabel: hasRouteContent ? spec.cta : 'no content',
+        actionLabel: spec.cta,
         alignRight: spec.alignRight,
-        onTap: hasRouteContent
-            ? () => controller.openAction(
-                  QuickActionItem(
-                    title: spec.defaultTitle,
-                    subtitle: spec.defaultSubtitle,
-                    icon: AppIcons.forward,
-                    accentColor: AppColors.primary,
-                    route: spec.route,
-                  ),
-                )
-            : null,
+        onTap: () => controller.openAction(
+          QuickActionItem(
+            title: spec.defaultTitle,
+            subtitle: spec.defaultSubtitle,
+            icon: AppIcons.forward,
+            accentColor: AppColors.primary,
+            route: spec.route,
+          ),
+        ),
       );
     }
 

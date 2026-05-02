@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../../data/mock/mock_content.dart';
 import '../../data/models/app_models.dart';
 import '../../routes/app_routes.dart';
 import '../../theme/app_colors.dart';
@@ -63,7 +64,7 @@ class ContentItemsService {
   Future<List<QuickActionItem>> loadQuickActions() async {
     final rows = await _loadPublishedContentByType(
       'quick_action',
-      aliases: const ['quick_actions'],
+      aliases: const ['quick_actions', 'home_card', 'home_cards'],
     );
     final mediaById = await _loadMediaById(_collectMediaIds(rows));
 
@@ -101,13 +102,17 @@ class ContentItemsService {
       );
     }
 
+    if (items.isEmpty) {
+      return List<QuickActionItem>.from(MockContent.quickActions);
+    }
+
     return items;
   }
 
   Future<List<QuickActionItem>> loadSpaces() async {
     final rows = await _loadPublishedContentByType(
       'space',
-      aliases: const ['spaces'],
+      aliases: const ['spaces', 'space_item', 'space_items'],
     );
     final mediaById = await _loadMediaById(_collectMediaIds(rows));
 
@@ -143,6 +148,10 @@ class ContentItemsService {
           premium: _toBool(data['isPremium']),
         ),
       );
+    }
+
+    if (items.isEmpty) {
+      return List<QuickActionItem>.from(MockContent.spaces);
     }
 
     return items;
@@ -177,13 +186,17 @@ class ContentItemsService {
       );
     }
 
+    if (items.isEmpty) {
+      return List<JournalPrompt>.from(MockContent.journalPrompts);
+    }
+
     return items;
   }
 
   Future<List<ResetOption>> loadResetOptions() async {
     final rows = await _loadPublishedContentByType(
       'reset',
-      aliases: const ['resets', 'gentle_reset'],
+      aliases: const ['resets', 'gentle_reset', 'reset_session'],
     );
     final mediaById = await _loadMediaById(_collectMediaIds(rows));
 
@@ -220,6 +233,10 @@ class ContentItemsService {
           audioPath: audioPath,
         ),
       );
+    }
+
+    if (items.isEmpty) {
+      return List<ResetOption>.from(MockContent.resetOptions);
     }
 
     return items;
@@ -267,6 +284,10 @@ class ContentItemsService {
           audioPath: audioPath,
         ),
       );
+    }
+
+    if (items.isEmpty) {
+      return List<MindfulnessSession>.from(MockContent.mindfulnessSessions);
     }
 
     return items;
@@ -318,13 +339,22 @@ class ContentItemsService {
       );
     }
 
+    if (items.isEmpty) {
+      return List<AudioTrack>.from(MockContent.audioTracks);
+    }
+
     return items;
   }
 
   Future<List<RehearsalScenario>> loadRehearsalScenarios() async {
     final rows = await _loadPublishedContentByType(
       'rehearsal_scenario',
-      aliases: const ['rehearsal', 'rehearse'],
+      aliases: const [
+        'rehearsal',
+        'rehearse',
+        'rehearsal_scenarios',
+        'rehearse_the_moment',
+      ],
     );
     final mediaById = await _loadMediaById(_collectMediaIds(rows));
 
@@ -365,6 +395,10 @@ class ContentItemsService {
       );
     }
 
+    if (items.isEmpty) {
+      return List<RehearsalScenario>.from(MockContent.rehearsalScenarios);
+    }
+
     return items;
   }
 
@@ -374,7 +408,12 @@ class ContentItemsService {
       aliases: const ['normal_topics', 'normal'],
     );
 
-    return _mapNormalTopics(rows);
+    final items = _mapNormalTopics(rows);
+    if (items.isEmpty) {
+      return List<NormalTopicItem>.from(MockContent.normalTopics);
+    }
+
+    return items;
   }
 
   Stream<List<NormalTopicItem>> watchNormalTopics() {
@@ -475,6 +514,10 @@ class ContentItemsService {
       );
     }
 
+    if (items.isEmpty) {
+      return List<KeyTermItem>.from(MockContent.keyTerms);
+    }
+
     return items;
   }
 
@@ -506,6 +549,10 @@ class ContentItemsService {
           isPremium: _toBool(data['isPremium']),
         ),
       );
+    }
+
+    if (items.isEmpty) {
+      return List<QaItem>.from(MockContent.qas);
     }
 
     return items;
@@ -555,6 +602,10 @@ class ContentItemsService {
       );
     }
 
+    if (items.isEmpty) {
+      return List<CommunityPost>.from(MockContent.communityPosts);
+    }
+
     return items;
   }
 
@@ -589,6 +640,10 @@ class ContentItemsService {
           isSaved: false,
         ),
       );
+    }
+
+    if (items.isEmpty) {
+      return List<AffirmationItem>.from(MockContent.affirmations);
     }
 
     return items;
@@ -634,7 +689,12 @@ class ContentItemsService {
     }
 
     sortable.sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
-    return sortable.map((item) => item.value).toList();
+    final plans = sortable.map((item) => item.value).toList();
+    if (plans.isEmpty) {
+      return List<PremiumPlan>.from(MockContent.premiumPlans);
+    }
+
+    return plans;
   }
 
   Future<String> loadDailyAffirmation() async {
@@ -690,7 +750,21 @@ class ContentItemsService {
       return true;
     }
 
-    return status == 'published' || status == 'live' || status == 'active';
+    if (status == 'published' ||
+        status == 'live' ||
+        status == 'active' ||
+        status == 'public' ||
+        status == 'enabled' ||
+        status == 'approved') {
+      return true;
+    }
+
+    final legacy = data['isPublished'];
+    if (legacy is bool) {
+      return legacy;
+    }
+
+    return data['publishedAt'] != null || data['published_at'] != null;
   }
 
   static String _normalizeToken(dynamic value) {
@@ -768,12 +842,15 @@ class ContentItemsService {
         case 'chat':
         case 'talk':
         case 'talk_to_resora':
+        case 'talk_to_ressora':
+        case 'talktoresora':
           return AppRoutes.chat;
         case 'normal':
         case 'is_this_normal':
           return AppRoutes.normal;
         case 'resets':
         case 'gentle_reset':
+        case 'gentle_resets':
           return AppRoutes.resets;
         case 'noise':
         case 'quiet_the_noise':

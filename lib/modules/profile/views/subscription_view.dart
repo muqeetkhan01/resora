@@ -72,7 +72,8 @@ class SubscriptionView extends GetView<ProfileController> {
                     const SizedBox(height: AppSpacing.md),
                     _PlanCard(
                       title: 'Premium',
-                      subtitle: '\$9.99 / month · or \$79.99 / year',
+                      subtitle:
+                          '\$9.99 / month · \$49.99 / year · \$250 lifetime',
                       selected: controller.activePlan.value == 'premium',
                       badge: 'most popular',
                       features: const [
@@ -81,6 +82,7 @@ class SubscriptionView extends GetView<ProfileController> {
                         'Talk to Resora (AI)',
                         'Space library — full access',
                         'Priority support',
+                        'Lifetime option: one payment, no renewals',
                       ],
                       onTap: () => controller.setPlan('premium'),
                     ),

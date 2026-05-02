@@ -209,31 +209,34 @@ class _CoverScreen extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  SizedBox(
-                    width: 136,
-                    height: 56,
-                    child: OutlinedButton(
-                      onPressed: onNext,
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: _OnboardingTokens.off,
-                        side: const BorderSide(
-                          color: _OnboardingTokens.off,
-                          width: 0.5,
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: SizedBox(
+                      width: 136,
+                      height: 56,
+                      child: OutlinedButton(
+                        onPressed: onNext,
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: _OnboardingTokens.off,
+                          side: const BorderSide(
+                            color: _OnboardingTokens.off,
+                            width: 0.5,
+                          ),
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.zero,
+                          ),
+                          padding: EdgeInsets.zero,
+                          alignment: Alignment.center,
                         ),
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.zero,
-                        ),
-                        padding: EdgeInsets.zero,
-                        alignment: Alignment.center,
-                      ),
-                      child: Text(
-                        'Begin',
-                        textAlign: TextAlign.center,
-                        style: textTheme.labelLarge?.copyWith(
-                          color: _OnboardingTokens.off,
-                          fontSize: 13,
-                          letterSpacing: 0.05,
-                          fontWeight: FontWeight.w400,
+                        child: Text(
+                          'Begin',
+                          textAlign: TextAlign.center,
+                          style: textTheme.labelLarge?.copyWith(
+                            color: _OnboardingTokens.off,
+                            fontSize: 13,
+                            letterSpacing: 0.05,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
                       ),
                     ),
@@ -641,9 +644,13 @@ class _PaywallScreen extends StatelessWidget {
             }),
             const SizedBox(height: AppSpacing.lg),
             Text(
-              selectedPlan == 'year'
-                  ? 'Free for 7 days, then less than \$4 a month. We will remind you 48 hours before.'
-                  : 'Free for 7 days, then \$9.99/month. We will remind you 48 hours before.',
+              switch (selectedPlan) {
+                'year' =>
+                  'Free for 7 days, then less than \$5 a month. We will remind you 48 hours before.',
+                'month' =>
+                  'Free for 7 days, then \$9.99/month. We will remind you 48 hours before.',
+                _ => 'One payment. Full access. No renewals.',
+              },
               style: textTheme.bodySmall?.copyWith(
                 color: _OnboardingTokens.taupe,
                 fontSize: 11,
