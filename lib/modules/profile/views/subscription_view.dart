@@ -73,7 +73,7 @@ class SubscriptionView extends GetView<ProfileController> {
                     _PlanCard(
                       title: 'Premium',
                       subtitle:
-                          '\$9.99 / month · \$49.99 / year · \$250 lifetime',
+                          '\$9.99 / month · \$49.99 / year · \$249.99 lifetime',
                       selected: controller.activePlan.value == 'premium',
                       badge: 'most popular',
                       features: const [

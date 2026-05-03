@@ -14,6 +14,7 @@ class ResetsController extends GetxController {
 
   final selectedCategory = 'all'.obs;
   final currentPage = 0.obs;
+  final isLoading = true.obs;
   final _options = <ResetOption>[].obs;
 
   @override
@@ -23,11 +24,14 @@ class ResetsController extends GetxController {
   }
 
   Future<void> _loadOptions() async {
+    isLoading.value = true;
     try {
       final options = await _contentItemsService.loadResetOptions();
       _options.assignAll(options);
     } catch (_) {
       _options.clear();
+    } finally {
+      isLoading.value = false;
     }
 
     if (!categories.contains(selectedCategory.value)) {

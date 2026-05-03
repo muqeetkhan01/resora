@@ -75,7 +75,7 @@ class OnboardingController extends GetxController {
     (
       key: 'lifetime',
       label: 'Lifetime',
-      price: '\$250',
+      price: '\$249.99',
       meta: 'One payment. Full access. No renewals.',
       note: 'Yours forever'
     ),

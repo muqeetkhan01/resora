@@ -20,12 +20,16 @@ class ResoraAiService {
   );
   static const String _model =
       String.fromEnvironment('OPENAI_MODEL', defaultValue: 'gpt-4.1-mini');
+  static const String _memoryModel = String.fromEnvironment(
+      'OPENAI_MEMORY_MODEL',
+      defaultValue: 'gpt-4o-mini');
 
   bool get isConfigured => _apiKey.trim().isNotEmpty;
 
   Future<String> generateReply({
     required List<ChatMessageModel> messages,
     required String userName,
+    required String latestUserMessage,
   }) async {
     if (!isConfigured) {
       throw const _AiConfigException(
@@ -35,8 +39,8 @@ class ResoraAiService {
 
     final trimmedMessages =
         messages.where((message) => message.text.trim().isNotEmpty).toList();
-    final contextWindow = trimmedMessages.length > 14
-        ? trimmedMessages.sublist(trimmedMessages.length - 14)
+    final contextWindow = trimmedMessages.length > 20
+        ? trimmedMessages.sublist(trimmedMessages.length - 20)
         : trimmedMessages;
 
     final input = <Map<String, dynamic>>[
@@ -52,11 +56,13 @@ class ResoraAiService {
       ...contextWindow.map(_toInputMessage),
     ];
 
+    final isCrisis = _isCrisisLanguage(latestUserMessage);
+
     final payload = {
       'model': _model,
       'input': input,
       'temperature': 0.6,
-      'max_output_tokens': 260,
+      'max_output_tokens': isCrisis ? 500 : 350,
     };
 
     http.Response response;
@@ -111,6 +117,77 @@ class ResoraAiService {
     }
 
     return _safeFallbackReply(userName);
+  }
+
+  Future<Map<String, dynamic>> updateMemoryFromTranscript({
+    required Map<String, dynamic> existingMemory,
+    required List<ChatMessageModel> transcript,
+  }) async {
+    if (!isConfigured || transcript.isEmpty) {
+      return <String, dynamic>{};
+    }
+
+    final lines = transcript
+        .map((message) =>
+            '${message.isUser ? 'user' : 'assistant'}: ${message.text}')
+        .join('\n');
+    final prompt = '''
+You are analyzing a wellness app conversation to update a user's profile.
+Existing profile: ${jsonEncode(existingMemory)}
+New conversation: $lines
+Return a JSON object with only the fields that should be updated:
+- goals (array of strings, max 3)
+- focus_areas (array of strings)
+- current_challenge (string)
+- mood_trend (string, based on this session only)
+- communication_style (string)
+- progress_notes (string, one new observation only)
+- last_session_summary (string, 1 to 2 sentences)
+Return only JSON. No explanation. No markdown.
+''';
+
+    final payload = {
+      'model': _memoryModel,
+      'input': [
+        {
+          'role': 'user',
+          'content': [
+            {
+              'type': 'input_text',
+              'text': prompt,
+            },
+          ],
+        },
+      ],
+      'temperature': 0.3,
+      'max_output_tokens': 400,
+    };
+
+    try {
+      final response = await _client
+          .post(
+            Uri.https('api.openai.com', '/v1/responses'),
+            headers: {
+              'Authorization': 'Bearer $_apiKey',
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode(payload),
+          )
+          .timeout(const Duration(seconds: 25));
+
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        return <String, dynamic>{};
+      }
+
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      final raw = _extractOutputText(data);
+      if (raw.isEmpty) {
+        return <String, dynamic>{};
+      }
+      return _sanitizeMemoryUpdates(_extractJsonMap(raw));
+    } catch (_) {
+      return <String, dynamic>{};
+    }
   }
 
   Map<String, dynamic> _toInputMessage(ChatMessageModel message) {
@@ -289,11 +366,21 @@ Identity and tone:
 - No fluff, no long lists, no generic motivational speech.
 
 Core behavior:
+- Follow the one-idea rule: anchor each reply to one emotional beat.
+- Ask at most one question in a response.
+- Never start two consecutive responses with the same opener.
 - First, validate the feeling in one sentence.
 - Then offer one clear next step the user can take now.
+- Use perspective offers only when the user is looping and has not asked for advice:
+  "I'm seeing this a bit differently — want to hear it?"
+- If they decline, honor it and do not push the perspective again in this session.
 - Optionally suggest ONE app-native support path if relevant:
   Journal, Gentle Reset, Quiet the Noise, Rehearse the Moment, Is This Normal.
 - Prefer clear language and short concrete wording.
+- Do not open with hollow affirmations like "Absolutely", "Great question",
+  "I understand", or "I'm sorry you're going through that."
+- Avoid generic phrases like "It's important to remember", "journey", and
+  overusing "support" in abstract terms.
 
 Safety and boundaries:
 - Do not diagnose or provide medical/legal/financial advice.
@@ -306,6 +393,119 @@ Output style:
 - Plain text only, no markdown bullets unless absolutely needed.
 - End with a grounded, actionable close.
 ''';
+  }
+
+  bool _isCrisisLanguage(String text) {
+    final normalized = text.toLowerCase();
+    if (normalized.trim().isEmpty) {
+      return false;
+    }
+
+    const phrases = <String>[
+      'end it',
+      "don't want to be here",
+      'hurt myself',
+      'suicide',
+      "can't go on",
+      'kill myself',
+      'self harm',
+      'self-harm',
+      'want to die',
+      'harm someone',
+    ];
+    return phrases.any(normalized.contains);
+  }
+
+  Map<String, dynamic> _extractJsonMap(String value) {
+    try {
+      final decoded = jsonDecode(value);
+      if (decoded is Map<String, dynamic>) {
+        return decoded;
+      }
+    } catch (_) {
+      // Continue to bracket extraction.
+    }
+
+    final start = value.indexOf('{');
+    final end = value.lastIndexOf('}');
+    if (start < 0 || end <= start) {
+      return <String, dynamic>{};
+    }
+
+    final jsonSlice = value.substring(start, end + 1);
+    try {
+      final decoded = jsonDecode(jsonSlice);
+      if (decoded is Map<String, dynamic>) {
+        return decoded;
+      }
+    } catch (_) {
+      return <String, dynamic>{};
+    }
+
+    return <String, dynamic>{};
+  }
+
+  Map<String, dynamic> _sanitizeMemoryUpdates(Map<String, dynamic> raw) {
+    final result = <String, dynamic>{};
+
+    List<String> sanitizeList(dynamic value, {int? max}) {
+      if (value is! List) {
+        return const <String>[];
+      }
+      final mapped = value
+          .whereType<String>()
+          .map((entry) => entry.trim())
+          .where((entry) => entry.isNotEmpty)
+          .toList();
+      if (max != null && mapped.length > max) {
+        return mapped.sublist(0, max);
+      }
+      return mapped;
+    }
+
+    String sanitizeText(dynamic value) {
+      if (value is! String) {
+        return '';
+      }
+      return value.trim();
+    }
+
+    final goals = sanitizeList(raw['goals'], max: 3);
+    if (goals.isNotEmpty) {
+      result['goals'] = goals;
+    }
+
+    final focusAreas = sanitizeList(raw['focus_areas']);
+    if (focusAreas.isNotEmpty) {
+      result['focus_areas'] = focusAreas;
+    }
+
+    final currentChallenge = sanitizeText(raw['current_challenge']);
+    if (currentChallenge.isNotEmpty) {
+      result['current_challenge'] = currentChallenge;
+    }
+
+    final moodTrend = sanitizeText(raw['mood_trend']);
+    if (moodTrend.isNotEmpty) {
+      result['mood_trend'] = moodTrend;
+    }
+
+    final communicationStyle = sanitizeText(raw['communication_style']);
+    if (communicationStyle.isNotEmpty) {
+      result['communication_style'] = communicationStyle;
+    }
+
+    final progressNotes = sanitizeText(raw['progress_notes']);
+    if (progressNotes.isNotEmpty) {
+      result['progress_notes'] = progressNotes;
+    }
+
+    final summary = sanitizeText(raw['last_session_summary']);
+    if (summary.isNotEmpty) {
+      result['last_session_summary'] = summary;
+    }
+
+    return result;
   }
 }
 

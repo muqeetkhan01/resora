@@ -15,6 +15,7 @@ class RehearseController extends GetxController {
 
   final selectedCategory = 'all'.obs;
   final currentPage = 0.obs;
+  final isLoading = true.obs;
   final _scenarios = <RehearsalScenario>[].obs;
 
   @override
@@ -24,11 +25,14 @@ class RehearseController extends GetxController {
   }
 
   Future<void> _loadScenarios() async {
+    isLoading.value = true;
     try {
       final scenarios = await _contentItemsService.loadRehearsalScenarios();
       _scenarios.assignAll(scenarios);
     } catch (_) {
       _scenarios.clear();
+    } finally {
+      isLoading.value = false;
     }
 
     if (!categories.contains(selectedCategory.value)) {

@@ -117,7 +117,7 @@ class HomeView extends GetView<HomeController> {
                     'Life gets better when you do.',
                     style: textTheme.bodyLarge?.copyWith(
                       color: AppColors.primary.withOpacity(0.34),
-                      fontStyle: FontStyle.italic,
+                      fontStyle: FontStyle.normal,
                     ),
                   ),
                 ),
@@ -257,7 +257,7 @@ class _HomeFeatureCard extends StatelessWidget {
                     textAlign: textAlign,
                     style: textTheme.displayLarge?.copyWith(
                       fontSize: 40,
-                      fontStyle: FontStyle.italic,
+                      fontStyle: FontStyle.normal,
                       fontWeight: FontWeight.w300,
                       color: AppColors.primary.withOpacity(0.9),
                       height: 1.02,

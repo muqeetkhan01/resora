@@ -1,15 +1,22 @@
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 import '../../../core/controllers/app_session_controller.dart';
+import '../../../core/services/chat_session_service.dart';
 import '../../../core/services/resora_ai_service.dart';
 import '../../../data/models/app_models.dart';
 
 class ChatController extends GetxController {
-  ChatController({ResoraAiService? aiService})
-      : _aiService = aiService ?? ResoraAiService();
+  ChatController({
+    ResoraAiService? aiService,
+    ChatSessionService? chatSessionService,
+  })  : _aiService = aiService ?? ResoraAiService(),
+        _chatSessionService = chatSessionService ?? ChatSessionService();
 
   final ResoraAiService _aiService;
+  final ChatSessionService _chatSessionService;
   final _session = Get.find<AppSessionController>();
 
   final inputController = TextEditingController();
@@ -17,20 +24,39 @@ class ChatController extends GetxController {
   final messages = <ChatMessageModel>[].obs;
   final isTyping = false.obs;
   final draftText = ''.obs;
+  final isSendCooldownActive = false.obs;
 
   int _pendingReplies = 0;
+  String? _activeSessionId;
+  Timer? _sendCooldownTimer;
+  Timer? _sessionInactivityTimer;
+  bool _isClosingSession = false;
 
-  bool get canSend => draftText.value.trim().isNotEmpty;
+  static const int maxCharacters = 500;
+  static const int warningCharacters = 450;
+  static const Duration sendCooldown = Duration(seconds: 2);
+
+  bool get canSend =>
+      draftText.value.trim().isNotEmpty &&
+      !isSendCooldownActive.value &&
+      !isTyping.value &&
+      draftText.value.characters.length <= maxCharacters;
+  int get characterCount => draftText.value.characters.length;
+  bool get shouldShowCharacterWarning => characterCount >= warningCharacters;
 
   @override
   void onInit() {
     super.onInit();
     inputController.addListener(_handleDraftChanged);
+    _bootstrapSessionHistory();
   }
 
   Future<void> sendMessage([String? preset]) async {
     final text = (preset ?? inputController.text).trim();
-    if (text.isEmpty) return;
+    if (text.isEmpty || isSendCooldownActive.value || isTyping.value) return;
+    if (text.characters.length > maxCharacters) return;
+
+    _startSendCooldown();
 
     messages.add(ChatMessageModel(text: text, isUser: true, time: 'Now'));
     inputController.clear();
@@ -39,9 +65,31 @@ class ChatController extends GetxController {
     _scrollToBottom();
 
     try {
+      final uid = _session.firebaseUser?.uid;
+      List<ChatMessageModel> contextWindow = messages.toList();
+
+      if (uid != null) {
+        final sessionId = await _chatSessionService.ensureActiveSession(uid);
+        _activeSessionId = sessionId;
+        await _chatSessionService.saveMessage(
+          uid: uid,
+          sessionId: sessionId,
+          isUser: true,
+          text: text,
+        );
+        await _chatSessionService.touchSession(uid, sessionId);
+        _restartSessionInactivityTimer();
+        contextWindow = await _chatSessionService.loadRecentMessages(
+          uid: uid,
+          sessionId: sessionId,
+          limit: 20,
+        );
+      }
+
       final reply = await _aiService.generateReply(
-        messages: messages.toList(),
+        messages: contextWindow,
         userName: _session.displayName,
+        latestUserMessage: text,
       );
       messages.add(
         ChatMessageModel(
@@ -50,6 +98,17 @@ class ChatController extends GetxController {
           time: 'Now',
         ),
       );
+
+      if (uid != null && _activeSessionId != null) {
+        await _chatSessionService.saveMessage(
+          uid: uid,
+          sessionId: _activeSessionId!,
+          isUser: false,
+          text: reply,
+        );
+        await _chatSessionService.touchSession(uid, _activeSessionId!);
+        _restartSessionInactivityTimer();
+      }
     } catch (error) {
       messages.add(
         ChatMessageModel(
@@ -67,6 +126,90 @@ class ChatController extends GetxController {
 
   void _handleDraftChanged() {
     draftText.value = inputController.text;
+  }
+
+  Future<void> _bootstrapSessionHistory() async {
+    final uid = _session.firebaseUser?.uid;
+    if (uid == null) {
+      return;
+    }
+
+    try {
+      final sessionId = await _chatSessionService.ensureActiveSession(uid);
+      _activeSessionId = sessionId;
+      final recent = await _chatSessionService.loadRecentMessages(
+        uid: uid,
+        sessionId: sessionId,
+        limit: 20,
+      );
+      if (isClosed) {
+        return;
+      }
+      messages.assignAll(recent);
+      _scrollToBottom();
+      _restartSessionInactivityTimer();
+    } catch (_) {
+      // Keep chat available even if persistence fails.
+    }
+  }
+
+  void _startSendCooldown() {
+    isSendCooldownActive.value = true;
+    _sendCooldownTimer?.cancel();
+    _sendCooldownTimer = Timer(sendCooldown, () {
+      isSendCooldownActive.value = false;
+    });
+  }
+
+  void _restartSessionInactivityTimer() {
+    _sessionInactivityTimer?.cancel();
+    _sessionInactivityTimer =
+        Timer(ChatSessionService.sessionTimeout, _handleSessionTimeout);
+  }
+
+  Future<void> _handleSessionTimeout() async {
+    await _closeSessionAndUpdateMemory(reason: 'inactivity');
+    if (!isClosed) {
+      messages.clear();
+    }
+  }
+
+  Future<void> _closeSessionAndUpdateMemory({
+    required String reason,
+  }) async {
+    if (_isClosingSession) {
+      return;
+    }
+
+    final uid = _session.firebaseUser?.uid;
+    final sessionId = _activeSessionId;
+    if (uid == null || sessionId == null || sessionId.trim().isEmpty) {
+      return;
+    }
+
+    _isClosingSession = true;
+    try {
+      final transcript = await _chatSessionService.loadSessionTranscript(
+        uid: uid,
+        sessionId: sessionId,
+      );
+      final existingMemory = await _chatSessionService.loadMemoryProfile(uid);
+      final updates = await _aiService.updateMemoryFromTranscript(
+        existingMemory: existingMemory,
+        transcript: transcript,
+      );
+      await _chatSessionService.updateMemoryProfile(uid: uid, updates: updates);
+      await _chatSessionService.closeSession(
+        uid: uid,
+        sessionId: sessionId,
+        reason: reason,
+      );
+      _activeSessionId = null;
+    } catch (_) {
+      // Session close and memory update are best effort.
+    } finally {
+      _isClosingSession = false;
+    }
   }
 
   void _scrollToBottom() {
@@ -113,6 +256,9 @@ class ChatController extends GetxController {
   @override
   void onClose() {
     inputController.removeListener(_handleDraftChanged);
+    _sendCooldownTimer?.cancel();
+    _sessionInactivityTimer?.cancel();
+    unawaited(_closeSessionAndUpdateMemory(reason: 'session_end'));
     inputController.dispose();
     scrollController.dispose();
     super.onClose();

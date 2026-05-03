@@ -50,7 +50,7 @@ class WelcomeView extends GetView<AuthEntryController> {
                       textAlign: TextAlign.center,
                       style: textTheme.bodyLarge?.copyWith(
                         fontSize: 18,
-                        fontStyle: FontStyle.italic,
+                        fontStyle: FontStyle.normal,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.xxl),

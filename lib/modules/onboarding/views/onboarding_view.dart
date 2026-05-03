@@ -739,7 +739,7 @@ class _IntentionScreen extends StatelessWidget {
             style: textTheme.displaySmall?.copyWith(
               color: _OnboardingTokens.taupe,
               fontSize: 30,
-              fontStyle: FontStyle.italic,
+              fontStyle: FontStyle.normal,
               fontWeight: FontWeight.w300,
               height: 1.35,
             ),
@@ -1029,7 +1029,7 @@ class _GlimpseBreathState extends State<_GlimpseBreath> {
                   style: textTheme.displaySmall?.copyWith(
                     color: _OnboardingTokens.off.withOpacity(0.78),
                     fontSize: 28,
-                    fontStyle: FontStyle.italic,
+                    fontStyle: FontStyle.normal,
                     height: 1.35,
                     fontWeight: FontWeight.w300,
                   ),

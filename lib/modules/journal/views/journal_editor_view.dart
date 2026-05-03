@@ -113,7 +113,7 @@ class _JournalEditorViewState extends State<JournalEditorView> {
                       style: textTheme.displayMedium?.copyWith(
                         color: AppColors.primary.withOpacity(0.45),
                         fontSize: 34,
-                        fontStyle: FontStyle.italic,
+                        fontStyle: FontStyle.normal,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.lg),

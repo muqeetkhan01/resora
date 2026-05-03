@@ -205,7 +205,7 @@ class _NormalHero extends StatelessWidget {
                 style: Theme.of(context).textTheme.displayMedium?.copyWith(
                       color: AppColors.white,
                       fontSize: 34,
-                      fontStyle: FontStyle.italic,
+                      fontStyle: FontStyle.normal,
                     ),
               ),
               const SizedBox(height: AppSpacing.xs),
@@ -317,7 +317,7 @@ class _TopicCard extends StatelessWidget {
                   style: textTheme.headlineLarge?.copyWith(
                     color: AppColors.primary.withOpacity(0.85),
                     height: 1.3,
-                    fontStyle: FontStyle.italic,
+                    fontStyle: FontStyle.normal,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.sm),
@@ -408,7 +408,7 @@ class _TopicSheetState extends State<_TopicSheet> {
               style: textTheme.displayMedium?.copyWith(
                 color: AppColors.warmDark,
                 fontSize: 40,
-                fontStyle: FontStyle.italic,
+                fontStyle: FontStyle.normal,
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
@@ -465,7 +465,7 @@ class _TopicSheetState extends State<_TopicSheet> {
                         '"$voice"',
                         style: textTheme.bodyLarge?.copyWith(
                           color: AppColors.placeholder,
-                          fontStyle: FontStyle.italic,
+                          fontStyle: FontStyle.normal,
                         ),
                       ),
                     ),

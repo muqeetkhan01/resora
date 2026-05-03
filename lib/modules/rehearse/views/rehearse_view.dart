@@ -25,6 +25,19 @@ class RehearseView extends GetView<RehearseController> {
       backgroundColor: AppColors.primary,
       body: SafeArea(
         child: Obx(() {
+          if (controller.isLoading.value) {
+            return const Center(
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: AppColors.terracotta,
+                ),
+              ),
+            );
+          }
+
           final scenarios = controller.filteredScenarios;
           if (scenarios.isEmpty) {
             return const _EditorialEmptyState(
@@ -119,7 +132,7 @@ class RehearseView extends GetView<RehearseController> {
                                   color: AppColors.white,
                                   fontSize: titleSize,
                                   height: 1.04,
-                                  fontStyle: FontStyle.italic,
+                                  fontStyle: FontStyle.normal,
                                   fontWeight: FontWeight.w300,
                                 ),
                               ),
@@ -214,7 +227,7 @@ class RehearseView extends GetView<RehearseController> {
                                         ? AppColors.primary
                                         : AppColors.primary.withOpacity(0.72),
                                     fontSize: 24,
-                                    fontStyle: FontStyle.italic,
+                                    fontStyle: FontStyle.normal,
                                   ),
                             ),
                             const SizedBox(height: AppSpacing.xxs),

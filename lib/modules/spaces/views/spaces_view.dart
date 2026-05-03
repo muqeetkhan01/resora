@@ -250,7 +250,7 @@ class _SpaceFeatureCard extends StatelessWidget {
                     style: Theme.of(context).textTheme.displayMedium?.copyWith(
                           fontSize: titleSize,
                           color: AppColors.white,
-                          fontStyle: FontStyle.italic,
+                          fontStyle: FontStyle.normal,
                           height: 1.04,
                         ),
                   ),

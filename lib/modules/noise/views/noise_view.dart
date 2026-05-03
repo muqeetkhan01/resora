@@ -134,7 +134,7 @@ class _NoiseHero extends StatelessWidget {
                   style: Theme.of(context).textTheme.displayMedium?.copyWith(
                         color: AppColors.white,
                         fontSize: 34,
-                        fontStyle: FontStyle.italic,
+                        fontStyle: FontStyle.normal,
                       ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
@@ -212,7 +212,7 @@ class _NoiseTrackRow extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             color: AppColors.primary,
                             fontSize: 20,
-                            fontStyle: FontStyle.italic,
+                            fontStyle: FontStyle.normal,
                           ),
                     ),
                     const SizedBox(height: AppSpacing.xxs),

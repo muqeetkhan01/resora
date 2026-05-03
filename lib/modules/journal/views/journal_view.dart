@@ -129,7 +129,7 @@ class JournalView extends GetView<JournalController> {
                                   color: AppColors.white,
                                   fontSize: titleSize,
                                   height: 1.04,
-                                  fontStyle: FontStyle.italic,
+                                  fontStyle: FontStyle.normal,
                                   fontWeight: FontWeight.w300,
                                 ),
                               ),
@@ -219,7 +219,7 @@ class JournalView extends GetView<JournalController> {
                                         ? AppColors.primary
                                         : AppColors.primary.withOpacity(0.72),
                                     fontSize: 24,
-                                    fontStyle: FontStyle.italic,
+                                    fontStyle: FontStyle.normal,
                                   ),
                             ),
                             const SizedBox(height: AppSpacing.xxs),

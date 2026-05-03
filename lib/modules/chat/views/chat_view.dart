@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../core/constants/app_icons.dart';
@@ -275,63 +276,91 @@ class _ChatInputBar extends GetView<ChatController> {
 
     return Obx(() {
       final canSend = controller.canSend;
+      final showWarning = controller.shouldShowCharacterWarning;
 
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppColors.canvas,
-                border: Border.all(color: AppColors.primary.withOpacity(0.72)),
-                borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
-              ),
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.lg,
-                vertical: AppSpacing.xs,
-              ),
-              child: TextField(
-                controller: controller.inputController,
-                minLines: 1,
-                maxLines: 4,
-                textInputAction: TextInputAction.send,
-                onSubmitted: (_) => controller.sendMessage(),
-                cursorColor: AppColors.primary,
-                style: textTheme.bodyLarge?.copyWith(
-                  color: AppColors.primary,
-                  fontStyle: FontStyle.italic,
-                ),
-                decoration: InputDecoration(
-                  isDense: true,
-                  border: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  hintText: 'share what is happening...',
-                  hintStyle: textTheme.bodyLarge?.copyWith(
-                    color: AppColors.placeholder,
-                    fontStyle: FontStyle.italic,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.canvas,
+                    border:
+                        Border.all(color: AppColors.primary.withOpacity(0.72)),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                    vertical: AppSpacing.xs,
+                  ),
+                  child: TextField(
+                    controller: controller.inputController,
+                    minLines: 1,
+                    maxLines: 4,
+                    maxLength: ChatController.maxCharacters,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(
+                        ChatController.maxCharacters,
+                        maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                      ),
+                    ],
+                    textInputAction: TextInputAction.send,
+                    onSubmitted: (_) => controller.sendMessage(),
+                    cursorColor: AppColors.primary,
+                    style: textTheme.bodyLarge?.copyWith(
+                      color: AppColors.primary,
+                      fontStyle: FontStyle.normal,
+                    ),
+                    decoration: InputDecoration(
+                      isDense: true,
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      counterText: '',
+                      hintText: 'share what is happening...',
+                      hintStyle: textTheme.bodyLarge?.copyWith(
+                        color: AppColors.placeholder,
+                        fontStyle: FontStyle.normal,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              InkWell(
+                onTap: canSend ? controller.sendMessage : null,
+                borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.xs,
+                    vertical: AppSpacing.sm,
+                  ),
+                  child: Icon(
+                    AppIcons.forward,
+                    size: 16,
+                    color: canSend
+                        ? AppColors.terracotta
+                        : AppColors.terracotta.withOpacity(0.4),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (showWarning)
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.xs),
+              child: Text(
+                'Take your time — no need to fit everything into one message. Send what you have and keep going.',
+                style: textTheme.bodySmall?.copyWith(
+                  color: AppColors.placeholder,
+                  height: 1.4,
                 ),
               ),
             ),
-          ),
-          const SizedBox(width: AppSpacing.sm),
-          InkWell(
-            onTap: canSend ? controller.sendMessage : null,
-            borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
-            child: const Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: AppSpacing.xs,
-                vertical: AppSpacing.sm,
-              ),
-              child: Icon(
-                AppIcons.forward,
-                size: 16,
-                color: AppColors.terracotta,
-              ),
-            ),
-          ),
         ],
       );
     });

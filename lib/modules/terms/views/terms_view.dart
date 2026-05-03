@@ -69,7 +69,7 @@ class TermsView extends GetView<TermsController> {
                               style: textTheme.displayMedium?.copyWith(
                                 color: AppColors.primary,
                                 fontSize: 28,
-                                fontStyle: FontStyle.italic,
+                                fontStyle: FontStyle.normal,
                               ),
                             ),
                             const SizedBox(height: AppSpacing.xs),
@@ -130,7 +130,7 @@ class _TermsHero extends StatelessWidget {
                   style: Theme.of(context).textTheme.displayMedium?.copyWith(
                         color: AppColors.white,
                         fontSize: 34,
-                        fontStyle: FontStyle.italic,
+                        fontStyle: FontStyle.normal,
                       ),
                 ),
                 const SizedBox(height: AppSpacing.xs),

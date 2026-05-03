@@ -123,7 +123,7 @@ class _HistoryHeader extends StatelessWidget {
             style: Theme.of(context).textTheme.displayMedium?.copyWith(
                   fontSize: 26,
                   color: AppColors.primary,
-                  fontStyle: FontStyle.italic,
+                  fontStyle: FontStyle.normal,
                 ),
           ),
         ),
@@ -162,7 +162,7 @@ class _HistoryCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: textTheme.headlineLarge?.copyWith(
                   color: AppColors.primary.withOpacity(0.72),
-                  fontStyle: FontStyle.italic,
+                  fontStyle: FontStyle.normal,
                   height: 1.3,
                 ),
               ),

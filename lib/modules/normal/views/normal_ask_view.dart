@@ -50,7 +50,7 @@ class NormalAskView extends GetView<NormalController> {
                   textAlignVertical: TextAlignVertical.top,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: AppColors.primary,
-                        fontStyle: FontStyle.italic,
+                        fontStyle: FontStyle.normal,
                       ),
                   decoration: const InputDecoration(
                     hintText: 'Type your question...',
