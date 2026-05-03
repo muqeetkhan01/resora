@@ -67,10 +67,15 @@ class ChatController extends GetxController {
     try {
       final uid = _session.firebaseUser?.uid;
       List<ChatMessageModel> contextWindow = messages.toList();
+      var softMemoryBlock = '';
 
       if (uid != null) {
         final sessionId = await _chatSessionService.ensureActiveSession(uid);
         _activeSessionId = sessionId;
+        softMemoryBlock = await _chatSessionService.buildSoftMemoryBlock(
+          uid: uid,
+          displayName: _session.displayName,
+        );
         await _chatSessionService.saveMessage(
           uid: uid,
           sessionId: sessionId,
@@ -90,6 +95,7 @@ class ChatController extends GetxController {
         messages: contextWindow,
         userName: _session.displayName,
         latestUserMessage: text,
+        softMemoryBlock: softMemoryBlock,
       );
       messages.add(
         ChatMessageModel(

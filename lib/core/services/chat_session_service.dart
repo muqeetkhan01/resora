@@ -212,13 +212,97 @@ class ChatSessionService {
     if (updates.isEmpty) {
       return;
     }
+
+    final existing = await loadMemoryProfile(uid);
+    final merged = Map<String, dynamic>.from(updates);
+
+    final nextProgress = (updates['progress_notes'] as String? ?? '').trim();
+    if (nextProgress.isNotEmpty) {
+      final previous = ((existing['progress_notes_recent'] as List<dynamic>?) ??
+              const <dynamic>[])
+          .whereType<String>()
+          .map((entry) => entry.trim())
+          .where((entry) => entry.isNotEmpty)
+          .toList();
+      final recent = <String>[nextProgress, ...previous]
+          .fold<List<String>>(<String>[], (list, value) {
+        if (!list.contains(value)) {
+          list.add(value);
+        }
+        return list;
+      });
+      merged['progress_notes_recent'] =
+          recent.length > 2 ? recent.sublist(0, 2) : recent;
+    }
+
     await _memoryProfileDoc(uid).set(
       <String, dynamic>{
-        ...updates,
+        ...merged,
         'updatedAt': FieldValue.serverTimestamp(),
       },
       SetOptions(merge: true),
     );
+  }
+
+  Future<String> buildSoftMemoryBlock({
+    required String uid,
+    required String displayName,
+  }) async {
+    final memory = await loadMemoryProfile(uid);
+    final safeName = displayName.trim().isEmpty ? 'The user' : displayName;
+
+    final goals = _list(memory['goals']);
+    final focusAreas = _list(memory['focus_areas']);
+    final currentChallenge = _text(memory['current_challenge']);
+    final moodTrend = _text(memory['mood_trend']);
+    final communicationStyle = _text(memory['communication_style']);
+    final progressRecent = _list(memory['progress_notes_recent']);
+    final singleProgress = _text(memory['progress_notes']);
+    final summary = _text(memory['last_session_summary']);
+
+    final lines = <String>[];
+    lines.add('The user\'s name is $safeName.');
+
+    if (goals.isNotEmpty) {
+      lines.add('Active goals: ${_joinItems(goals)}.');
+    }
+    if (focusAreas.isNotEmpty) {
+      lines.add('Recent focus areas: ${_joinItems(focusAreas)}.');
+    }
+    if (currentChallenge.isNotEmpty) {
+      lines.add('Current challenge: $currentChallenge.');
+    }
+    if (moodTrend.isNotEmpty) {
+      lines.add('Recent mood trend (last 3 to 5 sessions): $moodTrend.');
+    }
+    if (communicationStyle.isNotEmpty) {
+      lines.add('Preferred communication style: $communicationStyle.');
+    }
+    if (progressRecent.isNotEmpty) {
+      lines.add('Most recent progress notes: ${_joinItems(progressRecent)}.');
+    } else if (singleProgress.isNotEmpty) {
+      lines.add('Most recent progress note: $singleProgress.');
+    }
+    if (summary.isNotEmpty) {
+      lines.add('Last session summary: $summary.');
+    }
+
+    final hasMeaningfulContext = goals.isNotEmpty ||
+        focusAreas.isNotEmpty ||
+        currentChallenge.isNotEmpty ||
+        moodTrend.isNotEmpty ||
+        communicationStyle.isNotEmpty ||
+        progressRecent.isNotEmpty ||
+        singleProgress.isNotEmpty ||
+        summary.isNotEmpty;
+
+    if (!hasMeaningfulContext) {
+      lines.add(
+        'No meaningful prior context yet. Stay present and build context from this session only.',
+      );
+    }
+
+    return lines.join(' ');
   }
 
   ChatMessageModel? _toChatMessage(Map<String, dynamic> data) {
@@ -259,5 +343,36 @@ class ChatSessionService {
     final minute = local.minute.toString().padLeft(2, '0');
     final meridiem = local.hour >= 12 ? 'PM' : 'AM';
     return '$hour:$minute $meridiem';
+  }
+
+  static String _text(dynamic value) {
+    if (value is! String) {
+      return '';
+    }
+    return value.trim();
+  }
+
+  static List<String> _list(dynamic value) {
+    if (value is! List) {
+      return const <String>[];
+    }
+    return value
+        .whereType<String>()
+        .map((entry) => entry.trim())
+        .where((entry) => entry.isNotEmpty)
+        .toList();
+  }
+
+  static String _joinItems(List<String> values) {
+    if (values.isEmpty) {
+      return '';
+    }
+    if (values.length == 1) {
+      return values.first;
+    }
+    if (values.length == 2) {
+      return '${values.first} and ${values.last}';
+    }
+    return '${values.sublist(0, values.length - 1).join(', ')}, and ${values.last}';
   }
 }

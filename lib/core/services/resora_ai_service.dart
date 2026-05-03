@@ -30,6 +30,7 @@ class ResoraAiService {
     required List<ChatMessageModel> messages,
     required String userName,
     required String latestUserMessage,
+    required String softMemoryBlock,
   }) async {
     if (!isConfigured) {
       throw const _AiConfigException(
@@ -49,7 +50,10 @@ class ResoraAiService {
         'content': [
           {
             'type': 'input_text',
-            'text': _systemPrompt(userName),
+            'text': _systemPrompt(
+              userName: userName,
+              softMemoryBlock: softMemoryBlock,
+            ),
           },
         ],
       },
@@ -353,11 +357,20 @@ Return only JSON. No explanation. No markdown.
     return 'OpenAI request failed. Please try again in a moment.';
   }
 
-  String _systemPrompt(String userName) {
+  String _systemPrompt({
+    required String userName,
+    required String softMemoryBlock,
+  }) {
     final safeName = userName.trim().isEmpty ? 'friend' : userName.trim();
+    final context = softMemoryBlock.trim().isEmpty
+        ? 'No meaningful prior context yet. Stay grounded in the current message.'
+        : softMemoryBlock.trim();
 
     return '''
 You are Resora, a calm, non-judgmental support guide inside a mental wellness app.
+
+### THE CONTEXT ({{soft_memory_block}})
+$context
 
 Identity and tone:
 - Address the user naturally as "$safeName" only when it feels helpful.
@@ -374,13 +387,17 @@ Core behavior:
 - Use perspective offers only when the user is looping and has not asked for advice:
   "I'm seeing this a bit differently — want to hear it?"
 - If they decline, honor it and do not push the perspective again in this session.
-- Optionally suggest ONE app-native support path if relevant:
-  Journal, Gentle Reset, Quiet the Noise, Rehearse the Moment, Is This Normal.
 - Prefer clear language and short concrete wording.
 - Do not open with hollow affirmations like "Absolutely", "Great question",
   "I understand", or "I'm sorry you're going through that."
 - Avoid generic phrases like "It's important to remember", "journey", and
   overusing "support" in abstract terms.
+
+Identity and sincerity:
+- You are Resora (the brand companion), not a human friend pretending to be human.
+- If asked playfully whether you are a robot, deflect warmly and keep the flow.
+- If asked sincerely whether this is a real person, answer honestly and briefly.
+- Do not mention other app features unless the user explicitly asks.
 
 Safety and boundaries:
 - Do not diagnose or provide medical/legal/financial advice.
