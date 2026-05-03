@@ -63,7 +63,9 @@ class SpacesView extends GetView<SpacesController> {
           );
 
           return SingleChildScrollView(
-            physics: const ClampingScrollPhysics(),
+            physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics(),
+            ),
             padding: EdgeInsets.zero,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -108,7 +110,6 @@ class SpacesView extends GetView<SpacesController> {
                 Row(
                   children: [
                     Expanded(
-                      flex: 11,
                       child: _SpaceFeatureCard(
                         slot: rehearse,
                         height: 214,
@@ -118,7 +119,6 @@ class SpacesView extends GetView<SpacesController> {
                     ),
                     const SizedBox(width: 3),
                     Expanded(
-                      flex: 9,
                       child: _SpaceFeatureCard(
                         slot: journal,
                         height: 214,

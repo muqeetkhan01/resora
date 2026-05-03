@@ -73,7 +73,9 @@ class HomeView extends GetView<HomeController> {
           ];
 
           return SingleChildScrollView(
-            physics: const ClampingScrollPhysics(),
+            physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics(),
+            ),
             padding: EdgeInsets.zero,
             child: Column(
               children: [
@@ -85,12 +87,39 @@ class HomeView extends GetView<HomeController> {
                       bottom: BorderSide(color: AppColors.line),
                     ),
                   ),
-                  child: Text(
-                    'R E S O R A',
-                    style: textTheme.bodySmall?.copyWith(
-                      color: AppColors.primary.withOpacity(0.84),
-                      letterSpacing: 4.2,
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const SizedBox(
+                        width: _offset,
+                      ),
+                      const Icon(
+                        AppIcons.profileOutline,
+                        size: 18,
+                        color: AppColors.white,
+                      ),
+                      const Spacer(),
+                      Text(
+                        'R E S O R A',
+                        style: textTheme.bodySmall?.copyWith(
+                          color: AppColors.primary.withOpacity(0.84),
+                          letterSpacing: 4.2,
+                        ),
+                      ),
+                      const Spacer(),
+                      InkWell(
+                        onTap: () => Get.toNamed(AppRoutes.profile),
+                        // padding: EdgeInsets.zero,
+                        child: const Icon(
+                          AppIcons.profileOutline,
+                          size: 18,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: _offset,
+                      )
+                    ],
                   ),
                 ),
                 for (var i = 0; i < slots.length; i++)

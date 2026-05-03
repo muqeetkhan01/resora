@@ -31,18 +31,14 @@ class ChatView extends GetView<ChatController> {
       },
       child: Scaffold(
         backgroundColor: AppColors.canvas,
-        body: GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-              child: _ChatContent(
-                rootTab: rootTab,
-                onBack: showRitualExit
-                    ? () => _openRitualExit(routeArgs.ritualFeature!)
-                    : () => Get.back(),
-              ),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+            child: _ChatContent(
+              rootTab: rootTab,
+              onBack: showRitualExit
+                  ? () => _openRitualExit(routeArgs.ritualFeature!)
+                  : () => Get.back(),
             ),
           ),
         ),
@@ -90,6 +86,9 @@ class _ChatContent extends GetView<ChatController> {
 
             return ListView.builder(
               controller: controller.scrollController,
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               padding: const EdgeInsets.only(
                 top: AppSpacing.sm,
@@ -178,16 +177,6 @@ class _ChatHeader extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
-          ),
-          IconButton(
-            onPressed: () => Get.toNamed(AppRoutes.profile),
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints.tightFor(width: 28, height: 28),
-            icon: const Icon(
-              AppIcons.profileOutline,
-              size: 18,
-              color: AppColors.primary,
             ),
           ),
         ],
@@ -309,6 +298,8 @@ class _ChatInputBar extends GetView<ChatController> {
                     ],
                     textInputAction: TextInputAction.send,
                     onSubmitted: (_) => controller.sendMessage(),
+                    onTapOutside: (_) =>
+                        FocusManager.instance.primaryFocus?.unfocus(),
                     cursorColor: AppColors.primary,
                     style: textTheme.bodyLarge?.copyWith(
                       color: AppColors.primary,
