@@ -112,15 +112,27 @@ class ResoraAiService {
     final outputText = _extractOutputText(data);
 
     if (outputText.isNotEmpty) {
-      return outputText;
+      return _applyFeatureMentionGuard(
+        reply: outputText,
+        latestUserMessage: latestUserMessage,
+        userName: userName,
+      );
     }
 
     final fallback = _extractIncompleteFallback(data);
     if (fallback.isNotEmpty) {
-      return fallback;
+      return _applyFeatureMentionGuard(
+        reply: fallback,
+        latestUserMessage: latestUserMessage,
+        userName: userName,
+      );
     }
 
-    return _safeFallbackReply(userName);
+    return _applyFeatureMentionGuard(
+      reply: _safeFallbackReply(userName),
+      latestUserMessage: latestUserMessage,
+      userName: userName,
+    );
   }
 
   Future<Map<String, dynamic>> updateMemoryFromTranscript({
@@ -523,6 +535,73 @@ Output style:
     }
 
     return result;
+  }
+
+  String _applyFeatureMentionGuard({
+    required String reply,
+    required String latestUserMessage,
+    required String userName,
+  }) {
+    final trimmed = reply.trim();
+    if (trimmed.isEmpty) {
+      return trimmed;
+    }
+
+    if (_userExplicitlyAskedForFeatures(latestUserMessage)) {
+      return trimmed;
+    }
+
+    if (!_containsBlockedFeatureMention(trimmed)) {
+      return trimmed;
+    }
+
+    final cleaned = trimmed
+        .split(RegExp(r'(?<=[.!?])\s+'))
+        .where((sentence) => !_containsBlockedFeatureMention(sentence))
+        .join(' ')
+        .trim();
+
+    if (cleaned.isNotEmpty) {
+      return cleaned;
+    }
+
+    final safeName = userName.trim().isEmpty ? '' : ', ${userName.trim()}';
+    return 'I hear you$safeName. Let us stay with this moment: name one feeling you notice right now, and take one steady breath.';
+  }
+
+  bool _containsBlockedFeatureMention(String text) {
+    final normalized = text.toLowerCase();
+    const blocked = <String>[
+      'gentle reset',
+      'quiet the noise',
+      'rehearse the moment',
+      'is this normal',
+      'space library',
+      'talk to resora',
+      'journal prompts',
+      'journal prompt',
+    ];
+    return blocked.any(normalized.contains);
+  }
+
+  bool _userExplicitlyAskedForFeatures(String text) {
+    final normalized = text.toLowerCase();
+    const requestSignals = <String>[
+      'which feature',
+      'what feature',
+      'which space',
+      'what space',
+      'where should i go',
+      'what should i use in the app',
+      'what can this app do',
+      'show me options',
+      'journal prompt',
+      'gentle reset',
+      'quiet the noise',
+      'rehearse the moment',
+      'is this normal',
+    ];
+    return requestSignals.any(normalized.contains);
   }
 }
 
