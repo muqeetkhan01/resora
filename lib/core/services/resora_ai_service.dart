@@ -112,7 +112,7 @@ class ResoraAiService {
     final outputText = _extractOutputText(data);
 
     if (outputText.isNotEmpty) {
-      return _applyFeatureMentionGuard(
+      return _finalizeReply(
         reply: outputText,
         latestUserMessage: latestUserMessage,
         userName: userName,
@@ -121,14 +121,14 @@ class ResoraAiService {
 
     final fallback = _extractIncompleteFallback(data);
     if (fallback.isNotEmpty) {
-      return _applyFeatureMentionGuard(
+      return _finalizeReply(
         reply: fallback,
         latestUserMessage: latestUserMessage,
         userName: userName,
       );
     }
 
-    return _applyFeatureMentionGuard(
+    return _finalizeReply(
       reply: _safeFallbackReply(userName),
       latestUserMessage: latestUserMessage,
       userName: userName,
@@ -379,7 +379,7 @@ Return only JSON. No explanation. No markdown.
         : softMemoryBlock.trim();
 
     return '''
-You are Resora, a calm, non-judgmental support guide inside a mental wellness app.
+You are Resora, a wellness companion. You show up as a grounded, emotionally intelligent friend who listens well. You are not a therapist and you are never performative.
 
 ### THE CONTEXT ({{soft_memory_block}})
 $context
@@ -404,6 +404,15 @@ Core behavior:
   "I understand", or "I'm sorry you're going through that."
 - Avoid generic phrases like "It's important to remember", "journey", and
   overusing "support" in abstract terms.
+
+Hard rules:
+- No hyphens in response text.
+- Never use dash symbols of any kind in final text (-, –, —, ‑, ‒, ―).
+- No lists, headers, bullets, or structured formatting in responses.
+- Never end a message with a question.
+- Never ask the user to provide the answer they came for.
+- Avoid phrases like "here are some options", "let's break this down", and
+  "here's what I suggest."
 
 Identity and sincerity:
 - You are Resora (the brand companion), not a human friend pretending to be human.
@@ -537,6 +546,19 @@ Output style:
     return result;
   }
 
+  String _finalizeReply({
+    required String reply,
+    required String latestUserMessage,
+    required String userName,
+  }) {
+    final guarded = _applyFeatureMentionGuard(
+      reply: reply,
+      latestUserMessage: latestUserMessage,
+      userName: userName,
+    );
+    return _applyV6HardRules(guarded, userName: userName);
+  }
+
   String _applyFeatureMentionGuard({
     required String reply,
     required String latestUserMessage,
@@ -602,6 +624,69 @@ Output style:
       'is this normal',
     ];
     return requestSignals.any(normalized.contains);
+  }
+
+  String _applyV6HardRules(String reply, {required String userName}) {
+    var text = reply.trim();
+    if (text.isEmpty) {
+      return text;
+    }
+
+    text = text.replaceAll('\r\n', '\n');
+    text = text
+        .split('\n')
+        .map(
+          (line) => line
+              .replaceFirst(
+                RegExp(r'^\s*(?:[-*#•●◦▪▫‣⁃]+|\d+[.)])\s*'),
+                '',
+              )
+              .trim(),
+        )
+        .where((line) => line.isNotEmpty)
+        .join(' ');
+
+    text = text.replaceAll(RegExp(r'\s*[‐‑‒–—―−]\s*'), ' ');
+    text = text.replaceAll('-', ' ');
+    text = text.replaceAll(RegExp(r'\s{2,}'), ' ').trim();
+
+    final lower = text.toLowerCase();
+    const aiVoicePhrases = <String>[
+      'here are some options',
+      "let's break this down",
+      "here's what i suggest",
+    ];
+    for (final phrase in aiVoicePhrases) {
+      if (lower.contains(phrase)) {
+        text = text
+            .replaceAll(RegExp(phrase, caseSensitive: false), '')
+            .replaceAll(RegExp(r'\s{2,}'), ' ')
+            .trim();
+      }
+    }
+
+    final asksUserForAnswer = RegExp(
+      r'(what do you think would help|how could you relax|what could you do|what do you think you should do)',
+      caseSensitive: false,
+    ).hasMatch(text);
+    if (asksUserForAnswer) {
+      final safeName = userName.trim().isEmpty ? '' : ', ${userName.trim()}';
+      return 'I hear you$safeName. Let us keep this simple: take one steady breath, unclench your jaw, and do one small next thing that lowers pressure right now.';
+    }
+
+    if (text.endsWith('?')) {
+      text = text.substring(0, text.length - 1).trim();
+      if (text.isNotEmpty && !text.endsWith('.')) {
+        text = '$text.';
+      }
+      text = '$text I am here with you.';
+    }
+
+    if (!RegExp(r'[.!]$').hasMatch(text)) {
+      text = '$text.';
+    }
+
+    return text.trim();
   }
 }
 

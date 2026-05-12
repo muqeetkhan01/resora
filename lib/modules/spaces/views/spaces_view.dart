@@ -9,272 +9,219 @@ import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
 import '../controllers/spaces_controller.dart';
 
-class SpacesView extends GetView<SpacesController> {
+class SpacesView extends StatefulWidget {
   const SpacesView({super.key});
 
   @override
+  State<SpacesView> createState() => _SpacesViewState();
+}
+
+class _SpacesViewState extends State<SpacesView> {
+  late final PageController _pageController;
+  int _active = 0;
+
+  static const double _cardWidth = 280;
+  static const double _cardGap = 16;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(viewportFraction: 0.712);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _scrollTo(int index) {
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 320),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final controller = Get.find<SpacesController>();
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      backgroundColor: AppColors.canvas,
+      backgroundColor: const Color(0xFFFAFBF9),
       body: SafeArea(
         child: Obx(() {
-          final normal = _resolveSlot(
-            route: AppRoutes.normal,
-            titleHint: 'normal',
-            defaultTitle: 'is this normal?',
-            defaultSubtitle:
-                'Short, reassuring answers from people who felt it too',
-            defaultImage: AppAssets.homeNormalStem,
-          );
-          final resets = _resolveSlot(
-            route: AppRoutes.resets,
-            titleHint: 'reset',
-            defaultTitle: 'gentle resets',
-            defaultSubtitle: 'Breath, grounding, step away',
-            defaultImage: AppAssets.spaceGarden,
-          );
-          final noise = _resolveSlot(
-            route: AppRoutes.noise,
-            titleHint: 'noise',
-            defaultTitle: 'quiet the noise',
-            defaultSubtitle: 'Ambient audio and guided calm',
-            defaultImage: AppAssets.spaceRoom,
-          );
-          final terms = _resolveSlot(
-            route: AppRoutes.terms,
-            titleHint: 'term',
-            defaultTitle: 'key terms',
-            defaultSubtitle: 'Plain language definitions',
-            defaultImage: AppAssets.homeComingSoonFlower,
-          );
-          final rehearse = _resolveSlot(
-            route: AppRoutes.rehearse,
-            titleHint: 'rehearse',
-            defaultTitle: 'rehearse the moment',
-            defaultSubtitle: 'Prepare for what is coming',
-            defaultImage: AppAssets.spaceMountain,
-          );
-          final journal = _resolveSlot(
-            route: AppRoutes.journal,
-            titleHint: 'journal',
-            defaultTitle: 'journal',
-            defaultSubtitle: 'Guided reflection prompts',
-            defaultImage: AppAssets.homeJournalBed,
-          );
+          final slots = _specs
+              .map((spec) => _resolveSlot(spec: spec, controller: controller))
+              .toList(growable: false);
 
-          return SingleChildScrollView(
-            physics: const BouncingScrollPhysics(
-              parent: AlwaysScrollableScrollPhysics(),
-            ),
-            padding: EdgeInsets.zero,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _SpaceFeatureCard(
-                  slot: normal,
-                  height: 244,
-                  titleSize: 30,
-                  subtitleSize: 11,
-                  category: 'community',
-                ),
-                const SizedBox(height: 3),
-                Row(
+          if (_active >= slots.length && slots.isNotEmpty) {
+            _active = 0;
+          }
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 28, 24, 0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      child: _SpaceFeatureCard(
-                        slot: resets,
-                        height: 248,
-                        titleSize: 24,
-                        subtitleSize: 9.5,
+                      child: Text(
+                        'spaces',
+                        style: textTheme.displayLarge?.copyWith(
+                          fontSize: 40,
+                          color: const Color(0xFF4A342B),
+                          height: 1,
+                          letterSpacing: 0.2,
+                          fontWeight: FontWeight.w300,
+                          fontStyle: FontStyle.normal,
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 3),
-                    Expanded(
-                      child: _SpaceFeatureCard(
-                        slot: noise,
-                        height: 248,
-                        titleSize: 24,
-                        subtitleSize: 9.5,
+                    IconButton(
+                      onPressed: controller.openProfile,
+                      icon: const Icon(
+                        AppIcons.profileOutline,
+                        color: Color(0xFF4A342B),
+                        size: 20,
                       ),
+                      splashRadius: 20,
                     ),
                   ],
                 ),
-                const SizedBox(height: 3),
-                _SpaceFeatureCard(
-                  slot: terms,
-                  height: 188,
-                  titleSize: 28,
-                  subtitleSize: 10,
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+                child: Container(
+                  height: 0.5,
+                  color: const Color(0x1F145C4F),
                 ),
-                const SizedBox(height: 3),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _SpaceFeatureCard(
-                        slot: rehearse,
-                        height: 214,
-                        titleSize: 24,
-                        subtitleSize: 9.5,
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                height: 548,
+                child: PageView.builder(
+                  controller: _pageController,
+                  padEnds: true,
+                  itemCount: slots.length,
+                  onPageChanged: (value) => setState(() => _active = value),
+                  itemBuilder: (context, index) {
+                    final slot = slots[index];
+                    return Padding(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: _cardGap / 2),
+                      child: _SpaceCard(
+                        slot: slot,
+                        width: _cardWidth,
+                        onTap: () {
+                          if (_active != index) {
+                            _scrollTo(index);
+                            return;
+                          }
+                          slot.onTap?.call();
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(slots.length, (i) {
+                  final selected = i == _active;
+                  return GestureDetector(
+                    onTap: () => _scrollTo(i),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 260),
+                      margin: const EdgeInsets.symmetric(horizontal: 3),
+                      width: selected ? 20 : 5,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: selected
+                            ? const Color(0xFF145C4F)
+                            : const Color(0x1F145C4F),
                       ),
                     ),
-                    const SizedBox(width: 3),
-                    Expanded(
-                      child: _SpaceFeatureCard(
-                        slot: journal,
-                        height: 214,
-                        titleSize: 24,
-                        subtitleSize: 9.5,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                  );
+                }),
+              ),
+              const SizedBox(height: 32),
+            ],
           );
         }),
       ),
     );
   }
-
-  _SpaceSlot _resolveSlot({
-    required String route,
-    required String titleHint,
-    required String defaultTitle,
-    required String defaultSubtitle,
-    required String defaultImage,
-  }) {
-    final item = controller.findSpaceByRoute(route) ??
-        controller.findSpaceByTitle(titleHint);
-    if (item == null) {
-      return _SpaceSlot(
-        title: defaultTitle.toLowerCase(),
-        subtitle: defaultSubtitle,
-        imagePath: defaultImage,
-        onTap: () => controller.openSpace(
-          QuickActionItem(
-            title: defaultTitle,
-            subtitle: defaultSubtitle,
-            icon: AppIcons.forward,
-            accentColor: AppColors.primary,
-            route: route,
-          ),
-        ),
-      );
-    }
-
-    return _SpaceSlot(
-      title: item.title.toLowerCase(),
-      subtitle: item.subtitle.trim().isEmpty ? defaultSubtitle : item.subtitle,
-      imagePath: item.imagePath ?? defaultImage,
-      onTap: () => controller.openSpace(item),
-    );
-  }
 }
 
-class _SpaceSlot {
-  const _SpaceSlot({
-    required this.title,
-    required this.subtitle,
-    required this.imagePath,
+class _SpaceCard extends StatelessWidget {
+  const _SpaceCard({
+    required this.slot,
+    required this.width,
     required this.onTap,
   });
 
-  final String title;
-  final String subtitle;
-  final String imagePath;
-  final VoidCallback? onTap;
-}
-
-class _SpaceFeatureCard extends StatelessWidget {
-  const _SpaceFeatureCard({
-    required this.slot,
-    required this.height,
-    required this.titleSize,
-    required this.subtitleSize,
-    this.category,
-  });
-
-  final _SpaceSlot slot;
-  final double height;
-  final double titleSize;
-  final double subtitleSize;
-  final String? category;
+  final _ResolvedSpaceSlot slot;
+  final double width;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final title = slot.title.replaceAll(' the ', '\nthe ');
+    final textTheme = Theme.of(context).textTheme;
 
-    return InkWell(
-      onTap: slot.onTap,
-      child: SizedBox(
-        height: height,
-        child: Stack(
-          fit: StackFit.expand,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: width,
+        decoration: BoxDecoration(
+          color: const Color(0xFFFAFBF9),
+          border: Border.all(color: const Color(0x1F145C4F), width: 0.5),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _SpaceImage(imagePath: slot.imagePath),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withOpacity(0.28),
-                    Colors.black.withOpacity(0.48),
-                  ],
-                ),
-              ),
+            SizedBox(
+              height: 380,
+              width: double.infinity,
+              child: _SpaceImage(imagePath: slot.imagePath),
             ),
-            Positioned(
-              left: AppSpacing.md,
-              right: AppSpacing.md,
-              bottom: AppSpacing.md,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (category != null)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: AppSpacing.xs),
-                      child: Text(
-                        category!.toUpperCase(),
-                        style:
-                            Theme.of(context).textTheme.labelMedium?.copyWith(
-                                  color: AppColors.white.withOpacity(0.74),
-                                  letterSpacing: 2.2,
-                                ),
-                      ),
-                    ),
                   Text(
-                    title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                          fontSize: titleSize,
-                          color: AppColors.white,
-                          fontStyle: FontStyle.normal,
-                          height: 1.04,
-                        ),
+                    slot.title,
+                    style: textTheme.displayMedium?.copyWith(
+                      fontSize: 28,
+                      color: const Color(0xFF4A342B),
+                      height: 1.1,
+                      fontWeight: FontWeight.w300,
+                      fontStyle: FontStyle.normal,
+                    ),
                   ),
-                  const SizedBox(height: AppSpacing.xs),
+                  const SizedBox(height: AppSpacing.sm),
+                  Container(
+                    width: 32,
+                    height: 0.5,
+                    color: AppColors.terracotta,
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
                   Text(
                     slot.subtitle,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.white.withOpacity(0.8),
-                          fontSize: subtitleSize,
-                          height: 1.45,
-                        ),
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: const Color(0x734A342B),
+                      fontSize: 13,
+                      height: 1.65,
+                      fontWeight: FontWeight.w400,
+                      fontStyle: FontStyle.normal,
+                    ),
                   ),
                 ],
-              ),
-            ),
-            const Positioned(
-              right: AppSpacing.md,
-              bottom: AppSpacing.md,
-              child: Icon(
-                AppIcons.forward,
-                size: 14,
-                color: AppColors.terracotta,
               ),
             ),
           ],
@@ -313,4 +260,117 @@ class _SpaceImage extends StatelessWidget {
       errorBuilder: (_, __, ___) => fallback,
     );
   }
+}
+
+class _SpaceSpec {
+  const _SpaceSpec({
+    required this.route,
+    required this.titleHint,
+    required this.defaultTitle,
+    required this.defaultSubtitle,
+    required this.defaultImage,
+  });
+
+  final String route;
+  final String titleHint;
+  final String defaultTitle;
+  final String defaultSubtitle;
+  final String defaultImage;
+}
+
+class _ResolvedSpaceSlot {
+  const _ResolvedSpaceSlot({
+    required this.title,
+    required this.subtitle,
+    required this.imagePath,
+    required this.onTap,
+  });
+
+  final String title;
+  final String subtitle;
+  final String imagePath;
+  final VoidCallback? onTap;
+}
+
+const _specs = <_SpaceSpec>[
+  _SpaceSpec(
+    route: AppRoutes.resets,
+    titleHint: 'reset',
+    defaultTitle: 'Gentle Resets',
+    defaultSubtitle:
+        'Short pauses that help you step back, breathe, and return to yourself.',
+    defaultImage: AppAssets.spaceGarden,
+  ),
+  _SpaceSpec(
+    route: AppRoutes.journal,
+    titleHint: 'journal',
+    defaultTitle: 'Journal Prompts',
+    defaultSubtitle: 'Questions that dig deeper. Reflection without judgment.',
+    defaultImage: AppAssets.homeJournalBed,
+  ),
+  _SpaceSpec(
+    route: AppRoutes.normal,
+    titleHint: 'normal',
+    defaultTitle: 'Is This Normal',
+    defaultSubtitle:
+        'Real moments from real people. You are not alone in what you are experiencing.',
+    defaultImage: AppAssets.homeNormalStem,
+  ),
+  _SpaceSpec(
+    route: AppRoutes.rehearse,
+    titleHint: 'rehearse',
+    defaultTitle: 'Rehearse the Moment',
+    defaultSubtitle:
+        'See it clearly. Mental rehearsal that readies your mind for what comes next.',
+    defaultImage: AppAssets.spaceMountain,
+  ),
+  _SpaceSpec(
+    route: AppRoutes.noise,
+    titleHint: 'noise',
+    defaultTitle: 'Quiet the Noise',
+    defaultSubtitle:
+        'Ambient audio designed to calm your nervous system. Let sound become your anchor.',
+    defaultImage: AppAssets.spaceRoom,
+  ),
+  _SpaceSpec(
+    route: AppRoutes.terms,
+    titleHint: 'term',
+    defaultTitle: 'Key Terms',
+    defaultSubtitle:
+        'Understand the language we use. Clear definitions for everyday concepts in emotional wellbeing.',
+    defaultImage: AppAssets.homeComingSoonFlower,
+  ),
+];
+
+_ResolvedSpaceSlot _resolveSlot({
+  required _SpaceSpec spec,
+  required SpacesController controller,
+}) {
+  final item = controller.findSpaceByRoute(spec.route) ??
+      controller.findSpaceByTitle(spec.titleHint);
+
+  if (item == null) {
+    return _ResolvedSpaceSlot(
+      title: spec.defaultTitle,
+      subtitle: spec.defaultSubtitle,
+      imagePath: spec.defaultImage,
+      onTap: () => controller.openSpace(
+        QuickActionItem(
+          title: spec.defaultTitle,
+          subtitle: spec.defaultSubtitle,
+          icon: AppIcons.forward,
+          accentColor: AppColors.primary,
+          route: spec.route,
+        ),
+      ),
+    );
+  }
+
+  return _ResolvedSpaceSlot(
+    title: item.title.trim().isEmpty ? spec.defaultTitle : item.title,
+    subtitle:
+        item.subtitle.trim().isEmpty ? spec.defaultSubtitle : item.subtitle,
+    imagePath: item.imagePath ?? spec.defaultImage,
+    onTap: () => controller.openSpace(item),
+  );
 }
