@@ -81,7 +81,9 @@ class _ChatContent extends GetView<ChatController> {
                 (controller.isTyping.value ? 1 : 0);
 
             if (showWatermark) {
-              return const _TalkEmptyStateWithPrompt();
+              return _TalkEmptyStateWithPrompt(
+                line: controller.sessionLine,
+              );
             }
 
             return ListView.builder(
@@ -105,6 +107,14 @@ class _ChatContent extends GetView<ChatController> {
             );
           }),
         ),
+        Obx(() {
+          final showQuickStart =
+              controller.messages.isEmpty && !controller.isTyping.value;
+          if (!showQuickStart) {
+            return const SizedBox.shrink();
+          }
+          return const _QuickStartActionsRow();
+        }),
         const SizedBox(height: AppSpacing.sm),
         const _ChatInputBar(),
         if (rootTab) ...[
@@ -128,6 +138,7 @@ class _ChatHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final chatController = Get.find<ChatController>();
     final textTheme = Theme.of(context).textTheme;
 
     return Padding(
@@ -161,20 +172,13 @@ class _ChatHeader extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
-                  'what\'s on your mind?',
+                  chatController.sessionLine.toLowerCase(),
                   style: textTheme.displayLarge?.copyWith(
                     fontSize: 30,
                     height: 1.02,
                   ),
                   maxLines: 1,
                   softWrap: false,
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                Text(
-                  '3 free messages left today',
-                  style: textTheme.bodySmall?.copyWith(
-                    color: AppColors.placeholder,
-                  ),
                 ),
               ],
             ),
@@ -186,15 +190,17 @@ class _ChatHeader extends StatelessWidget {
 }
 
 class _TalkEmptyStateWithPrompt extends StatelessWidget {
-  const _TalkEmptyStateWithPrompt();
+  const _TalkEmptyStateWithPrompt({required this.line});
+
+  final String line;
 
   @override
   Widget build(BuildContext context) {
-    return const Stack(
+    return Stack(
       fit: StackFit.expand,
       children: <Widget>[
-        _TalkEmptyState(),
-        _ChatPromptState(),
+        const _TalkEmptyState(),
+        _ChatPromptState(line: line),
       ],
     );
   }
@@ -238,19 +244,100 @@ class _TalkEmptyState extends StatelessWidget {
 }
 
 class _ChatPromptState extends StatelessWidget {
-  const _ChatPromptState();
+  const _ChatPromptState({required this.line});
+
+  final String line;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Align(
+      alignment: Alignment.centerLeft,
       child: Padding(
-        padding: const EdgeInsets.only(bottom: AppSpacing.xl),
-        child: Text(
-          'Start with one clear sentence.',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.placeholder,
-              ),
+        padding: const EdgeInsets.only(
+          left: AppSpacing.md,
+          right: AppSpacing.md,
+          bottom: AppSpacing.xl,
         ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'resora',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.terracotta,
+                    letterSpacing: 2,
+                    fontWeight: FontWeight.w400,
+                  ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              line,
+              style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                    color: AppColors.primary,
+                    fontSize: 40,
+                    height: 1.15,
+                    fontStyle: FontStyle.normal,
+                  ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Container(
+              width: 28,
+              height: 0.8,
+              color: AppColors.primary.withOpacity(0.2),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _QuickStartActionsRow extends GetView<ChatController> {
+  const _QuickStartActionsRow();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(color: AppColors.primary.withOpacity(0.08)),
+        ),
+      ),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.sm,
+        AppSpacing.sm,
+        AppSpacing.sm,
+        AppSpacing.xs,
+      ),
+      child: Row(
+        children: ChatController.quickStartActions.map((label) {
+          return Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 3),
+              child: OutlinedButton(
+                onPressed: () => controller.sendMessage(label),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: AppColors.primary.withOpacity(0.16)),
+                  foregroundColor: AppColors.placeholder,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: AppSpacing.sm,
+                  ),
+                  shape: const RoundedRectangleBorder(),
+                ),
+                child: Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.placeholder,
+                        letterSpacing: 0.15,
+                        fontStyle: FontStyle.normal,
+                      ),
+                ),
+              ),
+            ),
+          );
+        }).toList(growable: false),
       ),
     );
   }
@@ -311,7 +398,7 @@ class _ChatInputBar extends GetView<ChatController> {
                       focusedBorder: InputBorder.none,
                       enabledBorder: InputBorder.none,
                       counterText: '',
-                      hintText: 'share what is happening...',
+                      hintText: 'Share what\'s happening...',
                       hintStyle: textTheme.bodyLarge?.copyWith(
                         color: AppColors.placeholder,
                         fontStyle: FontStyle.normal,

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
@@ -35,6 +36,25 @@ class ChatController extends GetxController {
   static const int maxCharacters = 500;
   static const int warningCharacters = 450;
   static const Duration sendCooldown = Duration(seconds: 2);
+  static const List<String> rotatingLines = [
+    "What's on your mind?",
+    'Something on your mind?',
+    'Ready when you are.',
+    'This is your space.',
+    'Start anywhere.',
+    'No wrong way to begin.',
+    "What's weighing on you?",
+    'Take your time.',
+  ];
+  static const List<String> quickStartActions = [
+    "I'm overwhelmed",
+    'I need clarity',
+    'I need to vent',
+  ];
+
+  final Random _random = Random();
+  late final String sessionLine =
+      rotatingLines[_random.nextInt(rotatingLines.length)];
 
   bool get canSend =>
       draftText.value.trim().isNotEmpty &&

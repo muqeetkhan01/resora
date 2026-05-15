@@ -337,7 +337,7 @@ const _specs = <_SpaceSpec>[
     titleHint: 'term',
     defaultTitle: 'Key Terms',
     defaultSubtitle:
-        'Understand the language we use. Clear definitions for everyday concepts in emotional wellbeing.',
+        'Understand the language we use. Clear definitions for everyday concepts in Resora.',
     defaultImage: AppAssets.homeComingSoonFlower,
   ),
 ];

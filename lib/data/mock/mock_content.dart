@@ -186,9 +186,9 @@ abstract final class MockContent {
   );
 
   static const suggestedPrompts = [
-    'I am close to snapping. What do I do right now?',
-    'Give me a 2-minute reset.',
-    'Help me script a hard conversation.',
+    "I'm overwhelmed",
+    'I need clarity',
+    'I need to vent',
   ];
 
   static const chatMessages = <ChatMessageModel>[];
@@ -196,23 +196,26 @@ abstract final class MockContent {
   static const journalPrompts = [
     JournalPrompt(
       category: 'clarity',
-      prompt: 'What felt heavier than it looked?',
-    ),
-    JournalPrompt(
-      category: 'ground',
-      prompt: 'Where did you feel most steady today?',
+      prompt:
+          'What has been on your mind the most this week that you haven\'t said out loud to anyone?',
     ),
     JournalPrompt(
       category: 'release',
-      prompt: 'What are you still carrying from yesterday?',
+      prompt:
+          'What are you still carrying that you were supposed to let go of months ago?',
     ),
     JournalPrompt(
       category: 'connect',
-      prompt: 'What do you wish someone had said to you today?',
+      prompt:
+          'Who have you been showing up for lately? Who has been showing up for you?',
+    ),
+    JournalPrompt(
+      category: 'ground',
+      prompt: 'Where in your body do you feel the most tension right now?',
     ),
     JournalPrompt(
       category: 'restore',
-      prompt: 'What would feel restorative before the day ends?',
+      prompt: 'What would a genuinely restful day look like for you this week?',
     ),
   ];
 
@@ -253,114 +256,116 @@ abstract final class MockContent {
     ),
     ResetOption(
       category: 'release',
-      title: 'Step away',
-      subtitle: 'A short permission to pause before you respond to anything.',
-      duration: '1 min',
-      icon: AppIcons.isNormal,
+      title: 'Tension drop',
+      subtitle: 'A slow body scan to release what you are holding right now.',
+      duration: '3 min',
+      icon: AppIcons.resets,
     ),
     ResetOption(
       category: 'clarity',
-      title: '5-4-3-2-1 ground',
-      subtitle:
-          'Bring yourself back to the room when your mind will not settle.',
-      duration: '3 min',
-      icon: AppIcons.close,
+      title: 'One clear thought',
+      subtitle: 'A simple prompt sequence to settle a busy or scattered mind.',
+      duration: '4 min',
+      icon: AppIcons.resets,
     ),
     ResetOption(
-      category: 'ground',
-      title: 'Box breath',
-      subtitle: 'Four counts in, hold, four counts out.',
-      duration: '4 min',
-      icon: AppIcons.play,
+      category: 'connect',
+      title: 'Soften the posture',
+      subtitle:
+          'A reset for when you feel closed off or guarded around others.',
+      duration: '3 min',
+      icon: AppIcons.resets,
     ),
     ResetOption(
       category: 'restore',
-      title: 'Cold water reset',
-      subtitle: 'A simple physical anchor when everything feels like too much.',
-      duration: '1 min',
-      icon: AppIcons.play,
+      title: 'Full pause',
+      subtitle: 'Permission to do absolutely nothing for a few minutes.',
+      duration: '5 min',
+      icon: AppIcons.resets,
     ),
   ];
 
   static const audioTracks = [
     AudioTrack(
       title: 'Soft rain on leaves',
-      category: 'Nature',
-      description: 'Steady sound for nervous-system downshift',
-      duration: '1 min',
+      category: 'nature',
+      description:
+          'Steady sound for nervous-system downshift. Let the rhythm of rain do the work your mind has been trying to do.',
+      duration: '8 min',
       assetPath: AppAssets.ambientSoftRain,
     ),
     AudioTrack(
       title: 'Brown noise for the background',
-      category: 'Brown Noise',
-      description: 'Mask the noise and quiet the edges',
-      duration: '2 min',
+      category: 'brown noise',
+      description:
+          'Mask the noise and quiet the edges. Brown noise sits lower than white — warmer, less harsh.',
+      duration: '20 min',
       assetPath: AppAssets.ambientBrownNoise,
     ),
     AudioTrack(
-      title: 'Five-minute guided exhale',
-      category: 'Guided Meditation',
-      description: 'Voice-led support for the first few minutes',
-      duration: '1 min',
+      title: 'Five minute guided exhale',
+      category: 'guided',
+      description:
+          'Voice-led support for the first few minutes. You don\'t need to do anything except follow the breath.',
+      duration: '5 min',
       assetPath: AppAssets.guidedExhale,
     ),
     AudioTrack(
-      title: 'Parenting calm visualization',
-      category: 'Visualizations',
-      description: 'Future-focused calm before the next hard moment',
-      duration: '1 min',
+      title: 'Still water visualization',
+      category: 'visualization',
+      description:
+          'A short guided image to bring mental clarity when everything feels murky.',
+      duration: '7 min',
       assetPath: AppAssets.guidedParentingCalm,
-      isPremium: true,
     ),
   ];
 
   static const normalTopics = [
     NormalTopicItem(
       tab: 'evening stress',
-      question: 'Is it normal to feel angry right before bedtime?',
+      question: 'Is it normal to feel angry right before bed?',
       expertAnswer:
-          'Yes. End-of-day overload is common, especially when you have been carrying the weight of the day. Start with regulation, then decide what actually needs to happen tonight.',
+          'This is one of the most commonly felt moments in the evening. The transition from doing to stopping is harder for some nervous systems than others — and anger is often what exhaustion looks like.',
       metoo: 1204,
       voices: [
-        'I used to think something was wrong with me. Turns out I just needed ten minutes alone before the evening started.',
-        'The angrier I felt, the more I realized I had not had a single moment to myself all day.',
-        'What helped me was recognizing it as a signal, not a flaw.',
+        'Yes. Every single night for months. I started doing 10 slow breaths before I even walked into my bedroom and it changed everything.',
+        'I think it\'s the transition. The day is winding down but your body hasn\'t gotten the message yet.',
+        'I thought I was just a bad person. Turns out it\'s a nervous system thing. That reframe helped more than anything.',
       ],
     ),
     NormalTopicItem(
       tab: 'overwhelm',
-      question: 'Is it normal to feel like I can\'t do anything right?',
+      question: 'I feel like I\'m behind on everything, always.',
       expertAnswer:
-          'Yes. When you are overwhelmed, your brain narrows its focus to threats, which can make everything feel like evidence of failure. It is a stress response, not the truth.',
-      metoo: 980,
+          'That feeling of perpetual lateness isn\'t a character flaw — it\'s often a sign of a nervous system that never fully downshifts. The catching up feeling can outlast the actual workload by days.',
+      metoo: 3871,
       voices: [
-        'I kept waiting to feel competent. Eventually I realized that feeling was the overwhelm talking.',
-        'Naming it as a stress response completely changed how I related to it.',
-        'Once I stopped treating every mistake like proof, I could finally breathe again.',
+        'I started asking: behind compared to what? Usually there\'s no real answer. It helped.',
+        'This is me every Sunday. I\'ve started calling it \'the lag\' — it helps to name it.',
       ],
     ),
     NormalTopicItem(
-      tab: 'regulation',
-      question: 'Is it normal to need silence just to feel okay?',
+      tab: 'depletion',
+      question:
+          'Sometimes I just need everyone to stop needing things from me.',
       expertAnswer:
-          'Completely. Sensory and social input accumulate across the day. Needing quiet is not withdrawal. It can be exactly what helps your system settle.',
-      metoo: 2341,
+          'This isn\'t a failure of love or care. It\'s a signal that your capacity has run out and your body is requesting a refill. Wanting space isn\'t selfish — it\'s information.',
+      metoo: 2109,
       voices: [
-        'Silence is the only thing that actually works for me. I stopped apologizing for it.',
-        'I used to feel guilty for not wanting to talk. Now I protect that quiet time on purpose.',
-        'Even five minutes of silence in my car before going inside changed everything.',
+        'This sentence made me cry the first time I read it. I thought I was the only one.',
+        'I had to learn that this feeling is a boundary my body sets before I set it consciously.',
       ],
     ),
     NormalTopicItem(
-      tab: 'sleep',
-      question: 'Is it normal to lie awake replaying everything?',
+      tab: 'low mood',
+      question:
+          'I don\'t know why I feel sad when nothing is technically wrong.',
       expertAnswer:
-          'Yes. A tired nervous system often keeps scanning long after the day is over. The goal is not to solve every thought tonight. It is to help your body feel safe enough to rest.',
-      metoo: 1648,
+          'Emotions don\'t always have a clear cause. Sometimes sadness is depletion. Sometimes it\'s the body processing something slower than the mind. The absence of an obvious reason doesn\'t make the feeling less real.',
+      metoo: 4430,
       voices: [
-        'My brain gets loudest the moment the house is finally quiet.',
-        'The replay loop eased up once I stopped trying to finish every thought before bed.',
-        'I needed a wind-down ritual, not more self-criticism.',
+        'I started calling this \'weather\' instead of \'why.\' It passes. You don\'t have to explain it.',
+        'This question opened up a whole therapy journey for me. You\'re not broken for asking it.',
       ],
     ),
   ];
@@ -434,51 +439,50 @@ abstract final class MockContent {
       ],
     ),
     RehearsalScenario(
-      title: 'Setting a limit with someone I care about',
-      category: 'Release',
-      reframe: 'Saying it clearly is not the same as saying it unkindly.',
-      script:
-          '“I care about this, and I need to stop here for tonight. I can come back to it when I have more room.”',
-      steps: [
-        'Keep the sentence short.',
-        'Let the boundary be the message.',
-        'Do not explain past the first clear line.',
-      ],
-    ),
-    RehearsalScenario(
-      title: 'Asking for what I actually need',
+      title: 'Asking for what I need at work',
       category: 'Clarity',
-      reframe: 'Most people cannot guess. Most people will help if you say it.',
+      reframe: 'Not a demand. Not an apology. Just a clear and honest ask.',
       script:
-          '“I do not need advice first. I need a little support and one clear next step.”',
+          '“I need a little clarity on priorities so I can focus on the right next step.”',
       steps: [
-        'Ask for the real need.',
-        'Say it plainly.',
-        'Pause before adding extra explanation.',
+        'Name what you need directly.',
+        'Keep the request specific.',
+        'Pause before over-explaining.',
       ],
     ),
     RehearsalScenario(
-      title: 'Repairing after I lost my temper',
-      category: 'Connect',
-      reframe: 'You do not have to be perfect. You have to show up.',
+      title: 'Setting a limit with someone close',
+      category: 'Release',
+      reframe: 'You can hold your boundary without holding your breath.',
       script:
-          '“I do not like how I handled that. I want to try again more gently.”',
+          '“I care about this, and I need to pause here for now. I can come back when I have more room.”',
       steps: [
-        'Own your part without over-explaining.',
-        'Say the repair line simply.',
-        'Focus on the next interaction, not a perfect apology.',
+        'Lead with care and limit.',
+        'Keep it one clear sentence.',
+        'Stop before you justify.',
       ],
     ),
     RehearsalScenario(
-      title: 'Handling a hard conversation at work',
+      title: 'Re-entering a room after stepping away',
       category: 'Ground',
-      reframe: 'Steady beats certain. You do not need all the answers.',
+      reframe: 'You do not need to explain why you left. You just return.',
       script:
-          '“I want to be thoughtful here. Let me answer the part I know, and I can follow up on the rest.”',
+          '“I stepped out to reset. I\'m back and ready to continue calmly.”',
       steps: [
-        'Slow your pace first.',
-        'Answer what is clear.',
-        'Leave room for a follow-up instead of forcing certainty.',
+        'Exhale before speaking.',
+        'Say one steady line.',
+        'Keep your pace slow.',
+      ],
+    ),
+    RehearsalScenario(
+      title: 'Saying no without explaining yourself',
+      category: 'Restore',
+      reframe: 'A complete sentence. No footnotes required.',
+      script: '“I can\'t commit to that right now.”',
+      steps: [
+        'Say no plainly.',
+        'Do not add extra reasons.',
+        'Hold the pause after speaking.',
       ],
     ),
   ];
@@ -514,27 +518,28 @@ abstract final class MockContent {
   static const keyTerms = [
     KeyTermItem(
       term: 'Regulation',
-      definition: 'Getting your body and mind back into a steadier state.',
+      definition:
+          'Getting your body and mind back into a steadier state. When you regulate, you are not suppressing — you are giving your nervous system a way through the moment.',
     ),
     KeyTermItem(
-      term: 'Emotional flooding',
+      term: 'Window of Tolerance',
       definition:
-          'The moment your system gets overwhelmed and clear thinking drops.',
+          'The space where you can feel your feelings without being overwhelmed by them. Too little stimulation and you go numb. Too much and you spiral.',
     ),
     KeyTermItem(
       term: 'Co-regulation',
       definition:
-          'Borrowing calm from another person’s steady tone, pace, or presence.',
+          'The way steadiness moves between people. Being near someone grounded can help settle your own nervous system.',
     ),
     KeyTermItem(
-      term: 'Sensory overload',
+      term: 'Rumination',
       definition:
-          'When sound, touch, light, or activity stacks up faster than your system can process it.',
+          'Replaying a thought or scenario on repeat without it moving forward. It feels like problem-solving, but it is usually the mind stuck.',
     ),
     KeyTermItem(
-      term: 'Window of tolerance',
+      term: 'Nervous System Reset',
       definition:
-          'The zone where you can think clearly enough to respond instead of react.',
+          'Any action that communicates safety to your physiology. Slow breath, cold water, or a walk can help shift state.',
     ),
   ];
 

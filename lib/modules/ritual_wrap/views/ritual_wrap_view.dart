@@ -1,103 +1,105 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/constants/app_spacing.dart';
 import '../../../routes/app_routes.dart';
-import '../../../theme/app_colors.dart';
 import '../models/ritual_wrap_args.dart';
 
-class RitualWrapView extends StatelessWidget {
+class RitualWrapView extends StatefulWidget {
   const RitualWrapView({super.key});
 
   @override
+  State<RitualWrapView> createState() => _RitualWrapViewState();
+}
+
+class _RitualWrapViewState extends State<RitualWrapView> {
+  static const Duration _fadeInDelay = Duration(milliseconds: 150);
+  static const Duration _fadeOutAt = Duration(milliseconds: 2300);
+  static const Duration _doneAt = Duration(milliseconds: 2500);
+
+  late final RitualWrapArgs _args;
+  late final _WrapCopy _copy;
+
+  Timer? _fadeInTimer;
+  Timer? _fadeOutTimer;
+  Timer? _doneTimer;
+  bool _visible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _args = RitualWrapArgs.from(Get.arguments);
+    _copy = _copyFor(feature: _args.feature, isEntry: _args.isEntry);
+
+    _fadeInTimer = Timer(_fadeInDelay, () {
+      if (!mounted) {
+        return;
+      }
+      setState(() => _visible = true);
+    });
+    _fadeOutTimer = Timer(_fadeOutAt, () {
+      if (!mounted) {
+        return;
+      }
+      setState(() => _visible = false);
+    });
+    _doneTimer = Timer(_doneAt, () {
+      _continue(_args);
+    });
+  }
+
+  @override
+  void dispose() {
+    _fadeInTimer?.cancel();
+    _fadeOutTimer?.cancel();
+    _doneTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final args = RitualWrapArgs.from(Get.arguments);
-    final config = _featureContent(args.feature);
-    final isEntry = args.isEntry;
-    final darkMode = !isEntry && config.exitDark;
-
-    final background = darkMode ? AppColors.primary : AppColors.canvas;
-    final titleColor = darkMode ? AppColors.white : AppColors.primary;
-    final subtitleColor =
-        darkMode ? AppColors.white.withOpacity(0.72) : AppColors.placeholder;
-    final lineColor = darkMode
-        ? AppColors.white.withOpacity(0.34)
-        : AppColors.terracotta.withOpacity(0.7);
-
-    final label = isEntry ? config.entryLabel : config.exitLabel;
-    final title = isEntry ? config.entryTitle : config.exitTitle;
-    final subtitle = isEntry ? config.entrySubtitle : config.exitSubtitle;
-    final cta = isEntry ? config.entryAction : config.exitAction;
-
     return Scaffold(
-      backgroundColor: background,
+      backgroundColor: const Color(0xFF145C4F),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.xl,
-            AppSpacing.xl,
-            AppSpacing.xl,
-            AppSpacing.xl,
-          ),
-          child: Column(
-            children: [
-              const Spacer(flex: 3),
-              Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 280),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 1,
-                        height: 40,
-                        color: lineColor,
-                      ),
-                      const SizedBox(height: AppSpacing.xl),
-                      Text(
-                        label,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                              color: lineColor,
-                              letterSpacing: 2,
-                              fontWeight: FontWeight.w700,
-                            ),
-                      ),
-                      const SizedBox(height: AppSpacing.lg),
-                      Text(
-                        title,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                              color: titleColor,
-                              fontSize: 34,
-                              height: 1.25,
-                            ),
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      Text(
-                        subtitle,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: subtitleColor,
-                            ),
-                      ),
-                    ],
-                  ),
+        child: AnimatedOpacity(
+          opacity: _visible ? 1 : 0,
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeInOut,
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 290),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 28),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      _copy.sublabel,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                            color: const Color(0xFFFAFBF9).withOpacity(0.5),
+                            letterSpacing: 2.75,
+                            fontWeight: FontWeight.w500,
+                          ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      _copy.label,
+                      textAlign: TextAlign.center,
+                      style:
+                          Theme.of(context).textTheme.displayMedium?.copyWith(
+                                color: const Color(0xFFFAFBF9),
+                                fontSize: 32,
+                                height: 1.3,
+                                letterSpacing: 0.9,
+                                fontWeight: FontWeight.w300,
+                              ),
+                    ),
+                  ],
                 ),
               ),
-              const Spacer(flex: 4),
-              TextButton(
-                onPressed: () => _continue(args),
-                child: Text(
-                  cta,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: titleColor,
-                        letterSpacing: 1.4,
-                      ),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-            ],
+            ),
           ),
         ),
       ),
@@ -105,6 +107,10 @@ class RitualWrapView extends StatelessWidget {
   }
 
   void _continue(RitualWrapArgs args) {
+    if (!mounted) {
+      return;
+    }
+
     if (args.nextRoute != null) {
       Get.offNamed(args.nextRoute!, arguments: args.nextArguments);
       return;
@@ -119,102 +125,95 @@ class RitualWrapView extends StatelessWidget {
     Get.offAllNamed(AppRoutes.dashboard);
   }
 
-  _FeatureContent _featureContent(String feature) {
+  _WrapCopy _copyFor({
+    required String feature,
+    required bool isEntry,
+  }) {
+    _WrapCopy select({
+      required _WrapCopy entry,
+      required _WrapCopy exit,
+    }) {
+      return isEntry ? entry : exit;
+    }
+
     switch (feature) {
       case RitualWrapFeature.meditation:
-        return const _FeatureContent(
-          entryLabel: 'GENTLE RESET',
-          entryTitle: 'Settle in.',
-          entrySubtitle: 'You do not need to bring anything with you.',
-          entryAction: 'begin',
-          exitLabel: 'GENTLE RESET',
-          exitTitle: 'You came back\nto yourself.',
-          exitSubtitle: 'Carry this pace with you into what comes next.',
-          exitAction: 'continue',
-          exitDark: true,
+        return select(
+          entry: const _WrapCopy(
+            sublabel: 'ENTERING YOUR RESET',
+            label: 'Take a breath.',
+          ),
+          exit: const _WrapCopy(
+            sublabel: 'SESSION COMPLETE',
+            label: 'You reset.',
+          ),
         );
       case RitualWrapFeature.asmr:
-        return const _FeatureContent(
-          entryLabel: 'QUIET THE NOISE',
-          entryTitle: 'Let the outside\nfall away.',
-          entrySubtitle: 'Headphones on if you can. Just listen.',
-          entryAction: 'begin',
-          exitLabel: 'QUIET THE NOISE',
-          exitTitle: 'Rest well.',
-          exitSubtitle: 'You gave yourself this pause.',
-          exitAction: 'continue',
-          exitDark: true,
+        return select(
+          entry: const _WrapCopy(
+            sublabel: 'ENTERING YOUR SESSION',
+            label: 'Let it go quiet.',
+          ),
+          exit: const _WrapCopy(
+            sublabel: 'SESSION COMPLETE',
+            label: 'You found stillness.',
+          ),
         );
       case RitualWrapFeature.visualization:
-        return const _FeatureContent(
-          entryLabel: 'REHEARSE THE MOMENT',
-          entryTitle: 'Close your eyes.\nTake one breath.',
-          entrySubtitle: 'We start with one clear line at a time.',
-          entryAction: 'begin',
-          exitLabel: 'REHEARSE THE MOMENT',
-          exitTitle: 'Bring it\nwith you.',
-          exitSubtitle: 'That steadier version of you is already real.',
-          exitAction: 'continue',
-          exitDark: true,
+        return select(
+          entry: const _WrapCopy(
+            sublabel: 'ENTERING YOUR SESSION',
+            label: 'Get ready.',
+          ),
+          exit: const _WrapCopy(
+            sublabel: 'SESSION COMPLETE',
+            label: 'You practiced.',
+          ),
         );
       case RitualWrapFeature.normal:
-        return const _FeatureContent(
-          entryLabel: 'IS THIS NORMAL',
-          entryTitle: 'Ask what you have\nnot said out loud.',
-          entrySubtitle: 'Your question belongs here.',
-          entryAction: 'continue',
-          exitLabel: 'IS THIS NORMAL',
-          exitTitle: 'Someone heard you.',
-          exitSubtitle: 'You were right to ask.',
-          exitAction: 'return',
+        return select(
+          entry: const _WrapCopy(
+            sublabel: 'ENTERING YOUR SESSION',
+            label: 'Ask what you need.',
+          ),
+          exit: const _WrapCopy(
+            sublabel: 'SESSION COMPLETE',
+            label: 'Someone heard you.',
+          ),
         );
       case RitualWrapFeature.talk:
-        return const _FeatureContent(
-          entryLabel: 'TALK TO RESORA',
-          entryTitle: 'What is on your\nmind today?',
-          entrySubtitle: 'One clear sentence is enough to start.',
-          entryAction: 'begin',
-          exitLabel: 'TALK TO RESORA',
-          exitTitle: 'Come back when\nyou are ready.',
-          exitSubtitle: 'The conversation can stay simple and honest.',
-          exitAction: 'close session',
+        return select(
+          entry: const _WrapCopy(
+            sublabel: 'ENTERING YOUR SESSION',
+            label: 'Start anywhere.',
+          ),
+          exit: const _WrapCopy(
+            sublabel: 'SESSION COMPLETE',
+            label: 'You were heard.',
+          ),
         );
       case RitualWrapFeature.journal:
       default:
-        return const _FeatureContent(
-          entryLabel: 'JOURNAL',
-          entryTitle: 'What are you\ncarrying right now?',
-          entrySubtitle: 'Take your time. Begin when you are ready.',
-          entryAction: 'begin',
-          exitLabel: 'JOURNAL',
-          exitTitle: 'You stayed.',
-          exitSubtitle: 'That reflection is yours now.',
-          exitAction: 'return',
+        return select(
+          entry: const _WrapCopy(
+            sublabel: 'OPENING YOUR JOURNAL',
+            label: 'Find the words.',
+          ),
+          exit: const _WrapCopy(
+            sublabel: 'SESSION COMPLETE',
+            label: 'You showed up.',
+          ),
         );
     }
   }
 }
 
-class _FeatureContent {
-  const _FeatureContent({
-    required this.entryLabel,
-    required this.entryTitle,
-    required this.entrySubtitle,
-    required this.entryAction,
-    required this.exitLabel,
-    required this.exitTitle,
-    required this.exitSubtitle,
-    required this.exitAction,
-    this.exitDark = false,
+class _WrapCopy {
+  const _WrapCopy({
+    required this.sublabel,
+    required this.label,
   });
 
-  final String entryLabel;
-  final String entryTitle;
-  final String entrySubtitle;
-  final String entryAction;
-  final String exitLabel;
-  final String exitTitle;
-  final String exitSubtitle;
-  final String exitAction;
-  final bool exitDark;
+  final String sublabel;
+  final String label;
 }
