@@ -2,258 +2,324 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/constants/app_assets.dart';
-import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_icons.dart';
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
 import '../controllers/noise_controller.dart';
 
-class NoiseView extends GetView<NoiseController> {
+class NoiseView extends StatefulWidget {
   const NoiseView({super.key});
 
-  static const _thumbPool = [
+  @override
+  State<NoiseView> createState() => _NoiseViewState();
+}
+
+class _NoiseViewState extends State<NoiseView> {
+  late final PageController _pageController;
+  int _active = 0;
+
+  static const _thumbPool = <String>[
+    AppAssets.spaceRoom,
     AppAssets.spaceGarden,
     AppAssets.spaceMountain,
-    AppAssets.spaceRoom,
     AppAssets.homeNormalStem,
     AppAssets.homeComingSoonFlower,
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final controller = Get.find<NoiseController>();
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      backgroundColor: AppColors.canvas,
+      backgroundColor: const Color(0xFFFAFBF9),
       body: SafeArea(
-        child: Column(
-          children: [
-            Obx(() => _NoiseHero(trackCount: controller.totalTrackCount)),
-            SizedBox(
-              height: 44,
-              child: Obx(() {
-                final selected = controller.selectedCategory.value;
-                return ListView.separated(
+        child: Obx(() {
+          final tracks = controller.tracks;
+          if (tracks.isEmpty) {
+            return Center(
+              child: Text(
+                'No audio tracks published yet.',
+                style: textTheme.bodyMedium,
+              ),
+            );
+          }
+
+          if (_active >= tracks.length) {
+            _active = 0;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (_pageController.hasClients) _pageController.jumpToPage(0);
+            });
+          }
+
+          final categories = controller.categories;
+          final selectedCategory = controller.selectedCategory.value;
+          final track = tracks[_active];
+
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(22, 18, 22, 0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: Get.back,
+                      padding: EdgeInsets.zero,
+                      constraints:
+                          const BoxConstraints.tightFor(width: 28, height: 28),
+                      icon: const Icon(
+                        Icons.arrow_back_ios_rounded,
+                        size: 15,
+                        color: AppColors.terracotta,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'quiet the noise',
+                      style: textTheme.displayMedium?.copyWith(
+                        fontSize: 34,
+                        color: const Color(0xFF4A342B),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 46,
+                child: ListView.separated(
                   scrollDirection: Axis.horizontal,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                  itemCount: controller.categories.length,
-                  separatorBuilder: (_, __) =>
-                      const SizedBox(width: AppSpacing.lg),
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  itemCount: categories.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 18),
                   itemBuilder: (context, index) {
-                    final category = controller.categories[index];
-                    final isSelected = selected == category;
+                    final category = categories[index];
+                    final selected = category == selectedCategory;
                     return InkWell(
-                      onTap: () => controller.selectCategory(category),
-                      child: Padding(
-                        padding:
-                            const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                      onTap: () {
+                        controller.selectCategory(category);
+                        _active = 0;
+                        if (_pageController.hasClients) {
+                          _pageController.jumpToPage(0);
+                        }
+                        setState(() {});
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: selected
+                                  ? AppColors.terracotta
+                                  : Colors.transparent,
+                              width: 1.5,
+                            ),
+                          ),
+                        ),
                         child: Text(
-                          category.toLowerCase(),
+                          category,
                           style: textTheme.bodySmall?.copyWith(
-                            color: isSelected
-                                ? AppColors.primary
-                                : AppColors.placeholder,
-                            decoration: isSelected
-                                ? TextDecoration.underline
-                                : TextDecoration.none,
+                            color: selected
+                                ? const Color(0xFF4A342B)
+                                : const Color(0xFFA89890),
                           ),
                         ),
                       ),
                     );
                   },
-                );
-              }),
-            ),
-            const Divider(height: 1, color: AppColors.line),
-            Expanded(
-              child: Obx(() {
-                final tracks = controller.tracks;
-                if (tracks.isEmpty) {
-                  return Center(
-                    child: Text(
-                      'No audio tracks published yet.',
-                      style: textTheme.bodyMedium,
-                    ),
-                  );
-                }
-
-                return ListView.builder(
-                  itemCount: tracks.length,
-                  itemBuilder: (context, index) {
-                    final track = tracks[index];
-                    return _NoiseTrackRow(
-                      track: track,
-                      imagePath: _thumbPool[index % _thumbPool.length],
-                      onTap: () => controller.openTrack(track),
-                    );
-                  },
-                );
-              }),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _NoiseHero extends StatelessWidget {
-  const _NoiseHero({required this.trackCount});
-
-  final int trackCount;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 190,
-      width: double.infinity,
-      color: AppColors.primary,
-      child: Stack(
-        children: [
-          Positioned(
-            top: AppSpacing.sm,
-            left: AppSpacing.sm,
-            child: IconButton(
-              onPressed: Get.back,
-              icon: const Icon(
-                Icons.arrow_back_ios_rounded,
-                size: 16,
-                color: AppColors.white,
-              ),
-            ),
-          ),
-          Positioned(
-            left: AppSpacing.lg,
-            right: AppSpacing.lg,
-            bottom: AppSpacing.lg,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'quiet the noise',
-                  style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                        color: AppColors.white,
-                        fontSize: 34,
-                        fontStyle: FontStyle.normal,
-                      ),
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  '$trackCount tracks · nature & visualizations',
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: AppColors.white.withOpacity(0.65),
-                        letterSpacing: 1.2,
-                      ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _NoiseTrackRow extends StatelessWidget {
-  const _NoiseTrackRow({
-    required this.track,
-    required this.imagePath,
-    required this.onTap,
-  });
-
-  final AudioTrack track;
-  final String imagePath;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final categoryColor = AppColors.categoryColor(track.category);
-
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        decoration: const BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: AppColors.line),
-          ),
-        ),
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg,
-          vertical: AppSpacing.sm,
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 3,
-              height: 58,
-              color: categoryColor.withOpacity(0.8),
-            ),
-            const SizedBox(width: AppSpacing.sm),
-            ClipRect(
-              child: SizedBox(
-                width: 58,
-                height: 58,
-                child: Image.asset(
-                  imagePath,
-                  fit: BoxFit.cover,
                 ),
               ),
-            ),
-            const SizedBox(width: AppSpacing.sm),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 2),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              const Divider(height: 1, color: AppColors.line),
+              Expanded(
+                child: Stack(
                   children: [
-                    Text(
-                      track.title,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: AppColors.primary,
-                            fontSize: 20,
-                            fontStyle: FontStyle.normal,
-                          ),
+                    PageView.builder(
+                      controller: _pageController,
+                      scrollDirection: Axis.vertical,
+                      itemCount: tracks.length,
+                      onPageChanged: (value) => setState(() => _active = value),
+                      itemBuilder: (context, index) => _NoiseSlide(
+                        track: tracks[index],
+                        imagePath: _thumbPool[index % _thumbPool.length],
+                        onPlay: () => controller.openTrack(tracks[index]),
+                      ),
                     ),
-                    const SizedBox(height: AppSpacing.xxs),
-                    Text(
-                      track.description,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.placeholder,
-                            height: 1.4,
+                    Positioned(
+                      top: 0,
+                      bottom: 0,
+                      right: 14,
+                      child: IgnorePointer(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(
+                            tracks.length,
+                            (index) => AnimatedContainer(
+                              duration: const Duration(milliseconds: 350),
+                              width: 1,
+                              height: index == _active ? 22 : 7,
+                              margin: const EdgeInsets.symmetric(vertical: 3),
+                              color: index == _active
+                                  ? AppColors.terracotta
+                                  : const Color(0x2E4A342B),
+                            ),
                           ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
-            ),
-            const SizedBox(width: AppSpacing.sm),
-            Column(
-              children: [
-                Container(
-                  width: 26,
-                  height: 26,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.terracotta),
-                  ),
-                  child: Icon(
-                    Icons.play_arrow_rounded,
-                    color: AppColors.terracotta,
-                    size: 16,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  track.duration,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.placeholder,
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+                child: Row(
+                  children: [
+                    Text(
+                      track.duration,
+                      style: textTheme.bodySmall?.copyWith(
+                        color: const Color(0x804A342B),
+                        letterSpacing: 0.9,
                       ),
+                    ),
+                    const Spacer(),
+                    TextButton(
+                      onPressed: () => controller.openTrack(track),
+                      child: Text(
+                        'BEGIN SESSION',
+                        style: textTheme.bodySmall?.copyWith(
+                          color: AppColors.terracotta,
+                          letterSpacing: 1.8,
+                          decoration: TextDecoration.underline,
+                          decorationColor: AppColors.terracotta,
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      onPressed: () => _showCategorySheet(context, controller),
+                      icon: const Icon(
+                        AppIcons.filter,
+                        size: 18,
+                        color: AppColors.terracotta,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
+            ],
+          );
+        }),
+      ),
+    );
+  }
+
+  Future<void> _showCategorySheet(
+      BuildContext context, NoiseController controller) async {
+    final selected = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: const Color(0xFFFAFBF9),
+      useSafeArea: true,
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 10),
+          Container(width: 34, height: 3, color: AppColors.line),
+          const SizedBox(height: 10),
+          for (final category in controller.categories)
+            ListTile(
+              title: Text(category),
+              onTap: () => Navigator.of(context).pop(category),
             ),
-          ],
+        ],
+      ),
+    );
+    if (selected == null) return;
+    controller.selectCategory(selected);
+    _active = 0;
+    if (_pageController.hasClients) _pageController.jumpToPage(0);
+    if (mounted) setState(() {});
+  }
+}
+
+class _NoiseSlide extends StatelessWidget {
+  const _NoiseSlide({
+    required this.track,
+    required this.imagePath,
+    required this.onPlay,
+  });
+
+  final AudioTrack track;
+  final String imagePath;
+  final VoidCallback onPlay;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 12, 42, 12),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 320),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRect(
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 210,
+                  child: Image.asset(imagePath, fit: BoxFit.cover),
+                ),
+              ),
+              const SizedBox(height: 18),
+              Text(
+                track.category.toUpperCase(),
+                style: textTheme.labelMedium?.copyWith(
+                  color: AppColors.terracotta,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                track.title,
+                style: textTheme.displayMedium?.copyWith(
+                  color: const Color(0xFF4A342B),
+                  fontSize: 34,
+                  fontStyle: FontStyle.normal,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                track.description,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: const Color(0x804A342B),
+                  height: 1.65,
+                  fontStyle: FontStyle.normal,
+                ),
+              ),
+              const SizedBox(height: 18),
+              OutlinedButton.icon(
+                onPressed: onPlay,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.terracotta,
+                  side: const BorderSide(color: AppColors.terracotta),
+                  shape: const RoundedRectangleBorder(),
+                ),
+                icon: const Icon(Icons.play_arrow_rounded, size: 16),
+                label: const Text('Play'),
+              ),
+            ],
+          ),
         ),
       ),
     );

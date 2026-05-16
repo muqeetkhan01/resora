@@ -1,168 +1,236 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_icons.dart';
+import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
 import '../controllers/journal_controller.dart';
 
-class JournalView extends GetView<JournalController> {
+class JournalView extends StatefulWidget {
   const JournalView({super.key});
 
-  static const Map<String, String> _categoryDescriptions = {
-    'all': 'Every prompt in this section',
-    'ground': 'Overwhelm, chaos, cannot think',
-    'release': 'Tension, heaviness, letting go',
-    'clarity': 'Foggy, indecisive, need to think',
-    'connect': 'Loneliness, feeling unseen',
-    'restore': 'Exhaustion, need to refill',
-  };
+  @override
+  State<JournalView> createState() => _JournalViewState();
+}
+
+class _JournalViewState extends State<JournalView> {
+  late final PageController _pageController;
+  int _active = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<JournalController>();
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      backgroundColor: AppColors.primary,
+      backgroundColor: const Color(0xFFFAFBF9),
       body: SafeArea(
         child: Obx(() {
           final prompts = controller.prompts;
           if (prompts.isEmpty) {
-            return const _EditorialEmptyState(
-              title: 'journal',
-              message: 'No journal prompts published yet.',
+            return Center(
+              child: Text(
+                'No journal prompts published yet.',
+                style: textTheme.bodyMedium,
+              ),
             );
           }
 
-          final maxIndex = prompts.length - 1;
-          final index = controller.currentPage.value.clamp(0, maxIndex);
-          if (index != controller.currentPage.value) {
-            controller.setCurrentPage(index);
+          if (_active >= prompts.length) {
+            _active = 0;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (_pageController.hasClients) _pageController.jumpToPage(0);
+            });
           }
-          final prompt = prompts[index];
-          final titleSize = _titleSizeFor(prompt.prompt);
-          final selected = controller.selectedCategory.value;
-          final hasPrevious = index > 0;
-          final hasNext = index < maxIndex;
 
-          return Stack(
+          final selectedCategory = controller.selectedCategory.value;
+          final categories = controller.categories;
+          final prompt = prompts[_active];
+          final currentNumber = (_active + 1).toString().padLeft(2, '0');
+          final totalNumber = prompts.length.toString().padLeft(2, '0');
+
+          return Column(
             children: [
-              const _EditorialBackground(),
               Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.lg,
-                  AppSpacing.lg,
-                  AppSpacing.lg,
-                  AppSpacing.lg,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                padding: const EdgeInsets.fromLTRB(22, 18, 22, 0),
+                child: Row(
                   children: [
-                    Row(
-                      children: [
-                        IconButton(
-                          onPressed: Get.back,
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints.tightFor(
-                              width: 28, height: 28),
-                          icon: const Icon(
-                            Icons.arrow_back_ios_rounded,
-                            size: 15,
-                            color: AppColors.terracotta,
-                          ),
+                    IconButton(
+                      onPressed: Get.back,
+                      padding: EdgeInsets.zero,
+                      constraints:
+                          const BoxConstraints.tightFor(width: 28, height: 28),
+                      icon: const Icon(
+                        Icons.arrow_back_ios_rounded,
+                        size: 15,
+                        color: AppColors.terracotta,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'journal',
+                      style: textTheme.displayMedium?.copyWith(
+                        fontSize: 34,
+                        color: const Color(0xFF4A342B),
+                        fontStyle: FontStyle.normal,
+                      ),
+                    ),
+                    const Spacer(),
+                    TextButton(
+                      onPressed: controller.openHistory,
+                      child: Text(
+                        'history',
+                        style: textTheme.bodySmall?.copyWith(
+                          color: AppColors.terracotta,
+                          decoration: TextDecoration.underline,
+                          decorationThickness: 1,
                         ),
-                        const SizedBox(width: AppSpacing.sm),
-                        Text(
-                          'journal',
-                          style: textTheme.labelMedium?.copyWith(
-                            color: AppColors.white.withOpacity(0.58),
-                            letterSpacing: 2.5,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const Spacer(),
-                        TextButton(
-                          onPressed: controller.openHistory,
-                          child: Text(
-                            'history',
-                            style: textTheme.bodySmall?.copyWith(
-                              color: AppColors.white.withOpacity(0.78),
-                              letterSpacing: 1.2,
+                      ),
+                    ),
+                    Text(
+                      '$currentNumber / $totalNumber',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: const Color(0x804A342B),
+                        letterSpacing: 0.4,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 46,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  itemCount: categories.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 18),
+                  itemBuilder: (context, index) {
+                    final category = categories[index];
+                    final selected = category == selectedCategory;
+                    return InkWell(
+                      onTap: () {
+                        controller.selectCategory(category);
+                        _active = 0;
+                        if (_pageController.hasClients) {
+                          _pageController.jumpToPage(0);
+                        }
+                        setState(() {});
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: selected
+                                  ? AppColors.terracotta
+                                  : Colors.transparent,
+                              width: 1.5,
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                    if (selected != 'all')
-                      Padding(
-                        padding: const EdgeInsets.only(top: AppSpacing.sm),
-                        child: _ActiveFilterChip(
-                          label: selected,
-                          onClear: () => controller.selectCategory('all'),
+                        child: Text(
+                          category,
+                          style: textTheme.bodySmall?.copyWith(
+                            color: selected
+                                ? const Color(0xFF4A342B)
+                                : const Color(0xFFA89890),
+                          ),
                         ),
                       ),
-                    Expanded(
-                      child: Center(
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 300),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: 1,
-                                height: 40,
-                                color: AppColors.terracotta.withOpacity(0.7),
-                              ),
-                              const SizedBox(height: AppSpacing.xl),
-                              Text(
-                                prompt.category.toUpperCase(),
-                                style: textTheme.labelMedium?.copyWith(
-                                  color: AppColors.terracotta.withOpacity(0.9),
-                                  letterSpacing: 3.2,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              const SizedBox(height: AppSpacing.lg),
-                              Text(
-                                prompt.prompt,
-                                style: textTheme.displayLarge?.copyWith(
-                                  color: AppColors.white,
-                                  fontSize: titleSize,
-                                  height: 1.04,
-                                  fontStyle: FontStyle.normal,
-                                  fontWeight: FontWeight.w300,
-                                ),
-                              ),
-                              const SizedBox(height: AppSpacing.xl),
-                              _JournalActionRow(
-                                label: 'write your own',
-                                onTap: () => controller.openEditor(prompt: ''),
-                              ),
-                              _JournalActionRow(
-                                label: 'start writing',
-                                highlighted: true,
-                                onTap: () => controller.openEditor(
-                                    prompt: prompt.prompt),
-                              ),
-                            ],
+                    );
+                  },
+                ),
+              ),
+              const Divider(height: 1, color: AppColors.line),
+              Expanded(
+                child: Stack(
+                  children: [
+                    PageView.builder(
+                      controller: _pageController,
+                      scrollDirection: Axis.vertical,
+                      itemCount: prompts.length,
+                      onPageChanged: (value) {
+                        setState(() => _active = value);
+                        controller.setCurrentPage(value);
+                      },
+                      itemBuilder: (context, index) =>
+                          _JournalSlide(prompt: prompts[index]),
+                    ),
+                    Positioned(
+                      top: 0,
+                      bottom: 0,
+                      right: 14,
+                      child: IgnorePointer(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(
+                            prompts.length,
+                            (index) => AnimatedContainer(
+                              duration: const Duration(milliseconds: 350),
+                              width: 1,
+                              height: index == _active ? 22 : 7,
+                              margin: const EdgeInsets.symmetric(vertical: 3),
+                              color: index == _active
+                                  ? AppColors.terracotta
+                                  : const Color(0x2E4A342B),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                    _BottomBar(
-                      onFilter: () async {
-                        final selectedCategory =
-                            await _showCategorySheet(context, selected);
-                        if (selectedCategory != null) {
-                          controller.selectCategory(selectedCategory);
-                        }
-                      },
-                      onPrevious: hasPrevious
-                          ? () => controller.setCurrentPage(index - 1)
-                          : null,
-                      onNext: hasNext
-                          ? () => controller.setCurrentPage(index + 1)
-                          : null,
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+                child: Row(
+                  children: [
+                    TextButton(
+                      onPressed: () => controller.openEditor(prompt: ''),
+                      child: Text(
+                        'WRITE YOUR OWN',
+                        style: textTheme.bodySmall?.copyWith(
+                          color: AppColors.terracotta,
+                          letterSpacing: 1.6,
+                          decoration: TextDecoration.underline,
+                          decorationColor: AppColors.terracotta,
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    TextButton(
+                      onPressed: () =>
+                          controller.openEditor(prompt: prompt.prompt),
+                      child: Text(
+                        'BEGIN JOURNAL',
+                        style: textTheme.bodySmall?.copyWith(
+                          color: AppColors.terracotta,
+                          letterSpacing: 1.8,
+                          decoration: TextDecoration.underline,
+                          decorationColor: AppColors.terracotta,
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      onPressed: () => _showCategorySheet(context, controller),
+                      icon: const Icon(
+                        AppIcons.filter,
+                        size: 18,
+                        color: AppColors.terracotta,
+                      ),
                     ),
                   ],
                 ),
@@ -174,333 +242,75 @@ class JournalView extends GetView<JournalController> {
     );
   }
 
-  Future<String?> _showCategorySheet(
-    BuildContext context,
-    String selected,
-  ) {
-    return showModalBottomSheet<String>(
+  Future<void> _showCategorySheet(
+      BuildContext context, JournalController controller) async {
+    final selected = await showModalBottomSheet<String>(
       context: context,
-      backgroundColor: AppColors.canvas,
+      backgroundColor: const Color(0xFFFAFBF9),
       useSafeArea: true,
-      builder: (context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: AppSpacing.sm),
-            Container(
-              width: 32,
-              height: 3,
-              color: AppColors.primary.withOpacity(0.18),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            for (final category in controller.categories)
-              InkWell(
-                onTap: () => Navigator.of(context).pop(category),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.lg,
-                    AppSpacing.md,
-                    AppSpacing.lg,
-                    AppSpacing.md,
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              category,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .displayMedium
-                                  ?.copyWith(
-                                    color: selected == category
-                                        ? AppColors.primary
-                                        : AppColors.primary.withOpacity(0.72),
-                                    fontSize: 24,
-                                    fontStyle: FontStyle.normal,
-                                  ),
-                            ),
-                            const SizedBox(height: AppSpacing.xxs),
-                            Text(
-                              _categoryDescriptions[category] ?? '',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(
-                                    color: AppColors.placeholder,
-                                  ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (selected == category)
-                        const Icon(
-                          Icons.check_rounded,
-                          color: AppColors.terracotta,
-                          size: 16,
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-            const SizedBox(height: AppSpacing.md),
-          ],
-        );
-      },
-    );
-  }
-
-  double _titleSizeFor(String value) {
-    final length = value.trim().length;
-    if (length > 90) return 30;
-    if (length > 70) return 33;
-    if (length > 52) return 36;
-    if (length > 38) return 40;
-    return 44;
-  }
-}
-
-class _EditorialBackground extends StatelessWidget {
-  const _EditorialBackground();
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(color: AppColors.primary),
-        Positioned(
-          left: 0,
-          top: 0,
-          bottom: 0,
-          child: Container(width: 2, color: AppColors.white.withOpacity(0.14)),
-        ),
-        Positioned.fill(
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: RadialGradient(
-                center: const Alignment(-0.8, -0.7),
-                radius: 1.1,
-                colors: [
-                  AppColors.white.withOpacity(0.07),
-                  Colors.transparent,
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _EditorialEmptyState extends StatelessWidget {
-  const _EditorialEmptyState({
-    required this.title,
-    required this.message,
-  });
-
-  final String title;
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        const _EditorialBackground(),
-        Center(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.xl),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                        color: AppColors.white,
-                        fontSize: 42,
-                      ),
-                ),
-                const SizedBox(height: AppSpacing.md),
-                Text(
-                  message,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.white.withOpacity(0.7),
-                      ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ActiveFilterChip extends StatelessWidget {
-  const _ActiveFilterChip({
-    required this.label,
-    required this.onClear,
-  });
-
-  final String label;
-  final VoidCallback onClear;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding:
-          const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 6),
-      decoration: BoxDecoration(
-        border: Border.all(color: AppColors.white.withOpacity(0.2)),
-        color: AppColors.white.withOpacity(0.06),
-      ),
-      child: Row(
+      builder: (context) => Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            label.toUpperCase(),
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: AppColors.white.withOpacity(0.64),
-                  letterSpacing: 1.8,
-                  fontWeight: FontWeight.w700,
+          const SizedBox(height: 10),
+          Container(width: 34, height: 3, color: AppColors.line),
+          const SizedBox(height: 10),
+          for (final category in controller.categories)
+            ListTile(
+              title: Text(category),
+              onTap: () => Navigator.of(context).pop(category),
+            ),
+        ],
+      ),
+    );
+    if (selected == null) return;
+    controller.selectCategory(selected);
+    _active = 0;
+    if (_pageController.hasClients) _pageController.jumpToPage(0);
+    if (mounted) setState(() {});
+  }
+}
+
+class _JournalSlide extends StatelessWidget {
+  const _JournalSlide({required this.prompt});
+
+  final JournalPrompt prompt;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 12, 42, 12),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 320),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                  width: 1.5,
+                  height: 50,
+                  color: AppColors.terracotta.withOpacity(0.7)),
+              const SizedBox(height: 14),
+              Text(
+                prompt.category.toUpperCase(),
+                style: textTheme.labelMedium?.copyWith(
+                  color: AppColors.terracotta,
+                  letterSpacing: 1.2,
                 ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                prompt.prompt,
+                style: textTheme.displayLarge?.copyWith(
+                  fontSize: 42,
+                  color: const Color(0xFF4A342B),
+                  height: 1.1,
+                  fontStyle: FontStyle.normal,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: AppSpacing.xs),
-          GestureDetector(
-            onTap: onClear,
-            child: Icon(
-              Icons.close_rounded,
-              size: 14,
-              color: AppColors.white.withOpacity(0.44),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _JournalActionRow extends StatelessWidget {
-  const _JournalActionRow({
-    required this.label,
-    required this.onTap,
-    this.highlighted = false,
-  });
-
-  final String label;
-  final VoidCallback onTap;
-  final bool highlighted;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: AppColors.white.withOpacity(0.1)),
-          ),
-        ),
-        child: Row(
-          children: [
-            Text(
-              label,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: highlighted
-                        ? AppColors.white.withOpacity(0.84)
-                        : AppColors.white.withOpacity(0.36),
-                    letterSpacing: 1.2,
-                  ),
-            ),
-            const Spacer(),
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              size: 12,
-              color: AppColors.terracotta.withOpacity(0.8),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _BottomBar extends StatelessWidget {
-  const _BottomBar({
-    required this.onFilter,
-    required this.onPrevious,
-    required this.onNext,
-  });
-
-  final VoidCallback onFilter;
-  final VoidCallback? onPrevious;
-  final VoidCallback? onNext;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 96,
-      decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(color: AppColors.white.withOpacity(0.12)),
-        ),
-      ),
-      child: Row(
-        children: [
-          const Spacer(),
-          _SquareButton(
-            icon: Icons.tune_rounded,
-            onTap: onFilter,
-          ),
-          const SizedBox(width: AppSpacing.xs),
-          _SquareButton(
-            icon: Icons.keyboard_arrow_up_rounded,
-            onTap: onPrevious,
-          ),
-          const SizedBox(width: AppSpacing.xs),
-          _SquareButton(
-            icon: Icons.keyboard_arrow_down_rounded,
-            onTap: onNext,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SquareButton extends StatelessWidget {
-  const _SquareButton({
-    required this.icon,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final disabled = onTap == null;
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: AppColors.white.withOpacity(disabled ? 0.08 : 0.24),
-          ),
-          color:
-              disabled ? Colors.transparent : AppColors.white.withOpacity(0.05),
-        ),
-        child: Icon(
-          icon,
-          color: AppColors.white.withOpacity(disabled ? 0.26 : 0.75),
-          size: 21,
         ),
       ),
     );

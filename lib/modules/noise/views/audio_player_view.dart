@@ -200,6 +200,35 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
     final scene = _PlayerScene.fromTrack(track);
     final textTheme = Theme.of(context).textTheme;
 
+    if (_args.ritualFeature == RitualWrapFeature.asmr) {
+      return PopScope(
+        canPop: false,
+        onPopInvoked: (didPop) {
+          if (!didPop) {
+            _closePlayer();
+          }
+        },
+        child: Scaffold(
+          backgroundColor: const Color(0xFF143C35),
+          body: _QuietNoisePlayer(
+            track: track,
+            imagePath: _args.imagePath,
+            progress: _progress,
+            positionLabel: _formatDuration(_position),
+            durationLabel: _duration > Duration.zero
+                ? _formatDuration(_duration)
+                : track.duration,
+            isPlaying: _isPlaying,
+            isLoading: _isLoading,
+            errorText: _loadError,
+            onBack: _closePlayer,
+            onPlayPause: _togglePlayback,
+            onSeek: _seekToFraction,
+          ),
+        ),
+      );
+    }
+
     if (_args.minimal) {
       return PopScope(
         canPop: false,
@@ -387,6 +416,209 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
     }
 
     return '$minutes:$seconds';
+  }
+}
+
+class _QuietNoisePlayer extends StatelessWidget {
+  const _QuietNoisePlayer({
+    required this.track,
+    required this.imagePath,
+    required this.progress,
+    required this.positionLabel,
+    required this.durationLabel,
+    required this.isPlaying,
+    required this.isLoading,
+    required this.errorText,
+    required this.onBack,
+    required this.onPlayPause,
+    required this.onSeek,
+  });
+
+  final AudioTrack track;
+  final String imagePath;
+  final double progress;
+  final String positionLabel;
+  final String durationLabel;
+  final bool isPlaying;
+  final bool isLoading;
+  final String? errorText;
+  final VoidCallback onBack;
+  final VoidCallback onPlayPause;
+  final ValueChanged<double> onSeek;
+
+  @override
+  Widget build(BuildContext context) {
+    final slider = progress.clamp(0.0, 1.0);
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Image.asset(
+          imagePath,
+          fit: BoxFit.cover,
+          alignment: Alignment.center,
+        ),
+        Positioned.fill(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  const Color(0xFF143C35).withOpacity(0.95),
+                  const Color(0xFF143C35).withOpacity(0.42),
+                  const Color(0xFF143C35).withOpacity(0.58),
+                  const Color(0xFF143C35).withOpacity(0.9),
+                ],
+              ),
+            ),
+          ),
+        ),
+        SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.md,
+                  AppSpacing.md,
+                  AppSpacing.md,
+                  AppSpacing.sm,
+                ),
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: onBack,
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                          color: AppColors.white, size: 26),
+                    ),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Text(
+                            track.title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context)
+                                .textTheme
+                                .displaySmall
+                                ?.copyWith(
+                                  color: AppColors.white,
+                                  fontSize: 20,
+                                  fontStyle: FontStyle.normal,
+                                ),
+                          ),
+                          Text(
+                            track.category,
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: AppColors.white.withOpacity(0.82),
+                                      letterSpacing: 0.3,
+                                    ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(Icons.more_horiz_rounded,
+                          color: AppColors.white, size: 32),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                child: Row(
+                  children: [
+                    Text(
+                      positionLabel,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: AppColors.white,
+                            fontSize: 34,
+                          ),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: SliderTheme(
+                        data: SliderTheme.of(context).copyWith(
+                          trackHeight: 2,
+                          activeTrackColor: const Color(0xFF0A1713),
+                          inactiveTrackColor:
+                              const Color(0xFF0A1713).withOpacity(0.4),
+                          thumbColor: AppColors.white,
+                          thumbShape: const RoundSliderThumbShape(
+                              enabledThumbRadius: 11),
+                          overlayShape: SliderComponentShape.noOverlay,
+                        ),
+                        child: Slider(
+                          min: 0,
+                          max: 1,
+                          value: slider,
+                          onChanged: onSeek,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Text(
+                      '-$durationLabel',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: AppColors.white,
+                            fontSize: 34,
+                          ),
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Text(
+                      '1x',
+                      style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                            color: AppColors.white,
+                            fontSize: 30,
+                            fontStyle: FontStyle.normal,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              if (errorText != null)
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                  child: Text(
+                    errorText!,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.white,
+                        ),
+                  ),
+                ),
+              const SizedBox(height: AppSpacing.lg),
+              GestureDetector(
+                onTap: onPlayPause,
+                child: Container(
+                  width: 84,
+                  height: 84,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.white.withOpacity(0.18),
+                    border:
+                        Border.all(color: AppColors.white.withOpacity(0.38)),
+                  ),
+                  child: Icon(
+                    isLoading
+                        ? Icons.hourglass_empty_rounded
+                        : (isPlaying
+                            ? Icons.pause_rounded
+                            : Icons.play_arrow_rounded),
+                    size: 38,
+                    color: AppColors.white,
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xxxl),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }
 
