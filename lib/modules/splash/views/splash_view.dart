@@ -14,15 +14,19 @@ class SplashView extends GetView<SplashController> {
   @override
   Widget build(BuildContext context) {
     controller;
-    return const Scaffold(
-      backgroundColor: Color(0xFF111111),
-      body: _SplashSequence(),
+    return Scaffold(
+      backgroundColor: const Color(0xFF111111),
+      body: _SplashSequence(
+        onFinished: controller.continueFromSplash,
+      ),
     );
   }
 }
 
 class _SplashSequence extends StatefulWidget {
-  const _SplashSequence();
+  const _SplashSequence({required this.onFinished});
+
+  final Future<void> Function() onFinished;
 
   @override
   State<_SplashSequence> createState() => _SplashSequenceState();
@@ -30,7 +34,7 @@ class _SplashSequence extends StatefulWidget {
 
 class _SplashSequenceState extends State<_SplashSequence> {
   static const _crossfadeMs = 450;
-  static const _imageDuration = Duration(milliseconds: 1500);
+  static const _imageDuration = Duration(milliseconds: 2000);
   static const _textFadeInMs = 900;
 
   static const _images = <String>[
@@ -48,6 +52,7 @@ class _SplashSequenceState extends State<_SplashSequence> {
   Timer? _switchTimer2;
   Timer? _finishTimer;
   Timer? _crossfadeSettleTimer;
+  Timer? _navigateTimer;
 
   @override
   void initState() {
@@ -63,6 +68,11 @@ class _SplashSequenceState extends State<_SplashSequence> {
       () {
         if (!mounted) return;
         setState(() => _screenFadeOut = true);
+        _navigateTimer?.cancel();
+        _navigateTimer = Timer(const Duration(milliseconds: 650), () {
+          if (!mounted) return;
+          widget.onFinished();
+        });
       },
     );
   }
@@ -98,6 +108,7 @@ class _SplashSequenceState extends State<_SplashSequence> {
     _switchTimer2?.cancel();
     _finishTimer?.cancel();
     _crossfadeSettleTimer?.cancel();
+    _navigateTimer?.cancel();
     super.dispose();
   }
 

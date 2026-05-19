@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:get/get.dart';
 
 import '../../../core/controllers/app_session_controller.dart';
@@ -7,29 +5,18 @@ import '../../../routes/app_routes.dart';
 
 class SplashController extends GetxController {
   final _session = Get.find<AppSessionController>();
-  Timer? _timer;
+  bool _didNavigate = false;
 
-  @override
-  void onReady() {
-    super.onReady();
-    _timer = Timer(
-      const Duration(milliseconds: 3000),
-      () async {
-        await _session.waitUntilReady();
+  Future<void> continueFromSplash() async {
+    if (_didNavigate) return;
+    _didNavigate = true;
+    await _session.waitUntilReady();
 
-        if (!_session.isAuthenticated) {
-          Get.offNamed(AppRoutes.onboarding);
-          return;
-        }
+    if (!_session.isAuthenticated) {
+      Get.offNamed(AppRoutes.onboarding);
+      return;
+    }
 
-        Get.offNamed(AppRoutes.dashboard);
-      },
-    );
-  }
-
-  @override
-  void onClose() {
-    _timer?.cancel();
-    super.onClose();
+    Get.offNamed(AppRoutes.dashboard);
   }
 }
