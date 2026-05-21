@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/constants/app_icons.dart';
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
 import '../controllers/noise_controller.dart';
@@ -57,12 +56,10 @@ class _NoiseViewState extends State<NoiseView> {
 
           final categories = controller.categories;
           final selectedCategory = controller.selectedCategory.value;
-          final track = tracks[_active];
-
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(22, 18, 22, 0),
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
                 child: Row(
                   children: [
                     IconButton(
@@ -72,16 +69,17 @@ class _NoiseViewState extends State<NoiseView> {
                           const BoxConstraints.tightFor(width: 28, height: 28),
                       icon: const Icon(
                         Icons.arrow_back_ios_rounded,
-                        size: 15,
-                        color: AppColors.terracotta,
+                        size: 16,
+                        color: Color(0xFFA3A3A3),
                       ),
                     ),
                     const SizedBox(width: 8),
                     Text(
                       'quiet the noise',
-                      style: textTheme.displayMedium?.copyWith(
-                        fontSize: 34,
-                        color: const Color(0xFF4A342B),
+                      style: textTheme.bodyMedium?.copyWith(
+                        fontSize: 14,
+                        color: const Color(0xFFA3A3A3),
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                   ],
@@ -93,7 +91,7 @@ class _NoiseViewState extends State<NoiseView> {
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   itemCount: categories.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 18),
+                  separatorBuilder: (_, __) => const SizedBox(width: 24),
                   itemBuilder: (context, index) {
                     final category = categories[index];
                     final selected = category == selectedCategory;
@@ -119,11 +117,12 @@ class _NoiseViewState extends State<NoiseView> {
                           ),
                         ),
                         child: Text(
-                          category,
-                          style: textTheme.bodySmall?.copyWith(
+                          category.toLowerCase(),
+                          style: textTheme.bodyMedium?.copyWith(
+                            fontSize: 14,
                             color: selected
                                 ? const Color(0xFF4A342B)
-                                : const Color(0xFFA89890),
+                                : const Color(0xFFA3A3A3),
                           ),
                         ),
                       ),
@@ -146,9 +145,9 @@ class _NoiseViewState extends State<NoiseView> {
                       ),
                     ),
                     Positioned(
-                      top: 0,
-                      bottom: 0,
-                      right: 14,
+                      top: 104,
+                      bottom: 104,
+                      right: 16,
                       child: IgnorePointer(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -156,12 +155,12 @@ class _NoiseViewState extends State<NoiseView> {
                             tracks.length,
                             (index) => AnimatedContainer(
                               duration: const Duration(milliseconds: 350),
-                              width: 1,
-                              height: index == _active ? 58 : 5,
-                              margin: const EdgeInsets.symmetric(vertical: 3),
+                              width: 2,
+                              height: 24,
+                              margin: const EdgeInsets.symmetric(vertical: 4),
                               color: index == _active
                                   ? AppColors.terracotta
-                                  : const Color(0x2E4A342B),
+                                  : const Color(0xFFE6E6E6),
                             ),
                           ),
                         ),
@@ -170,74 +169,12 @@ class _NoiseViewState extends State<NoiseView> {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-                child: Row(
-                  children: [
-                    Text(
-                      track.duration,
-                      style: textTheme.bodySmall?.copyWith(
-                        color: const Color(0x804A342B),
-                        letterSpacing: 0.9,
-                      ),
-                    ),
-                    const Spacer(),
-                    TextButton(
-                      onPressed: () => controller.openTrack(track),
-                      child: Text(
-                        'BEGIN SESSION',
-                        style: textTheme.bodySmall?.copyWith(
-                          color: AppColors.terracotta,
-                          letterSpacing: 1.8,
-                          decoration: TextDecoration.underline,
-                          decorationColor: AppColors.terracotta,
-                        ),
-                      ),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      onPressed: () => _showCategorySheet(context, controller),
-                      icon: const Icon(
-                        AppIcons.filter,
-                        size: 18,
-                        color: AppColors.terracotta,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              const SizedBox(height: 24),
             ],
           );
         }),
       ),
     );
-  }
-
-  Future<void> _showCategorySheet(
-      BuildContext context, NoiseController controller) async {
-    final selected = await showModalBottomSheet<String>(
-      context: context,
-      backgroundColor: const Color(0xFFFAFBF9),
-      useSafeArea: true,
-      builder: (context) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 10),
-          Container(width: 34, height: 3, color: AppColors.line),
-          const SizedBox(height: 10),
-          for (final category in controller.categories)
-            ListTile(
-              title: Text(category),
-              onTap: () => Navigator.of(context).pop(category),
-            ),
-        ],
-      ),
-    );
-    if (selected == null) return;
-    controller.selectCategory(selected);
-    _active = 0;
-    if (_pageController.hasClients) _pageController.jumpToPage(0);
-    if (mounted) setState(() {});
   }
 }
 
@@ -254,49 +191,81 @@ class _NoiseSlide extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 12, 42, 12),
-      child: Center(
+      padding: const EdgeInsets.fromLTRB(24, 104, 42, 12),
+      child: Align(
+        alignment: Alignment.topLeft,
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 320),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                track.category.toUpperCase(),
-                style: textTheme.labelMedium?.copyWith(
-                  color: AppColors.terracotta,
-                  letterSpacing: 1.2,
+              Container(width: 2, height: 240, color: AppColors.terracotta),
+              const SizedBox(width: 24),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          track.category.toUpperCase(),
+                          style: textTheme.labelMedium?.copyWith(
+                            color: AppColors.terracotta,
+                            letterSpacing: 1.5,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const Spacer(),
+                        Text(
+                          track.duration,
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: const Color(0xFFA3A3A3),
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 164),
+                    Text(
+                      track.title,
+                      style: textTheme.displayLarge?.copyWith(
+                        color: const Color(0xFF3B2C24),
+                        fontSize: 40,
+                        height: 1.2,
+                        fontStyle: FontStyle.normal,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Container(
+                      width: double.infinity,
+                      height: 1,
+                      color: const Color(0xFFE6E6E6),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      track.description,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: const Color(0xFFA3A3A3),
+                        height: 1.6,
+                        fontSize: 16,
+                        fontStyle: FontStyle.normal,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    OutlinedButton.icon(
+                      onPressed: onPlay,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.terracotta,
+                        side: const BorderSide(color: AppColors.terracotta),
+                        fixedSize: const Size(150, 48),
+                        shape: const RoundedRectangleBorder(),
+                      ),
+                      icon: const Icon(Icons.play_arrow_rounded, size: 18),
+                      label: const Text('Play'),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                track.title,
-                style: textTheme.displayMedium?.copyWith(
-                  color: const Color(0xFF4A342B),
-                  fontSize: 34,
-                  fontStyle: FontStyle.normal,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                track.description,
-                style: textTheme.bodyMedium?.copyWith(
-                  color: const Color(0x804A342B),
-                  height: 1.65,
-                  fontStyle: FontStyle.normal,
-                ),
-              ),
-              const SizedBox(height: 18),
-              OutlinedButton.icon(
-                onPressed: onPlay,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.terracotta,
-                  side: const BorderSide(color: AppColors.terracotta),
-                  shape: const RoundedRectangleBorder(),
-                ),
-                icon: const Icon(Icons.play_arrow_rounded, size: 16),
-                label: const Text('Play'),
               ),
             ],
           ),

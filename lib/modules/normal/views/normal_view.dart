@@ -55,13 +55,13 @@ class _NormalViewState extends State<NormalView> {
 
           final categories = controller.categories;
           final selectedCategory = controller.selectedCategory.value;
-          final current = topics[_active];
-          final voices = controller.voicesFor(current).length;
+          final currentNumber = (_active + 1).toString().padLeft(2, '0');
+          final totalNumber = topics.length.toString().padLeft(2, '0');
 
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(22, 18, 22, 0),
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
                 child: Row(
                   children: [
                     IconButton(
@@ -71,28 +71,26 @@ class _NormalViewState extends State<NormalView> {
                           const BoxConstraints.tightFor(width: 28, height: 28),
                       icon: const Icon(
                         Icons.arrow_back_ios_rounded,
-                        size: 15,
-                        color: AppColors.terracotta,
+                        size: 16,
+                        color: Color(0xFFA3A3A3),
                       ),
                     ),
                     const SizedBox(width: 8),
                     Text(
                       'is this normal',
-                      style: textTheme.displayMedium?.copyWith(
-                        fontSize: 34,
-                        color: const Color(0xFF4A342B),
+                      style: textTheme.bodyMedium?.copyWith(
+                        fontSize: 14,
+                        color: const Color(0xFFA3A3A3),
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                     const Spacer(),
-                    TextButton(
-                      onPressed: controller.openAskQuestion,
-                      child: Text(
-                        'ask anonymously',
-                        style: textTheme.bodySmall?.copyWith(
-                          color: AppColors.terracotta,
-                          letterSpacing: 1.2,
-                          decoration: TextDecoration.underline,
-                        ),
+                    Text(
+                      '$currentNumber / $totalNumber',
+                      style: textTheme.bodyMedium?.copyWith(
+                        fontSize: 14,
+                        color: const Color(0xFFA3A3A3),
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                   ],
@@ -104,7 +102,7 @@ class _NormalViewState extends State<NormalView> {
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   itemCount: categories.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 18),
+                  separatorBuilder: (_, __) => const SizedBox(width: 24),
                   itemBuilder: (context, index) {
                     final category = categories[index];
                     final selected = category == selectedCategory;
@@ -131,15 +129,40 @@ class _NormalViewState extends State<NormalView> {
                         ),
                         child: Text(
                           controller.categoryLabel(category),
-                          style: textTheme.bodySmall?.copyWith(
+                          style: textTheme.bodyMedium?.copyWith(
+                            fontSize: 14,
                             color: selected
                                 ? const Color(0xFF4A342B)
-                                : const Color(0xFFA89890),
+                                : const Color(0xFFA3A3A3),
                           ),
                         ),
                       ),
                     );
                   },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+                child: Row(
+                  children: [
+                    _InlineTab(
+                      label: 'most felt',
+                      active: controller.sortMode.value == 'felt',
+                      onTap: () => controller.setSortMode('felt'),
+                    ),
+                    const SizedBox(width: 24),
+                    _InlineTab(
+                      label: 'latest',
+                      active: controller.sortMode.value == 'latest',
+                      onTap: () => controller.setSortMode('latest'),
+                    ),
+                    const Spacer(),
+                    _InlineTab(
+                      label: 'ASK ANONYMOUSLY',
+                      active: true,
+                      onTap: controller.openAskQuestion,
+                    ),
+                  ],
                 ),
               ),
               const Divider(height: 1, color: AppColors.line),
@@ -161,9 +184,9 @@ class _NormalViewState extends State<NormalView> {
                       ),
                     ),
                     Positioned(
-                      top: 0,
-                      bottom: 0,
-                      right: 14,
+                      top: 104,
+                      bottom: 104,
+                      right: 16,
                       child: IgnorePointer(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -171,12 +194,12 @@ class _NormalViewState extends State<NormalView> {
                             topics.length,
                             (index) => AnimatedContainer(
                               duration: const Duration(milliseconds: 350),
-                              width: 1,
-                              height: index == _active ? 58 : 5,
-                              margin: const EdgeInsets.symmetric(vertical: 3),
+                              width: 2,
+                              height: 24,
+                              margin: const EdgeInsets.symmetric(vertical: 4),
                               color: index == _active
                                   ? AppColors.terracotta
-                                  : const Color(0x2E4A342B),
+                                  : const Color(0xFFE6E6E6),
                             ),
                           ),
                         ),
@@ -185,32 +208,7 @@ class _NormalViewState extends State<NormalView> {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-                child: Row(
-                  children: [
-                    Text(
-                      '${current.metoo} felt this · $voices voices',
-                      style: textTheme.bodySmall?.copyWith(
-                        color: const Color(0x804A342B),
-                      ),
-                    ),
-                    const Spacer(),
-                    TextButton(
-                      onPressed: () => _openTopicSheet(context, current),
-                      child: Text(
-                        'OPEN THREAD',
-                        style: textTheme.bodySmall?.copyWith(
-                          color: AppColors.terracotta,
-                          letterSpacing: 1.8,
-                          decoration: TextDecoration.underline,
-                          decorationColor: AppColors.terracotta,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              const SizedBox(height: 24),
             ],
           );
         }),
@@ -292,65 +290,113 @@ class _NormalSlide extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 12, 42, 12),
-      child: Center(
+      padding: const EdgeInsets.fromLTRB(24, 104, 42, 12),
+      child: Align(
+        alignment: Alignment.topLeft,
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 320),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                  width: 1.5,
-                  height: 50,
-                  color: AppColors.terracotta.withOpacity(0.7)),
-              const SizedBox(height: 14),
-              Text(
-                category,
-                style: textTheme.labelMedium?.copyWith(
-                  color: AppColors.terracotta,
-                  letterSpacing: 1.2,
+              Container(width: 2, height: 240, color: AppColors.terracotta),
+              const SizedBox(width: 24),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      category,
+                      style: textTheme.labelMedium?.copyWith(
+                        color: AppColors.terracotta,
+                        letterSpacing: 1.5,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      '"${topic.question}"',
+                      style: textTheme.displayLarge?.copyWith(
+                        fontSize: 40,
+                        color: const Color(0xFF3B2C24),
+                        height: 1.2,
+                        fontStyle: FontStyle.normal,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Container(
+                      width: 32,
+                      height: 1,
+                      color: const Color(0xFFE6E6E6),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      '${topic.metoo} felt this',
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: const Color(0xFFA3A3A3),
+                        height: 1.6,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        _InlineTab(
+                          label: 'READ CONTEXT',
+                          active: true,
+                          onTap: onOpen,
+                        ),
+                        const SizedBox(width: 24),
+                        _InlineTab(
+                          label: '$voicesCount VOICES',
+                          active: false,
+                          onTap: onOpen,
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                '"${topic.question}"',
-                style: textTheme.displayLarge?.copyWith(
-                  fontSize: 40,
-                  color: const Color(0xFF4A342B),
-                  height: 1.15,
-                  fontStyle: FontStyle.normal,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                topic.expertAnswer.toString(),
-                maxLines: 5,
-                overflow: TextOverflow.ellipsis,
-                style: textTheme.bodyMedium?.copyWith(
-                  color: const Color(0x804A342B),
-                  height: 1.7,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                '${topic.metoo} felt this · $voicesCount voices',
-                style: textTheme.bodySmall?.copyWith(
-                  color: const Color(0x804A342B),
-                ),
-              ),
-              const SizedBox(height: 12),
-              OutlinedButton(
-                onPressed: onOpen,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.terracotta,
-                  side: const BorderSide(color: AppColors.terracotta),
-                  shape: const RoundedRectangleBorder(),
-                ),
-                child: const Text('Read more'),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _InlineTab extends StatelessWidget {
+  const _InlineTab({
+    required this.label,
+    required this.active,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool active;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.only(bottom: 6),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: active ? AppColors.terracotta : const Color(0xFFDCD6D2),
+              width: active ? 2 : 1,
+            ),
+          ),
+        ),
+        child: Text(
+          label,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontSize: 14,
+                color: active ? AppColors.terracotta : const Color(0xFFA3A3A3),
+                fontWeight: FontWeight.w400,
+              ),
         ),
       ),
     );

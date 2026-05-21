@@ -14,6 +14,16 @@ class TermsView extends StatefulWidget {
 class _TermsViewState extends State<TermsView> {
   late final PageController _pageController;
   int _active = 0;
+  int _tabIndex = 0;
+
+  static const _tabs = <String>[
+    'all',
+    'ground',
+    'release',
+    'clarity',
+    'connect',
+    'restore',
+  ];
 
   @override
   void initState() {
@@ -59,7 +69,7 @@ class _TermsViewState extends State<TermsView> {
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(22, 18, 22, 0),
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
                 child: Row(
                   children: [
                     IconButton(
@@ -69,36 +79,66 @@ class _TermsViewState extends State<TermsView> {
                           const BoxConstraints.tightFor(width: 28, height: 28),
                       icon: const Icon(
                         Icons.arrow_back_ios_rounded,
-                        size: 15,
-                        color: AppColors.terracotta,
+                        size: 16,
+                        color: Color(0xFFA3A3A3),
                       ),
                     ),
                     const SizedBox(width: 8),
                     Text(
                       'key terms',
-                      style: textTheme.displayMedium?.copyWith(
-                        fontSize: 34,
-                        color: const Color(0xFF4A342B),
+                      style: textTheme.bodyMedium?.copyWith(
+                        fontSize: 14,
+                        color: const Color(0xFFA3A3A3),
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                     const Spacer(),
                     Text(
                       '$currentNumber / $totalNumber',
-                      style: textTheme.bodySmall?.copyWith(
-                        color: const Color(0x804A342B),
+                      style: textTheme.bodyMedium?.copyWith(
+                        fontSize: 14,
+                        color: const Color(0xFFA3A3A3),
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
-                child: TextField(
-                  controller: controller.searchController,
-                  onChanged: controller.onSearch,
-                  decoration: const InputDecoration(
-                    hintText: 'Search key terms',
-                  ),
+              SizedBox(
+                height: 46,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  itemCount: _tabs.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 24),
+                  itemBuilder: (context, index) {
+                    final selected = index == _tabIndex;
+                    return InkWell(
+                      onTap: () => setState(() => _tabIndex = index),
+                      child: Container(
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: selected
+                                  ? AppColors.terracotta
+                                  : Colors.transparent,
+                              width: 1.5,
+                            ),
+                          ),
+                        ),
+                        child: Text(
+                          _tabs[index],
+                          style: textTheme.bodyMedium?.copyWith(
+                            fontSize: 14,
+                            color: selected
+                                ? const Color(0xFF4A342B)
+                                : const Color(0xFFA3A3A3),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
               const Divider(height: 1, color: AppColors.line),
@@ -112,13 +152,20 @@ class _TermsViewState extends State<TermsView> {
                       onPageChanged: (value) => setState(() => _active = value),
                       itemBuilder: (context, index) {
                         final item = terms[index];
-                        return _TermSlide(item: item);
+                        return _TermSlide(
+                          item: item,
+                          onReadDefinition: () => _openDefinitionSheet(
+                            context,
+                            title: item.term.toString(),
+                            definition: item.definition.toString(),
+                          ),
+                        );
                       },
                     ),
                     Positioned(
-                      top: 0,
-                      bottom: 0,
-                      right: 14,
+                      top: 104,
+                      bottom: 104,
+                      right: 16,
                       child: IgnorePointer(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -126,12 +173,12 @@ class _TermsViewState extends State<TermsView> {
                             terms.length,
                             (index) => AnimatedContainer(
                               duration: const Duration(milliseconds: 350),
-                              width: 1,
-                              height: index == _active ? 58 : 5,
-                              margin: const EdgeInsets.symmetric(vertical: 3),
+                              width: 2,
+                              height: 24,
+                              margin: const EdgeInsets.symmetric(vertical: 4),
                               color: index == _active
                                   ? AppColors.terracotta
-                                  : const Color(0x2E4A342B),
+                                  : const Color(0xFFE6E6E6),
                             ),
                           ),
                         ),
@@ -140,71 +187,142 @@ class _TermsViewState extends State<TermsView> {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-                child: TextButton(
-                  onPressed: () {
-                    controller.searchController.clear();
-                    controller.onSearch('');
-                  },
-                  child: Text(
-                    'SHOW ALL TERMS',
-                    style: textTheme.bodySmall?.copyWith(
-                      color: AppColors.terracotta,
-                      decoration: TextDecoration.underline,
-                      letterSpacing: 1.7,
-                    ),
-                  ),
-                ),
-              ),
+              const SizedBox(height: 24),
             ],
           );
         }),
       ),
     );
   }
+
+  Future<void> _openDefinitionSheet(
+    BuildContext context, {
+    required String title,
+    required String definition,
+  }) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      useSafeArea: true,
+      backgroundColor: const Color(0xFFFAFBF9),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(width: 34, height: 3, color: AppColors.line),
+            const SizedBox(height: 14),
+            Text(
+              title,
+              style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                    color: const Color(0xFF4A342B),
+                    fontStyle: FontStyle.normal,
+                  ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              definition,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: const Color(0x804A342B),
+                    height: 1.7,
+                  ),
+            ),
+            const SizedBox(height: 12),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Close'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _TermSlide extends StatelessWidget {
-  const _TermSlide({required this.item});
+  const _TermSlide({
+    required this.item,
+    required this.onReadDefinition,
+  });
 
   final dynamic item;
+  final VoidCallback onReadDefinition;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 12, 42, 12),
-      child: Center(
+      padding: const EdgeInsets.fromLTRB(24, 104, 42, 12),
+      child: Align(
+        alignment: Alignment.topLeft,
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 320),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                  width: 1.5,
-                  height: 50,
-                  color: AppColors.terracotta.withOpacity(0.7)),
-              const SizedBox(height: 18),
-              Text(
-                item.term.toString(),
-                style: textTheme.displayLarge?.copyWith(
-                  fontSize: 42,
-                  color: const Color(0xFF4A342B),
-                  height: 1.1,
-                  fontStyle: FontStyle.normal,
-                ),
-              ),
-              const SizedBox(height: 14),
-              Container(width: 28, height: 0.5, color: const Color(0x334A342B)),
-              const SizedBox(height: 14),
-              Text(
-                item.definition.toString(),
-                style: textTheme.bodyMedium?.copyWith(
-                  color: const Color(0x804A342B),
-                  height: 1.65,
-                  fontStyle: FontStyle.normal,
+              Container(width: 2, height: 240, color: AppColors.terracotta),
+              const SizedBox(width: 24),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'GROUND',
+                      style: textTheme.labelMedium?.copyWith(
+                        color: AppColors.terracotta,
+                        letterSpacing: 1.5,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      item.term.toString(),
+                      style: textTheme.displayLarge?.copyWith(
+                        fontSize: 40,
+                        color: const Color(0xFF3B2C24),
+                        height: 1.2,
+                        fontStyle: FontStyle.normal,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Container(
+                        width: 32, height: 1, color: const Color(0xFFE6E6E6)),
+                    const SizedBox(height: 20),
+                    Text(
+                      _previewDefinition(item.definition.toString()),
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: const Color(0xFFA3A3A3),
+                        height: 1.6,
+                        fontSize: 16,
+                        fontStyle: FontStyle.normal,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    InkWell(
+                      onTap: onReadDefinition,
+                      child: Container(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: AppColors.terracotta,
+                              width: 1,
+                            ),
+                          ),
+                        ),
+                        child: Text(
+                          'READ DEFINITION',
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: AppColors.terracotta,
+                            letterSpacing: 1.5,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -212,5 +330,17 @@ class _TermSlide extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _previewDefinition(String definition) {
+    final text = definition.trim();
+    if (text.isEmpty) {
+      return text;
+    }
+    final firstDot = text.indexOf('.');
+    if (firstDot == -1 || firstDot == text.length - 1) {
+      return text;
+    }
+    return text.substring(0, firstDot + 1);
   }
 }
