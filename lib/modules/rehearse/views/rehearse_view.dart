@@ -66,11 +66,13 @@ class _RehearseViewState extends State<RehearseView> {
           final categories = controller.categories;
           final selectedCategory = controller.selectedCategory.value;
           final current = scenarios[_active];
+          final currentNumber = (_active + 1).toString().padLeft(2, '0');
+          final totalNumber = scenarios.length.toString().padLeft(2, '0');
 
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(22, 18, 22, 0),
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
                 child: Row(
                   children: [
                     IconButton(
@@ -80,17 +82,27 @@ class _RehearseViewState extends State<RehearseView> {
                           const BoxConstraints.tightFor(width: 28, height: 28),
                       icon: const Icon(
                         Icons.arrow_back_ios_rounded,
-                        size: 15,
-                        color: AppColors.terracotta,
+                        size: 16,
+                        color: Color(0xFFA3A3A3),
                       ),
                     ),
                     const SizedBox(width: 8),
                     Text(
                       'rehearse the moment',
-                      style: textTheme.displayMedium?.copyWith(
-                        fontSize: 34,
-                        color: const Color(0xFF4A342B),
+                      style: textTheme.bodyMedium?.copyWith(
+                        fontSize: 14,
+                        color: const Color(0xFFA3A3A3),
+                        fontWeight: FontWeight.w400,
                         fontStyle: FontStyle.normal,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      '$currentNumber / $totalNumber',
+                      style: textTheme.bodyMedium?.copyWith(
+                        fontSize: 14,
+                        color: const Color(0xFFA3A3A3),
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                   ],
@@ -102,7 +114,7 @@ class _RehearseViewState extends State<RehearseView> {
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   itemCount: categories.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 18),
+                  separatorBuilder: (_, __) => const SizedBox(width: 24),
                   itemBuilder: (context, index) {
                     final category = categories[index];
                     final selected = category == selectedCategory;
@@ -158,9 +170,9 @@ class _RehearseViewState extends State<RehearseView> {
                       },
                     ),
                     Positioned(
-                      top: 0,
-                      bottom: 0,
-                      right: 14,
+                      top: 104,
+                      bottom: 104,
+                      right: 16,
                       child: IgnorePointer(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -168,12 +180,12 @@ class _RehearseViewState extends State<RehearseView> {
                             scenarios.length,
                             (index) => AnimatedContainer(
                               duration: const Duration(milliseconds: 350),
-                              width: 1,
-                              height: index == _active ? 58 : 5,
-                              margin: const EdgeInsets.symmetric(vertical: 3),
+                              width: 2,
+                              height: index == _active ? 24 : 24,
+                              margin: const EdgeInsets.symmetric(vertical: 4),
                               color: index == _active
                                   ? AppColors.terracotta
-                                  : const Color(0x2E4A342B),
+                                  : const Color(0xFFE6E6E6),
                             ),
                           ),
                         ),
@@ -186,7 +198,14 @@ class _RehearseViewState extends State<RehearseView> {
                 padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
                 child: Row(
                   children: [
-                    const Spacer(),
+                    Text(
+                      '2 min',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: const Color(0x80A3A3A3),
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(width: 24),
                     TextButton(
                       onPressed: () => controller.openScenario(current),
                       child: Text(
@@ -256,45 +275,56 @@ class _ScenarioSlide extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 12, 42, 12),
-      child: Center(
+      padding: const EdgeInsets.fromLTRB(24, 104, 42, 12),
+      child: Align(
+        alignment: Alignment.topLeft,
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 320),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                  width: 1.5,
-                  height: 50,
-                  color: AppColors.terracotta.withOpacity(0.7)),
-              const SizedBox(height: 14),
-              Text(
-                scenario.category.toString().toUpperCase(),
-                style: textTheme.labelMedium?.copyWith(
-                  color: AppColors.terracotta,
-                  letterSpacing: 1.2,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                scenario.title.toString(),
-                style: textTheme.displayLarge?.copyWith(
-                  fontSize: 42,
-                  color: const Color(0xFF4A342B),
-                  height: 1.1,
-                  fontStyle: FontStyle.normal,
-                ),
-              ),
-              const SizedBox(height: 14),
-              Container(width: 28, height: 0.5, color: const Color(0x334A342B)),
-              const SizedBox(height: 14),
-              Text(
-                scenario.reframe.toString(),
-                style: textTheme.bodyMedium?.copyWith(
-                  color: const Color(0x804A342B),
-                  height: 1.65,
-                  fontStyle: FontStyle.normal,
+              Container(width: 2, height: 240, color: AppColors.terracotta),
+              const SizedBox(width: 24),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      scenario.category.toString().toUpperCase(),
+                      style: textTheme.labelMedium?.copyWith(
+                        color: AppColors.terracotta,
+                        letterSpacing: 1.5,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      scenario.title.toString(),
+                      style: textTheme.displayLarge?.copyWith(
+                        fontSize: 48,
+                        color: const Color(0xFF3B2C24),
+                        height: 1.2,
+                        fontStyle: FontStyle.normal,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      width: 32,
+                      height: 1,
+                      color: const Color(0xFFE6E6E6),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      scenario.reframe.toString(),
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: const Color(0xFFA3A3A3),
+                        height: 1.6,
+                        fontSize: 16,
+                        fontStyle: FontStyle.normal,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
