@@ -38,9 +38,9 @@ class _SplashSequenceState extends State<_SplashSequence> {
   static const _textFadeInMs = 900;
 
   static const _images = <String>[
-    AppAssets.homeTalkOcean,
-    AppAssets.spaceGarden,
-    AppAssets.homeNormalStem,
+    AppAssets.splashLivingRoom,
+    AppAssets.splashWaterfall,
+    AppAssets.splashPickleball,
   ];
 
   int _current = 0;
@@ -160,31 +160,6 @@ class _SplashSequenceState extends State<_SplashSequence> {
             ),
           ),
           _BrandLockup(textVisible: _textVisible),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 44,
-            child: AnimatedOpacity(
-              opacity: _textVisible ? 1 : 0,
-              duration: const Duration(milliseconds: 600),
-              curve: Curves.easeOut,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(
-                  _images.length,
-                  (index) => AnimatedContainer(
-                    duration: const Duration(milliseconds: 350),
-                    margin: const EdgeInsets.symmetric(horizontal: 3.5),
-                    width: _current == index ? 22 : 6,
-                    height: 1.5,
-                    color: _current == index
-                        ? AppColors.terracotta
-                        : AppColors.white.withOpacity(0.4),
-                  ),
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -234,12 +209,12 @@ class _BrandLockup extends StatelessWidget {
                       offset: Offset(0, value), child: child);
                 },
                 child: Text(
-                  'Resora',
+                  'RESORA',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.cormorantGaramond(
-                    fontSize: 66,
+                    fontSize: 78,
                     fontWeight: FontWeight.w300,
-                    letterSpacing: 9.2,
+                    letterSpacing: 11.5,
                     color: const Color(0xFFFAFBF9),
                   ),
                 ),

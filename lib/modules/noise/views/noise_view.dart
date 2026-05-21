@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_icons.dart';
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
@@ -17,14 +16,6 @@ class NoiseView extends StatefulWidget {
 class _NoiseViewState extends State<NoiseView> {
   late final PageController _pageController;
   int _active = 0;
-
-  static const _thumbPool = <String>[
-    AppAssets.spaceRoom,
-    AppAssets.spaceGarden,
-    AppAssets.spaceMountain,
-    AppAssets.homeNormalStem,
-    AppAssets.homeComingSoonFlower,
-  ];
 
   @override
   void initState() {
@@ -151,7 +142,6 @@ class _NoiseViewState extends State<NoiseView> {
                       onPageChanged: (value) => setState(() => _active = value),
                       itemBuilder: (context, index) => _NoiseSlide(
                         track: tracks[index],
-                        imagePath: _thumbPool[index % _thumbPool.length],
                         onPlay: () => controller.openTrack(tracks[index]),
                       ),
                     ),
@@ -167,7 +157,7 @@ class _NoiseViewState extends State<NoiseView> {
                             (index) => AnimatedContainer(
                               duration: const Duration(milliseconds: 350),
                               width: 1,
-                              height: index == _active ? 22 : 7,
+                              height: index == _active ? 58 : 5,
                               margin: const EdgeInsets.symmetric(vertical: 3),
                               color: index == _active
                                   ? AppColors.terracotta
@@ -254,12 +244,10 @@ class _NoiseViewState extends State<NoiseView> {
 class _NoiseSlide extends StatelessWidget {
   const _NoiseSlide({
     required this.track,
-    required this.imagePath,
     required this.onPlay,
   });
 
   final AudioTrack track;
-  final String imagePath;
   final VoidCallback onPlay;
 
   @override
@@ -274,14 +262,6 @@ class _NoiseSlide extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ClipRect(
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 210,
-                  child: Image.asset(imagePath, fit: BoxFit.cover),
-                ),
-              ),
-              const SizedBox(height: 18),
               Text(
                 track.category.toUpperCase(),
                 style: textTheme.labelMedium?.copyWith(

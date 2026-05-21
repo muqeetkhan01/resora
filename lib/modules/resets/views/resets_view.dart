@@ -184,7 +184,7 @@ class _ResetsViewState extends State<ResetsView> {
                             (index) => AnimatedContainer(
                               duration: const Duration(milliseconds: 350),
                               width: 1,
-                              height: index == _active ? 22 : 7,
+                              height: index == _active ? 58 : 5,
                               margin: const EdgeInsets.symmetric(vertical: 3),
                               color: index == _active
                                   ? AppColors.terracotta

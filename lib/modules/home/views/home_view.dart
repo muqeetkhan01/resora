@@ -82,82 +82,81 @@ class _HomeCarouselState extends State<_HomeCarousel> {
 
     return Scaffold(
       backgroundColor: const Color(0xFF181210),
-      body: SafeArea(
-        child: Obx(() {
-          final slots = _specs
-              .map((spec) =>
-                  _resolveSlot(spec: spec, controller: widget.controller))
-              .toList(growable: false);
+      body: Obx(() {
+        final slots = _specs
+            .map((spec) =>
+                _resolveSlot(spec: spec, controller: widget.controller))
+            .toList(growable: false);
 
-          if (_activeIndex >= slots.length && slots.isNotEmpty) {
-            _activeIndex = 0;
-          }
+        if (_activeIndex >= slots.length && slots.isNotEmpty) {
+          _activeIndex = 0;
+        }
 
-          return Stack(
-            children: [
-              PageView.builder(
-                controller: _pageController,
-                scrollDirection: Axis.vertical,
-                itemCount: slots.length,
-                onPageChanged: (value) {
-                  setState(() => _activeIndex = value);
+        return Stack(
+          children: [
+            PageView.builder(
+              controller: _pageController,
+              scrollDirection: Axis.vertical,
+              physics: const ClampingScrollPhysics(),
+              itemCount: slots.length,
+              onPageChanged: (value) {
+                setState(() => _activeIndex = value);
+                _startAutoAdvance();
+              },
+              itemBuilder: (context, index) {
+                final slot = slots[index];
+                return _HomeSlide(slot: slot, textTheme: textTheme);
+              },
+            ),
+            Positioned(
+              left: 0,
+              top: MediaQuery.of(context).size.height * 0.15,
+              width: MediaQuery.of(context).size.width * 0.3,
+              height: MediaQuery.of(context).size.height * 0.55,
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: () {
+                  _goTo(_activeIndex - 1);
                   _startAutoAdvance();
                 },
-                itemBuilder: (context, index) {
-                  final slot = slots[index];
-                  return _HomeSlide(slot: slot, textTheme: textTheme);
+              ),
+            ),
+            Positioned(
+              right: 0,
+              top: MediaQuery.of(context).size.height * 0.15,
+              width: MediaQuery.of(context).size.width * 0.3,
+              height: MediaQuery.of(context).size.height * 0.55,
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: () {
+                  _goTo(_activeIndex + 1);
+                  _startAutoAdvance();
                 },
               ),
-              Positioned(
-                left: 0,
-                top: MediaQuery.of(context).size.height * 0.15,
-                width: MediaQuery.of(context).size.width * 0.3,
-                height: MediaQuery.of(context).size.height * 0.55,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: () {
-                    _goTo(_activeIndex - 1);
-                    _startAutoAdvance();
-                  },
-                ),
+            ),
+            Positioned(
+              top: MediaQuery.of(context).padding.top + AppSpacing.xs,
+              left: AppSpacing.lg,
+              right: AppSpacing.lg,
+              child: _TopOverlayBar(
+                onSettingsTap: widget.controller.openProfile,
               ),
-              Positioned(
-                right: 0,
-                top: MediaQuery.of(context).size.height * 0.15,
-                width: MediaQuery.of(context).size.width * 0.3,
-                height: MediaQuery.of(context).size.height * 0.55,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: () {
-                    _goTo(_activeIndex + 1);
-                    _startAutoAdvance();
-                  },
-                ),
+            ),
+            Positioned(
+              right: AppSpacing.lg,
+              bottom: MediaQuery.of(context).padding.bottom + AppSpacing.xxxl,
+              child: _SlideProgress(
+                count: slots.length,
+                activeIndex: _activeIndex,
+                onTap: (index) {
+                  _goTo(index);
+                  _startAutoAdvance();
+                },
               ),
-              Positioned(
-                top: AppSpacing.sm,
-                left: AppSpacing.lg,
-                right: AppSpacing.lg,
-                child: _TopOverlayBar(
-                  onSettingsTap: widget.controller.openProfile,
-                ),
-              ),
-              Positioned(
-                right: AppSpacing.lg,
-                bottom: AppSpacing.xxxl + 52,
-                child: _SlideProgress(
-                  count: slots.length,
-                  activeIndex: _activeIndex,
-                  onTap: (index) {
-                    _goTo(index);
-                    _startAutoAdvance();
-                  },
-                ),
-              ),
-            ],
-          );
-        }),
-      ),
+            ),
+          ],
+        );
+      }),
     );
   }
 }
