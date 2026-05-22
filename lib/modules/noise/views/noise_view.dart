@@ -145,24 +145,13 @@ class _NoiseViewState extends State<NoiseView> {
                       ),
                     ),
                     Positioned(
-                      top: 104,
-                      bottom: 104,
                       right: 16,
+                      top: 0,
+                      bottom: 0,
                       child: IgnorePointer(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(
-                            tracks.length,
-                            (index) => AnimatedContainer(
-                              duration: const Duration(milliseconds: 350),
-                              width: 2,
-                              height: 24,
-                              margin: const EdgeInsets.symmetric(vertical: 4),
-                              color: index == _active
-                                  ? AppColors.terracotta
-                                  : const Color(0xFFE6E6E6),
-                            ),
-                          ),
+                        child: _VerticalProgress(
+                          total: tracks.length,
+                          active: _active,
                         ),
                       ),
                     ),
@@ -196,80 +185,108 @@ class _NoiseSlide extends StatelessWidget {
         alignment: Alignment.topLeft,
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 320),
-          child: Row(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(width: 2, height: 240, color: AppColors.terracotta),
-              const SizedBox(width: 24),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          track.category.toUpperCase(),
-                          style: textTheme.labelMedium?.copyWith(
-                            color: AppColors.terracotta,
-                            letterSpacing: 1.5,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          track.duration,
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: const Color(0xFFA3A3A3),
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
+              Row(
+                children: [
+                  Text(
+                    track.category.toUpperCase(),
+                    style: textTheme.labelMedium?.copyWith(
+                      color: AppColors.terracotta,
+                      letterSpacing: 1.5,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
                     ),
-                    const SizedBox(height: 164),
-                    Text(
-                      track.title,
-                      style: textTheme.displayLarge?.copyWith(
-                        color: const Color(0xFF3B2C24),
-                        fontSize: 40,
-                        height: 1.2,
-                        fontStyle: FontStyle.normal,
-                      ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    track.duration,
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: const Color(0xFFA3A3A3),
+                      fontSize: 12,
                     ),
-                    const SizedBox(height: 24),
-                    Container(
-                      width: double.infinity,
-                      height: 1,
-                      color: const Color(0xFFE6E6E6),
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      track.description,
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: const Color(0xFFA3A3A3),
-                        height: 1.6,
-                        fontSize: 16,
-                        fontStyle: FontStyle.normal,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    OutlinedButton.icon(
-                      onPressed: onPlay,
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.terracotta,
-                        side: const BorderSide(color: AppColors.terracotta),
-                        fixedSize: const Size(150, 48),
-                        shape: const RoundedRectangleBorder(),
-                      ),
-                      icon: const Icon(Icons.play_arrow_rounded, size: 18),
-                      label: const Text('Play'),
-                    ),
-                  ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              Text(
+                track.title,
+                style: textTheme.displayLarge?.copyWith(
+                  color: const Color(0xFF3B2C24),
+                  fontSize: 40,
+                  height: 1.2,
+                  fontStyle: FontStyle.normal,
                 ),
+              ),
+              const SizedBox(height: 24),
+              Container(
+                width: double.infinity,
+                height: 1,
+                color: const Color(0xFFE6E6E6),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                track.description,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: const Color(0xFFA3A3A3),
+                  height: 1.6,
+                  fontSize: 16,
+                  fontStyle: FontStyle.normal,
+                ),
+              ),
+              const SizedBox(height: 24),
+              OutlinedButton.icon(
+                onPressed: onPlay,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.terracotta,
+                  side: const BorderSide(color: AppColors.terracotta),
+                  fixedSize: const Size(150, 48),
+                  shape: const RoundedRectangleBorder(),
+                ),
+                icon: const Icon(Icons.play_arrow_rounded, size: 18),
+                label: const Text('Play'),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _VerticalProgress extends StatelessWidget {
+  const _VerticalProgress({
+    required this.total,
+    required this.active,
+  });
+
+  final int total;
+  final int active;
+
+  @override
+  Widget build(BuildContext context) {
+    const maxBars = 6;
+    final bars = total <= 1 ? 2 : total.clamp(2, maxBars);
+    final mapped = total <= 1
+        ? 0
+        : ((active / (total - 1)) * (bars - 1)).round().clamp(0, bars - 1);
+
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: List.generate(bars, (index) {
+          return Padding(
+            padding: EdgeInsets.only(bottom: index == bars - 1 ? 0 : 8),
+            child: Container(
+              width: 2,
+              height: 24,
+              color: index == mapped
+                  ? AppColors.terracotta
+                  : const Color(0xFFE6E6E6),
+            ),
+          );
+        }),
       ),
     );
   }

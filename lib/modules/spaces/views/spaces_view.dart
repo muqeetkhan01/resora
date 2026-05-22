@@ -241,14 +241,14 @@ class _SpaceImage extends StatelessWidget {
     final fallback = Image.asset(
       AppAssets.homeComingSoonFlower,
       fit: BoxFit.cover,
-      alignment: Alignment.center,
+      alignment: Alignment.topCenter,
     );
 
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
       return Image.network(
         imagePath,
         fit: BoxFit.cover,
-        alignment: Alignment.center,
+        alignment: Alignment.topCenter,
         errorBuilder: (_, __, ___) => fallback,
       );
     }
@@ -256,7 +256,7 @@ class _SpaceImage extends StatelessWidget {
     return Image.asset(
       imagePath,
       fit: BoxFit.cover,
-      alignment: Alignment.center,
+      alignment: Alignment.topCenter,
       errorBuilder: (_, __, ___) => fallback,
     );
   }

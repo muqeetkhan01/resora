@@ -81,9 +81,7 @@ class _ChatContent extends GetView<ChatController> {
                 (controller.isTyping.value ? 1 : 0);
 
             if (showWatermark) {
-              return _TalkEmptyStateWithPrompt(
-                line: controller.sessionLine,
-              );
+              return const SizedBox.expand();
             }
 
             return ListView.builder(
@@ -189,23 +187,6 @@ class _ChatHeader extends StatelessWidget {
   }
 }
 
-class _TalkEmptyStateWithPrompt extends StatelessWidget {
-  const _TalkEmptyStateWithPrompt({required this.line});
-
-  final String line;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      fit: StackFit.expand,
-      children: <Widget>[
-        const _TalkEmptyState(),
-        _ChatPromptState(line: line),
-      ],
-    );
-  }
-}
-
 class _ChatRouteArgs {
   const _ChatRouteArgs({
     this.ritualFeature,
@@ -221,75 +202,6 @@ class _ChatRouteArgs {
     }
 
     return const _ChatRouteArgs();
-  }
-}
-
-class _TalkEmptyState extends StatelessWidget {
-  const _TalkEmptyState();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'R',
-        style: Theme.of(context).textTheme.displayLarge?.copyWith(
-              fontSize: 160,
-              height: 1,
-              color: AppColors.primary.withOpacity(0.045),
-              letterSpacing: -4,
-            ),
-      ),
-    );
-  }
-}
-
-class _ChatPromptState extends StatelessWidget {
-  const _ChatPromptState({required this.line});
-
-  final String line;
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Padding(
-        padding: const EdgeInsets.only(
-          left: AppSpacing.md,
-          right: AppSpacing.md,
-          bottom: AppSpacing.xl,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'resora',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.terracotta,
-                    letterSpacing: 2,
-                    fontWeight: FontWeight.w400,
-                  ),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              line,
-              style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                    color: AppColors.primary,
-                    fontSize: 40,
-                    height: 1.15,
-                    fontStyle: FontStyle.normal,
-                  ),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            Container(
-              width: 28,
-              height: 0.8,
-              color: AppColors.primary.withOpacity(0.2),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }
 
@@ -361,49 +273,40 @@ class _ChatInputBar extends GetView<ChatController> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.canvas,
-                    border:
-                        Border.all(color: AppColors.primary.withOpacity(0.72)),
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
+                child: TextField(
+                  controller: controller.inputController,
+                  minLines: 1,
+                  maxLines: 4,
+                  maxLength: ChatController.maxCharacters,
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(
+                      ChatController.maxCharacters,
+                      maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                    ),
+                  ],
+                  textInputAction: TextInputAction.send,
+                  onSubmitted: (_) => controller.sendMessage(),
+                  onTapOutside: (_) =>
+                      FocusManager.instance.primaryFocus?.unfocus(),
+                  cursorColor: AppColors.primary,
+                  style: textTheme.bodyLarge?.copyWith(
+                    color: AppColors.primary,
+                    fontStyle: FontStyle.normal,
                   ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.lg,
-                    vertical: AppSpacing.xs,
-                  ),
-                  child: TextField(
-                    controller: controller.inputController,
-                    minLines: 1,
-                    maxLines: 4,
-                    maxLength: ChatController.maxCharacters,
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(
-                        ChatController.maxCharacters,
-                        maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                      ),
-                    ],
-                    textInputAction: TextInputAction.send,
-                    onSubmitted: (_) => controller.sendMessage(),
-                    onTapOutside: (_) =>
-                        FocusManager.instance.primaryFocus?.unfocus(),
-                    cursorColor: AppColors.primary,
-                    style: textTheme.bodyLarge?.copyWith(
-                      color: AppColors.primary,
+                  decoration: InputDecoration(
+                    isDense: true,
+                    border: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    counterText: '',
+                    hintText: 'Share what\'s happening...',
+                    hintStyle: textTheme.bodyLarge?.copyWith(
+                      color: AppColors.placeholder,
                       fontStyle: FontStyle.normal,
                     ),
-                    decoration: InputDecoration(
-                      isDense: true,
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      counterText: '',
-                      hintText: 'Share what\'s happening...',
-                      hintStyle: textTheme.bodyLarge?.copyWith(
-                        color: AppColors.placeholder,
-                        fontStyle: FontStyle.normal,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 10,
                     ),
                   ),
                 ),
@@ -427,6 +330,10 @@ class _ChatInputBar extends GetView<ChatController> {
                 ),
               ),
             ],
+          ),
+          Container(
+            height: 1,
+            color: AppColors.primary.withOpacity(0.15),
           ),
           if (showWarning)
             Padding(
@@ -599,13 +506,10 @@ class _MessageAvatar extends StatelessWidget {
                 size: 16,
                 color: AppColors.primary,
               )
-            : Text(
-                'R',
-                style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                      fontSize: 18,
-                      color: AppColors.primary,
-                      height: 1,
-                    ),
+            : const Icon(
+                AppIcons.chatFilled,
+                size: 15,
+                color: AppColors.primary,
               ),
       ),
     );

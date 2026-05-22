@@ -176,24 +176,13 @@ class _ResetsViewState extends State<ResetsView> {
                       },
                     ),
                     Positioned(
-                      top: 104,
-                      bottom: 104,
                       right: 16,
+                      top: 0,
+                      bottom: 0,
                       child: IgnorePointer(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(
-                            options.length,
-                            (index) => AnimatedContainer(
-                              duration: const Duration(milliseconds: 350),
-                              width: 2,
-                              height: 24,
-                              margin: const EdgeInsets.symmetric(vertical: 4),
-                              color: index == _active
-                                  ? AppColors.terracotta
-                                  : const Color(0xFFE6E6E6),
-                            ),
-                          ),
+                        child: _VerticalProgress(
+                          total: options.length,
+                          active: _active,
                         ),
                       ),
                     ),
@@ -297,57 +286,85 @@ class _ResetSlide extends StatelessWidget {
         alignment: Alignment.topLeft,
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 320),
-          child: Row(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(width: 2, height: 240, color: AppColors.terracotta),
-              const SizedBox(width: 24),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      option.category.toUpperCase(),
-                      style: textTheme.labelMedium?.copyWith(
-                        color: AppColors.terracotta,
-                        letterSpacing: 1.5,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        fontStyle: FontStyle.normal,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      option.title,
-                      style: textTheme.displayLarge?.copyWith(
-                        fontSize: 48,
-                        color: const Color(0xFF3B2C24),
-                        height: 1.2,
-                        fontStyle: FontStyle.normal,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Container(
-                      width: 32,
-                      height: 1,
-                      color: const Color(0xFFE6E6E6),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      option.subtitle,
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: const Color(0xFFA3A3A3),
-                        height: 1.6,
-                        fontSize: 16,
-                        fontStyle: FontStyle.normal,
-                      ),
-                    ),
-                  ],
+              Text(
+                option.category.toUpperCase(),
+                style: textTheme.labelMedium?.copyWith(
+                  color: AppColors.terracotta,
+                  letterSpacing: 1.5,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  fontStyle: FontStyle.normal,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                option.title,
+                style: textTheme.displayLarge?.copyWith(
+                  fontSize: 48,
+                  color: const Color(0xFF3B2C24),
+                  height: 1.2,
+                  fontStyle: FontStyle.normal,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                width: 32,
+                height: 1,
+                color: const Color(0xFFE6E6E6),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                option.subtitle,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: const Color(0xFFA3A3A3),
+                  height: 1.6,
+                  fontSize: 16,
+                  fontStyle: FontStyle.normal,
                 ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _VerticalProgress extends StatelessWidget {
+  const _VerticalProgress({
+    required this.total,
+    required this.active,
+  });
+
+  final int total;
+  final int active;
+
+  @override
+  Widget build(BuildContext context) {
+    const maxBars = 6;
+    final bars = total <= 1 ? 2 : total.clamp(2, maxBars);
+    final mapped = total <= 1
+        ? 0
+        : ((active / (total - 1)) * (bars - 1)).round().clamp(0, bars - 1);
+
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: List.generate(bars, (index) {
+          return Padding(
+            padding: EdgeInsets.only(bottom: index == bars - 1 ? 0 : 8),
+            child: Container(
+              width: 2,
+              height: 24,
+              color: index == mapped
+                  ? AppColors.terracotta
+                  : const Color(0xFFE6E6E6),
+            ),
+          );
+        }),
       ),
     );
   }
