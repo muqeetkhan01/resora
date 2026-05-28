@@ -67,7 +67,6 @@ class _ResetsViewState extends State<ResetsView> {
             });
           }
 
-          final current = options[_active];
           final categories = controller.categories;
           final selectedCategory = controller.selectedCategory.value;
           final currentNumber = (_active + 1).toString().padLeft(2, '0');
@@ -172,7 +171,14 @@ class _ResetsViewState extends State<ResetsView> {
                       },
                       itemBuilder: (context, index) {
                         final option = options[index];
-                        return _ResetSlide(option: option);
+                        return _ResetSlide(
+                          option: option,
+                          onBeginSession: () => controller.openReset(option),
+                          onOpenFilters: () => _showCategorySheet(
+                            context,
+                            controller: controller,
+                          ),
+                        );
                       },
                     ),
                     Positioned(
@@ -184,46 +190,6 @@ class _ResetsViewState extends State<ResetsView> {
                           total: options.length,
                           active: _active,
                         ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-                child: Row(
-                  children: [
-                    Text(
-                      current.duration,
-                      style: textTheme.bodySmall?.copyWith(
-                        color: const Color(0x804A342B),
-                        letterSpacing: 1,
-                      ),
-                    ),
-                    const Spacer(),
-                    TextButton(
-                      onPressed: () => controller.openReset(current),
-                      child: Text(
-                        'BEGIN SESSION',
-                        style: textTheme.bodySmall?.copyWith(
-                          color: AppColors.terracotta,
-                          letterSpacing: 2,
-                          decoration: TextDecoration.underline,
-                          decorationColor: AppColors.terracotta,
-                          decorationThickness: 1,
-                        ),
-                      ),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      onPressed: () => _showCategorySheet(
-                        context,
-                        controller: controller,
-                      ),
-                      icon: const Icon(
-                        AppIcons.filter,
-                        size: 18,
-                        color: AppColors.terracotta,
                       ),
                     ),
                   ],
@@ -272,9 +238,15 @@ class _ResetsViewState extends State<ResetsView> {
 }
 
 class _ResetSlide extends StatelessWidget {
-  const _ResetSlide({required this.option});
+  const _ResetSlide({
+    required this.option,
+    required this.onBeginSession,
+    required this.onOpenFilters,
+  });
 
   final ResetOption option;
+  final VoidCallback onBeginSession;
+  final VoidCallback onOpenFilters;
 
   @override
   Widget build(BuildContext context) {
@@ -287,6 +259,7 @@ class _ResetSlide extends StatelessWidget {
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 320),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
@@ -324,6 +297,42 @@ class _ResetSlide extends StatelessWidget {
                   fontSize: 16,
                   fontStyle: FontStyle.normal,
                 ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Text(
+                    option.duration,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: const Color(0x80A3A3A3),
+                      letterSpacing: 1,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(width: 24),
+                  TextButton(
+                    onPressed: onBeginSession,
+                    child: Text(
+                      'BEGIN SESSION',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: AppColors.terracotta,
+                        letterSpacing: 2,
+                        decoration: TextDecoration.underline,
+                        decorationColor: AppColors.terracotta,
+                        decorationThickness: 1,
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: onOpenFilters,
+                    icon: const Icon(
+                      AppIcons.filter,
+                      size: 18,
+                      color: AppColors.terracotta,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

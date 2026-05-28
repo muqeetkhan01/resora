@@ -1,90 +1,172 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/app_spacing.dart';
-import '../../../theme/app_colors.dart';
-import '../../../widgets/centered_back_header.dart';
+import 'widgets/settings_flow_widgets.dart';
 
-class HelpSupportView extends StatelessWidget {
+class HelpSupportView extends StatefulWidget {
   const HelpSupportView({super.key});
 
   @override
+  State<HelpSupportView> createState() => _HelpSupportViewState();
+}
+
+class _HelpSupportViewState extends State<HelpSupportView> {
+  String? _expanded;
+
+  static const _items = [
+    _SupportItem(
+      'faq',
+      'frequently asked questions',
+      'Answers to common questions.',
+      'Content for frequently asked questions is being finalized by the Resora team. Check back soon.',
+    ),
+    _SupportItem(
+      'contact',
+      'contact us',
+      'Reach the Resora team directly.',
+      'To reach the Resora team directly, email us at hello@resora.com. We respond within one business day.',
+    ),
+    _SupportItem(
+      'feedback',
+      'send feedback',
+      'Tell us what you think.',
+      'Your feedback shapes Resora. Send notes, requests, or thoughts directly to the team.',
+    ),
+    _SupportItem(
+      'issue',
+      'report an issue',
+      'Something not working properly?',
+      'Please describe the issue and what you were doing when it happened so the team can look into it.',
+    ),
+  ];
+
+  @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    const items = [
-      (
-        'frequently asked questions',
-        'Browse answers to the most common questions about Resora.',
-      ),
-      (
-        'contact us',
-        'Reach the Resora team directly. We aim to respond within 24 hours.',
-      ),
-      (
-        'send feedback',
-        'Share a thought, flag something, or tell us what you love.',
-      ),
-      (
-        'report a bug',
-        'Something not working right? Let us know.',
-      ),
-    ];
-
-    return Scaffold(
-      backgroundColor: AppColors.canvas,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg,
-            AppSpacing.lg,
-            AppSpacing.lg,
-            AppSpacing.xl,
+    return SettingsPageFrame(
+      scrollable: false,
+      children: [
+        const SettingsTopBack(title: ''),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+          child: Text(
+            'help & support',
+            style: SettingsFlowText.display(context, size: 32),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+          child: Text(
+            'We are here if you need us.\nEverything below goes directly to the Resora team.',
+            style: SettingsFlowText.body(context, size: 13),
+          ),
+        ),
+        const SettingsRule(horizontal: 0),
+        Expanded(
+          child: ListView(
             children: [
-              const CenteredBackHeader(title: 'help & support'),
-              const SizedBox(height: AppSpacing.lg),
-              Text(
-                'We are here if you need us. Everything below goes directly to the Resora team.',
-                style: textTheme.bodyMedium,
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              ...items.map(
-                (item) => Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              ..._items.map((item) {
+                final expanded = _expanded == item.id;
+                return Column(
                   children: [
-                    TextButton(
-                      onPressed: () {},
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        alignment: Alignment.centerLeft,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    InkWell(
+                      onTap: () => setState(
+                        () => _expanded = expanded ? null : item.id,
                       ),
-                      child: Text(
-                        item.$1,
-                        style: textTheme.titleMedium?.copyWith(
-                          color: AppColors.primary,
-                          decoration: TextDecoration.underline,
-                          decorationColor: AppColors.primary.withOpacity(0.4),
+                      splashColor: Colors.transparent,
+                      highlightColor: SettingsFlowColors.border,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 14,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        item.label,
+                                        style: SettingsFlowText.title(
+                                          context,
+                                          size: 14,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        item.subtitle,
+                                        style: SettingsFlowText.body(
+                                          context,
+                                          size: 11,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                AnimatedRotation(
+                                  turns: expanded ? 0.25 : 0,
+                                  duration: const Duration(milliseconds: 180),
+                                  child: Text(
+                                    '›',
+                                    style: SettingsFlowText.title(
+                                      context,
+                                      size: 18,
+                                    ).copyWith(
+                                      color: SettingsFlowColors.terracotta,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            AnimatedCrossFade(
+                              duration: const Duration(milliseconds: 180),
+                              crossFadeState: expanded
+                                  ? CrossFadeState.showSecond
+                                  : CrossFadeState.showFirst,
+                              firstChild: const SizedBox.shrink(),
+                              secondChild: Padding(
+                                padding:
+                                    const EdgeInsets.only(top: 10, bottom: 4),
+                                child: Text(
+                                  item.content,
+                                  style: SettingsFlowText.body(
+                                    context,
+                                    size: 12,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.xs),
-                    Text(item.$2, style: textTheme.bodySmall),
-                    const SizedBox(height: AppSpacing.md),
-                    const Divider(height: 1),
-                    const SizedBox(height: AppSpacing.md),
+                    const SettingsRule(horizontal: 0),
                   ],
+                );
+              }),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
+                child: Text(
+                  'version 2.1.0 · the resora team',
+                  style: SettingsFlowText.caps(context, size: 10),
                 ),
               ),
-              const SizedBox(height: AppSpacing.lg),
-              Text('version 2.1.0 · the resora team',
-                  style: textTheme.bodySmall),
             ],
           ),
         ),
-      ),
+      ],
     );
   }
+}
+
+class _SupportItem {
+  const _SupportItem(this.id, this.label, this.subtitle, this.content);
+
+  final String id;
+  final String label;
+  final String subtitle;
+  final String content;
 }

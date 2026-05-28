@@ -72,7 +72,7 @@ class _ChatContent extends GetView<ChatController> {
           rootTab: rootTab,
           onBack: onBack,
         ),
-        const SizedBox(height: AppSpacing.md),
+        const SizedBox(height: AppSpacing.sm),
         Expanded(
           child: Obx(() {
             final showWatermark =
@@ -81,7 +81,9 @@ class _ChatContent extends GetView<ChatController> {
                 (controller.isTyping.value ? 1 : 0);
 
             if (showWatermark) {
-              return const SizedBox.expand();
+              return _EmptyStatePrompt(
+                line: controller.sessionLine.toLowerCase(),
+              );
             }
 
             return ListView.builder(
@@ -91,7 +93,7 @@ class _ChatContent extends GetView<ChatController> {
               ),
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               padding: const EdgeInsets.only(
-                top: AppSpacing.sm,
+                top: AppSpacing.xs,
                 bottom: AppSpacing.md,
               ),
               itemCount: totalCount,
@@ -136,52 +138,70 @@ class _ChatHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final chatController = Get.find<ChatController>();
-    final textTheme = Theme.of(context).textTheme;
+    if (rootTab) {
+      return const SizedBox(height: AppSpacing.lg);
+    }
 
     return Padding(
       padding: const EdgeInsets.only(top: AppSpacing.lg),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (!rootTab)
-            IconButton(
-              onPressed: onBack,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints.tightFor(width: 28, height: 28),
-              icon: const Icon(
-                Icons.arrow_back_ios_rounded,
-                size: 15,
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: IconButton(
+          onPressed: onBack,
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints.tightFor(width: 28, height: 28),
+          icon: const Icon(
+            Icons.arrow_back_ios_rounded,
+            size: 15,
+            color: AppColors.terracotta,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _EmptyStatePrompt extends StatelessWidget {
+  const _EmptyStatePrompt({required this.line});
+
+  final String line;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.sm,
+        0,
+        AppSpacing.sm,
+        AppSpacing.lg,
+      ),
+      child: Align(
+        alignment: const Alignment(-1, 0.3),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'resora',
+              style: textTheme.bodySmall?.copyWith(
                 color: AppColors.terracotta,
+                letterSpacing: 1.5,
+                fontWeight: FontWeight.w400,
               ),
             ),
-          if (!rootTab) const SizedBox(width: AppSpacing.sm),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'resora',
-                  style: textTheme.bodySmall?.copyWith(
-                    color: AppColors.terracotta,
-                    letterSpacing: 1.5,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  chatController.sessionLine.toLowerCase(),
-                  style: textTheme.displayLarge?.copyWith(
-                    fontSize: 30,
-                    height: 1.02,
-                  ),
-                  maxLines: 1,
-                  softWrap: false,
-                ),
-              ],
+            const SizedBox(height: 14),
+            Text(
+              line,
+              style: textTheme.displayLarge?.copyWith(
+                fontSize: 48,
+                height: 1.1,
+              ),
+              maxLines: 2,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -372,14 +392,9 @@ class _MessageBubble extends StatelessWidget {
       child: Row(
         mainAxisAlignment:
             isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          if (!isUser) ...[
-            const _MessageAvatar(isUser: false),
-            const SizedBox(width: AppSpacing.xs),
-          ],
           ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 290),
+            constraints: const BoxConstraints(maxWidth: 320),
             child: Column(
               crossAxisAlignment:
                   isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -390,6 +405,7 @@ class _MessageBubble extends StatelessWidget {
                     speaker,
                     style: textTheme.bodySmall?.copyWith(
                       color: AppColors.placeholder,
+                      letterSpacing: 0.2,
                     ),
                   ),
                 ),
@@ -399,30 +415,32 @@ class _MessageBubble extends StatelessWidget {
                     vertical: 14,
                   ),
                   decoration: BoxDecoration(
-                    color: isUser ? AppColors.primary : AppColors.white,
+                    color: isUser
+                        ? AppColors.terracotta.withOpacity(0.08)
+                        : AppColors.white,
                     borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(16),
                       topRight: const Radius.circular(16),
-                      bottomLeft: Radius.circular(isUser ? 16 : 4),
-                      bottomRight: Radius.circular(isUser ? 4 : 16),
+                      bottomLeft: Radius.circular(isUser ? 16 : 6),
+                      bottomRight: Radius.circular(isUser ? 6 : 16),
                     ),
-                    border: isUser ? null : Border.all(color: AppColors.line),
+                    border: Border.all(
+                      color: isUser
+                          ? AppColors.terracotta.withOpacity(0.25)
+                          : AppColors.line,
+                    ),
                   ),
                   child: Text(
                     message.text,
                     style: textTheme.bodyLarge?.copyWith(
-                      color: isUser ? AppColors.white : AppColors.text,
-                      height: 1.75,
+                      color: AppColors.text,
+                      height: 1.68,
                     ),
                   ),
                 ),
               ],
             ),
           ),
-          if (isUser) ...[
-            const SizedBox(width: AppSpacing.xs),
-            const _MessageAvatar(isUser: true),
-          ],
         ],
       ),
     );
@@ -439,10 +457,8 @@ class _TypingBubble extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.md),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          const _MessageAvatar(isUser: false),
-          const SizedBox(width: AppSpacing.xs),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -479,38 +495,6 @@ class _TypingBubble extends StatelessWidget {
             ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _MessageAvatar extends StatelessWidget {
-  const _MessageAvatar({required this.isUser});
-
-  final bool isUser;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 28,
-      height: 28,
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        shape: BoxShape.circle,
-        border: Border.all(color: AppColors.line),
-      ),
-      child: Center(
-        child: isUser
-            ? const Icon(
-                Icons.person_outline_rounded,
-                size: 16,
-                color: AppColors.primary,
-              )
-            : const Icon(
-                AppIcons.chatFilled,
-                size: 15,
-                color: AppColors.primary,
-              ),
       ),
     );
   }

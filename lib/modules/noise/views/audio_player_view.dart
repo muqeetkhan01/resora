@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
@@ -200,7 +201,9 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
     final scene = _PlayerScene.fromTrack(track);
     final textTheme = Theme.of(context).textTheme;
 
-    if (_args.ritualFeature == RitualWrapFeature.asmr) {
+    final useMuseumMinimal =
+        _args.minimal || _args.ritualFeature == RitualWrapFeature.asmr;
+    if (useMuseumMinimal) {
       return PopScope(
         canPop: false,
         onPopInvoked: (didPop) {
@@ -209,52 +212,20 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
           }
         },
         child: Scaffold(
-          backgroundColor: const Color(0xFF143C35),
-          body: _QuietNoisePlayer(
-            track: track,
+          backgroundColor: Colors.black,
+          body: _MuseumMinimalPlayer(
             imagePath: _args.imagePath,
             progress: _progress,
             positionLabel: _formatDuration(_position),
-            durationLabel: _duration > Duration.zero
-                ? _formatDuration(_duration)
-                : track.duration,
+            remainingLabel: _remainingDurationLabel(track.duration),
             isPlaying: _isPlaying,
             isLoading: _isLoading,
             errorText: _loadError,
             onBack: _closePlayer,
             onPlayPause: _togglePlayback,
+            onSeekBackward: () => _seekRelative(-15),
+            onSeekForward: () => _seekRelative(15),
             onSeek: _seekToFraction,
-          ),
-        ),
-      );
-    }
-
-    if (_args.minimal) {
-      return PopScope(
-        canPop: false,
-        onPopInvoked: (didPop) {
-          if (!didPop) {
-            _closePlayer();
-          }
-        },
-        child: Scaffold(
-          backgroundColor: AppColors.canvas,
-          body: AnimatedBuilder(
-            animation: _controller,
-            builder: (context, _) {
-              return _MinimalAudioPlayer(
-                imagePath: _args.imagePath,
-                progress: _progress,
-                isPlaying: _isPlaying,
-                isLoading: _isLoading,
-                errorText: _loadError,
-                onBack: _closePlayer,
-                onPlayPause: _togglePlayback,
-                onSeekBackward: () => _seekRelative(-10),
-                onSeekForward: () => _seekRelative(10),
-                onSeek: _seekToFraction,
-              );
-            },
           ),
         ),
       );
@@ -298,25 +269,36 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
                             IconButton(
                               onPressed: _closePlayer,
                               icon: const Icon(
-                                AppIcons.back,
-                                color: AppColors.white,
+                                AppIcons.close,
+                                color: AppColors.terracotta,
                               ),
                             ),
                             const Spacer(),
-                            Icon(
-                              Icons.favorite_border_rounded,
-                              color: AppColors.white.withOpacity(0.84),
-                              size: 20,
+                            Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: AppColors.terracotta.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: AppColors.terracotta.withOpacity(0.34),
+                                ),
+                              ),
+                              child: const Icon(
+                                CupertinoIcons.slider_horizontal_3,
+                                color: AppColors.terracotta,
+                                size: 18,
+                              ),
                             ),
                           ],
                         ),
-                        const Spacer(flex: 3),
+                        const Spacer(flex: 2),
                         _CenterMotion(
                           scene: scene,
                           pulse: pulse,
                           animationValue: _controller.value,
                         ),
-                        const SizedBox(height: AppSpacing.xxxl),
+                        const SizedBox(height: AppSpacing.xl),
                         Text(
                           track.title,
                           style: textTheme.displayMedium?.copyWith(
@@ -334,7 +316,7 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
                           ),
                           textAlign: TextAlign.center,
                         ),
-                        const Spacer(flex: 4),
+                        const SizedBox(height: AppSpacing.xl),
                         _ProgressSection(
                           progress: _progress,
                           positionLabel: _formatDuration(_position),
@@ -345,23 +327,13 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
                         ),
                         const SizedBox(height: AppSpacing.xl),
                         _TransportRow(
-                          scene: scene,
-                          pulse: pulse,
                           isPlaying: _isPlaying,
                           isLoading: _isLoading,
-                          onPrevious: () => _seekRelative(-10),
+                          onPrevious: () => _seekRelative(-15),
                           onPlayPause: _togglePlayback,
-                          onNext: () => _seekRelative(10),
+                          onNext: () => _seekRelative(15),
                         ),
-                        const SizedBox(height: AppSpacing.lg),
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            _BottomMeta(icon: Icons.timer_outlined),
-                            _BottomMeta(icon: Icons.repeat_rounded),
-                            _BottomMeta(icon: Icons.close_rounded),
-                          ],
-                        ),
+                        const SizedBox(height: AppSpacing.xl),
                       ],
                     ),
                   ),
@@ -417,208 +389,14 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
 
     return '$minutes:$seconds';
   }
-}
 
-class _QuietNoisePlayer extends StatelessWidget {
-  const _QuietNoisePlayer({
-    required this.track,
-    required this.imagePath,
-    required this.progress,
-    required this.positionLabel,
-    required this.durationLabel,
-    required this.isPlaying,
-    required this.isLoading,
-    required this.errorText,
-    required this.onBack,
-    required this.onPlayPause,
-    required this.onSeek,
-  });
+  String _remainingDurationLabel(String fallbackDuration) {
+    if (_duration <= Duration.zero) {
+      return '-$fallbackDuration';
+    }
 
-  final AudioTrack track;
-  final String imagePath;
-  final double progress;
-  final String positionLabel;
-  final String durationLabel;
-  final bool isPlaying;
-  final bool isLoading;
-  final String? errorText;
-  final VoidCallback onBack;
-  final VoidCallback onPlayPause;
-  final ValueChanged<double> onSeek;
-
-  @override
-  Widget build(BuildContext context) {
-    final slider = progress.clamp(0.0, 1.0);
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        Image.asset(
-          imagePath,
-          fit: BoxFit.cover,
-          alignment: Alignment.center,
-        ),
-        Positioned.fill(
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  const Color(0xFF143C35).withOpacity(0.95),
-                  const Color(0xFF143C35).withOpacity(0.42),
-                  const Color(0xFF143C35).withOpacity(0.58),
-                  const Color(0xFF143C35).withOpacity(0.9),
-                ],
-              ),
-            ),
-          ),
-        ),
-        SafeArea(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.md,
-                  AppSpacing.md,
-                  AppSpacing.md,
-                  AppSpacing.sm,
-                ),
-                child: Row(
-                  children: [
-                    IconButton(
-                      onPressed: onBack,
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                          color: AppColors.white, size: 26),
-                    ),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Text(
-                            track.title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context)
-                                .textTheme
-                                .displaySmall
-                                ?.copyWith(
-                                  color: AppColors.white,
-                                  fontSize: 20,
-                                  fontStyle: FontStyle.normal,
-                                ),
-                          ),
-                          Text(
-                            track.category,
-                            style:
-                                Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: AppColors.white.withOpacity(0.82),
-                                      letterSpacing: 0.3,
-                                    ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.more_horiz_rounded,
-                          color: AppColors.white, size: 32),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                child: Row(
-                  children: [
-                    Text(
-                      positionLabel,
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: AppColors.white,
-                            fontSize: 34,
-                          ),
-                    ),
-                    const SizedBox(width: AppSpacing.md),
-                    Expanded(
-                      child: SliderTheme(
-                        data: SliderTheme.of(context).copyWith(
-                          trackHeight: 2,
-                          activeTrackColor: const Color(0xFF0A1713),
-                          inactiveTrackColor:
-                              const Color(0xFF0A1713).withOpacity(0.4),
-                          thumbColor: AppColors.white,
-                          thumbShape: const RoundSliderThumbShape(
-                              enabledThumbRadius: 11),
-                          overlayShape: SliderComponentShape.noOverlay,
-                        ),
-                        child: Slider(
-                          min: 0,
-                          max: 1,
-                          value: slider,
-                          onChanged: onSeek,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.md),
-                    Text(
-                      '-$durationLabel',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: AppColors.white,
-                            fontSize: 34,
-                          ),
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
-                    Text(
-                      '1x',
-                      style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                            color: AppColors.white,
-                            fontSize: 30,
-                            fontStyle: FontStyle.normal,
-                          ),
-                    ),
-                  ],
-                ),
-              ),
-              const Spacer(),
-              if (errorText != null)
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-                  child: Text(
-                    errorText!,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.white,
-                        ),
-                  ),
-                ),
-              const SizedBox(height: AppSpacing.lg),
-              GestureDetector(
-                onTap: onPlayPause,
-                child: Container(
-                  width: 84,
-                  height: 84,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.white.withOpacity(0.18),
-                    border:
-                        Border.all(color: AppColors.white.withOpacity(0.38)),
-                  ),
-                  child: Icon(
-                    isLoading
-                        ? Icons.hourglass_empty_rounded
-                        : (isPlaying
-                            ? Icons.pause_rounded
-                            : Icons.play_arrow_rounded),
-                    size: 38,
-                    color: AppColors.white,
-                  ),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.xxxl),
-            ],
-          ),
-        ),
-      ],
-    );
+    final remaining = _clampPosition(_duration - _position);
+    return '-${_formatDuration(remaining)}';
   }
 }
 
@@ -662,10 +440,12 @@ class _AudioPlayerArgs {
   );
 }
 
-class _MinimalAudioPlayer extends StatelessWidget {
-  const _MinimalAudioPlayer({
+class _MuseumMinimalPlayer extends StatelessWidget {
+  const _MuseumMinimalPlayer({
     required this.imagePath,
     required this.progress,
+    required this.positionLabel,
+    required this.remainingLabel,
     required this.isPlaying,
     required this.isLoading,
     required this.errorText,
@@ -678,6 +458,8 @@ class _MinimalAudioPlayer extends StatelessWidget {
 
   final String imagePath;
   final double progress;
+  final String positionLabel;
+  final String remainingLabel;
   final bool isPlaying;
   final bool isLoading;
   final String? errorText;
@@ -689,6 +471,8 @@ class _MinimalAudioPlayer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final slider = progress.clamp(0.0, 1.0);
+
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -701,13 +485,12 @@ class _MinimalAudioPlayer extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Colors.transparent,
-                AppColors.canvas.withOpacity(0.14),
-                AppColors.canvas.withOpacity(0.68),
-                AppColors.canvas.withOpacity(0.94),
-                AppColors.canvas,
+                Colors.black.withOpacity(0.02),
+                Colors.black.withOpacity(0.16),
+                Colors.black.withOpacity(0.28),
+                Colors.black.withOpacity(0.44),
               ],
-              stops: const [0.0, 0.48, 0.72, 0.9, 1.0],
+              stops: const [0.0, 0.6, 0.82, 1.0],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
@@ -719,7 +502,7 @@ class _MinimalAudioPlayer extends StatelessWidget {
               AppSpacing.lg,
               AppSpacing.md,
               AppSpacing.lg,
-              AppSpacing.xl,
+              44,
             ),
             child: Column(
               children: [
@@ -728,23 +511,93 @@ class _MinimalAudioPlayer extends StatelessWidget {
                   child: IconButton(
                     onPressed: onBack,
                     padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
+                    constraints: const BoxConstraints.tightFor(
+                      width: 32,
+                      height: 32,
+                    ),
                     icon: const Icon(
-                      AppIcons.back,
+                      AppIcons.close,
                       color: AppColors.white,
+                      size: 20,
                     ),
                   ),
                 ),
                 const Spacer(),
-                _MinimalAudioDock(
-                  progress: progress,
-                  isPlaying: isPlaying,
-                  isLoading: isLoading,
-                  errorText: errorText,
-                  onPlayPause: onPlayPause,
-                  onSeekBackward: onSeekBackward,
-                  onSeekForward: onSeekForward,
-                  onSeek: onSeek,
+                Row(
+                  children: [
+                    Text(
+                      positionLabel,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            letterSpacing: 0.2,
+                          ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      remainingLabel,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            letterSpacing: 0.2,
+                          ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                SliderTheme(
+                  data: SliderTheme.of(context).copyWith(
+                    trackHeight: 1,
+                    activeTrackColor: AppColors.white,
+                    inactiveTrackColor: AppColors.white.withOpacity(0.22),
+                    thumbColor: AppColors.terracotta,
+                    thumbShape:
+                        const RoundSliderThumbShape(enabledThumbRadius: 6),
+                    overlayShape: SliderComponentShape.noOverlay,
+                  ),
+                  child: Slider(
+                    min: 0,
+                    max: 1,
+                    value: slider,
+                    onChanged: onSeek,
+                  ),
+                ),
+                if (errorText != null) ...[
+                  const SizedBox(height: AppSpacing.md),
+                  Text(
+                    errorText!,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.terracotta,
+                        ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+                const SizedBox(height: AppSpacing.lg),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _MinimalTransportButton(
+                      backward: true,
+                      onTap: onSeekBackward,
+                    ),
+                    const SizedBox(width: AppSpacing.xl),
+                    _TransportGlyph(
+                      icon: isLoading
+                          ? Icons.hourglass_top_rounded
+                          : (isPlaying
+                              ? Icons.pause_rounded
+                              : Icons.play_arrow_rounded),
+                      onTap: onPlayPause,
+                      iconSize: 36,
+                    ),
+                    const SizedBox(width: AppSpacing.xl),
+                    _MinimalTransportButton(
+                      backward: false,
+                      onTap: onSeekForward,
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -755,152 +608,63 @@ class _MinimalAudioPlayer extends StatelessWidget {
   }
 }
 
-class _MinimalAudioDock extends StatelessWidget {
-  const _MinimalAudioDock({
-    required this.progress,
-    required this.isPlaying,
-    required this.isLoading,
-    required this.errorText,
-    required this.onPlayPause,
-    required this.onSeekBackward,
-    required this.onSeekForward,
-    required this.onSeek,
-  });
-
-  final double progress;
-  final bool isPlaying;
-  final bool isLoading;
-  final String? errorText;
-  final VoidCallback onPlayPause;
-  final VoidCallback onSeekBackward;
-  final VoidCallback onSeekForward;
-  final ValueChanged<double> onSeek;
-
-  @override
-  Widget build(BuildContext context) {
-    final clampedProgress = progress.clamp(0.0, 1.0);
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTapDown: (details) {
-            final width = context.size?.width ?? 1;
-            onSeek(details.localPosition.dx / width);
-          },
-          child: SizedBox(
-            height: 18,
-            child: Stack(
-              alignment: Alignment.centerLeft,
-              children: [
-                Container(
-                  height: 2,
-                  decoration: BoxDecoration(
-                    color: AppColors.line,
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                ),
-                FractionallySizedBox(
-                  widthFactor: clampedProgress,
-                  child: Container(
-                    height: 2.5,
-                    decoration: BoxDecoration(
-                      color: AppColors.terracotta,
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment(clampedProgress * 2 - 1, 0),
-                  child: Container(
-                    width: 10,
-                    height: 10,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors.terracotta,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        if (errorText != null) ...[
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            errorText!,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.primary,
-                ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-        const SizedBox(height: AppSpacing.xl),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _MinimalControl(
-              icon: Icons.replay_10_rounded,
-              small: true,
-              onTap: onSeekBackward,
-            ),
-            const SizedBox(width: AppSpacing.xl),
-            _MinimalControl(
-              icon: isLoading
-                  ? Icons.hourglass_empty_rounded
-                  : (isPlaying
-                      ? Icons.pause_rounded
-                      : Icons.play_arrow_rounded),
-              filled: true,
-              onTap: onPlayPause,
-            ),
-            const SizedBox(width: AppSpacing.xl),
-            _MinimalControl(
-              icon: Icons.forward_10_rounded,
-              small: true,
-              onTap: onSeekForward,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _MinimalControl extends StatelessWidget {
-  const _MinimalControl({
+class _TransportGlyph extends StatelessWidget {
+  const _TransportGlyph({
     required this.icon,
-    this.filled = false,
-    this.small = false,
     this.onTap,
+    this.iconSize = 30,
   });
 
   final IconData icon;
-  final bool filled;
-  final bool small;
   final VoidCallback? onTap;
+  final double iconSize;
 
   @override
   Widget build(BuildContext context) {
-    final size = filled ? 74.0 : (small ? 46.0 : 56.0);
-
-    return GestureDetector(
+    return InkWell(
       onTap: onTap,
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color:
-              filled ? AppColors.terracotta : AppColors.white.withOpacity(0.78),
-          border: Border.all(
-            color: filled ? AppColors.terracotta : AppColors.line,
-          ),
-        ),
+      splashColor: AppColors.terracotta.withOpacity(0.18),
+      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+      child: SizedBox(
+        width: 48,
+        height: 48,
         child: Icon(
           icon,
-          color: filled ? AppColors.white : AppColors.primary,
+          color: AppColors.white,
+          size: iconSize,
+        ),
+      ),
+    );
+  }
+}
+
+class _MinimalTransportButton extends StatelessWidget {
+  const _MinimalTransportButton({
+    required this.backward,
+    required this.onTap,
+  });
+
+  final bool backward;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+      splashColor: AppColors.terracotta.withOpacity(0.16),
+      child: SizedBox(
+        width: 48,
+        height: 48,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Icon(
+              backward ? Icons.replay_10 : Icons.forward_10,
+              size: 25,
+              color: AppColors.white.withOpacity(0.95),
+            ),
+          ],
         ),
       ),
     );
@@ -1241,8 +1005,6 @@ class _ProgressSection extends StatelessWidget {
 
 class _TransportRow extends StatelessWidget {
   const _TransportRow({
-    required this.scene,
-    required this.pulse,
     required this.isPlaying,
     required this.isLoading,
     required this.onPrevious,
@@ -1250,8 +1012,6 @@ class _TransportRow extends StatelessWidget {
     required this.onNext,
   });
 
-  final _PlayerScene scene;
-  final double pulse;
   final bool isPlaying;
   final bool isLoading;
   final VoidCallback onPrevious;
@@ -1261,100 +1021,26 @@ class _TransportRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _PlayerControl(
-          icon: Icons.skip_previous_rounded,
-          small: true,
+        _MinimalTransportButton(
+          backward: true,
           onTap: onPrevious,
         ),
-        _PlayerControl(
+        const SizedBox(width: AppSpacing.xl),
+        _TransportGlyph(
           icon: isLoading
-              ? Icons.hourglass_empty_rounded
+              ? Icons.hourglass_top_rounded
               : (isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded),
-          filled: true,
-          glowColor: scene.accent.withOpacity(0.24 + (pulse * 0.14)),
+          iconSize: 34,
           onTap: onPlayPause,
         ),
-        _PlayerControl(
-          icon: Icons.skip_next_rounded,
-          small: true,
+        const SizedBox(width: AppSpacing.xl),
+        _MinimalTransportButton(
+          backward: false,
           onTap: onNext,
         ),
       ],
-    );
-  }
-}
-
-class _PlayerControl extends StatelessWidget {
-  const _PlayerControl({
-    required this.icon,
-    this.filled = false,
-    this.small = false,
-    this.glowColor,
-    this.onTap,
-  });
-
-  final IconData icon;
-  final bool filled;
-  final bool small;
-  final Color? glowColor;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final size = filled ? 74.0 : (small ? 44.0 : 56.0);
-
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 320),
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color:
-              filled ? AppColors.white.withOpacity(0.94) : Colors.transparent,
-          border: Border.all(color: AppColors.white.withOpacity(0.18)),
-          boxShadow: glowColor == null
-              ? null
-              : [
-                  BoxShadow(
-                    color: glowColor!,
-                    blurRadius: 26,
-                    spreadRadius: 2,
-                  ),
-                ],
-        ),
-        child: Icon(
-          icon,
-          color: filled ? const Color(0xFF16201F) : AppColors.white,
-        ),
-      ),
-    );
-  }
-}
-
-class _BottomMeta extends StatelessWidget {
-  const _BottomMeta({required this.icon});
-
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 42,
-      height: 42,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: AppColors.white.withOpacity(0.12)),
-        color: AppColors.white.withOpacity(0.03),
-      ),
-      child: Icon(
-        icon,
-        size: 20,
-        color: AppColors.white.withOpacity(0.68),
-      ),
     );
   }
 }

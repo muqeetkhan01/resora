@@ -57,7 +57,6 @@ class _JournalViewState extends State<JournalView> {
 
           final selectedCategory = controller.selectedCategory.value;
           final categories = controller.categories;
-          final prompt = prompts[_active];
           final currentNumber = (_active + 1).toString().padLeft(2, '0');
           final totalNumber = prompts.length.toString().padLeft(2, '0');
 
@@ -169,8 +168,15 @@ class _JournalViewState extends State<JournalView> {
                         setState(() => _active = value);
                         controller.setCurrentPage(value);
                       },
-                      itemBuilder: (context, index) =>
-                          _JournalSlide(prompt: prompts[index]),
+                      itemBuilder: (context, index) => _JournalSlide(
+                        prompt: prompts[index],
+                        onWriteOwn: () => controller.openEditor(prompt: ''),
+                        onStartWriting: () => controller.openEditor(
+                          prompt: prompts[index].prompt,
+                        ),
+                        onOpenFilters: () =>
+                            _showCategorySheet(context, controller),
+                      ),
                     ),
                     Positioned(
                       right: 16,
@@ -181,48 +187,6 @@ class _JournalViewState extends State<JournalView> {
                           total: prompts.length,
                           active: _active,
                         ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-                child: Row(
-                  children: [
-                    TextButton(
-                      onPressed: () => controller.openEditor(prompt: ''),
-                      child: Text(
-                        'WRITE YOUR OWN',
-                        style: textTheme.bodySmall?.copyWith(
-                          color: AppColors.terracotta,
-                          letterSpacing: 1.6,
-                          decoration: TextDecoration.underline,
-                          decorationColor: AppColors.terracotta,
-                        ),
-                      ),
-                    ),
-                    const Spacer(),
-                    TextButton(
-                      onPressed: () =>
-                          controller.openEditor(prompt: prompt.prompt),
-                      child: Text(
-                        'START WRITING',
-                        style: textTheme.bodySmall?.copyWith(
-                          color: AppColors.terracotta,
-                          letterSpacing: 1.8,
-                          decoration: TextDecoration.underline,
-                          decorationColor: AppColors.terracotta,
-                        ),
-                      ),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      onPressed: () => _showCategorySheet(context, controller),
-                      icon: const Icon(
-                        AppIcons.filter,
-                        size: 18,
-                        color: AppColors.terracotta,
                       ),
                     ),
                   ],
@@ -264,9 +228,17 @@ class _JournalViewState extends State<JournalView> {
 }
 
 class _JournalSlide extends StatelessWidget {
-  const _JournalSlide({required this.prompt});
+  const _JournalSlide({
+    required this.prompt,
+    required this.onWriteOwn,
+    required this.onStartWriting,
+    required this.onOpenFilters,
+  });
 
   final JournalPrompt prompt;
+  final VoidCallback onWriteOwn;
+  final VoidCallback onStartWriting;
+  final VoidCallback onOpenFilters;
 
   @override
   Widget build(BuildContext context) {
@@ -314,6 +286,58 @@ class _JournalSlide extends StatelessWidget {
                   fontSize: 16,
                   fontStyle: FontStyle.normal,
                 ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  TextButton(
+                    onPressed: onWriteOwn,
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Text(
+                      'WRITE YOUR OWN',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: AppColors.terracotta,
+                        letterSpacing: 1.6,
+                        decoration: TextDecoration.underline,
+                        decorationColor: AppColors.terracotta,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 32),
+                  TextButton(
+                    onPressed: onStartWriting,
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Text(
+                      'START WRITING',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: AppColors.terracotta,
+                        letterSpacing: 1.8,
+                        decoration: TextDecoration.underline,
+                        decorationColor: AppColors.terracotta,
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: onOpenFilters,
+                    padding: EdgeInsets.zero,
+                    constraints:
+                        const BoxConstraints.tightFor(width: 40, height: 40),
+                    icon: const Icon(
+                      AppIcons.filter,
+                      size: 18,
+                      color: AppColors.terracotta,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

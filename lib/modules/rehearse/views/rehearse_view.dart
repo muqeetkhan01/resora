@@ -65,7 +65,6 @@ class _RehearseViewState extends State<RehearseView> {
 
           final categories = controller.categories;
           final selectedCategory = controller.selectedCategory.value;
-          final current = scenarios[_active];
           final currentNumber = (_active + 1).toString().padLeft(2, '0');
           final totalNumber = scenarios.length.toString().padLeft(2, '0');
 
@@ -166,7 +165,13 @@ class _RehearseViewState extends State<RehearseView> {
                       },
                       itemBuilder: (context, index) {
                         final scenario = scenarios[index];
-                        return _ScenarioSlide(scenario: scenario);
+                        return _ScenarioSlide(
+                          scenario: scenario,
+                          onBeginSession: () =>
+                              controller.openScenario(scenario),
+                          onOpenFilters: () =>
+                              _showCategorySheet(context, controller),
+                        );
                       },
                     ),
                     Positioned(
@@ -178,43 +183,6 @@ class _RehearseViewState extends State<RehearseView> {
                           total: scenarios.length,
                           active: _active,
                         ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-                child: Row(
-                  children: [
-                    Text(
-                      '2 min',
-                      style: textTheme.bodySmall?.copyWith(
-                        color: const Color(0x80A3A3A3),
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(width: 24),
-                    TextButton(
-                      onPressed: () => controller.openScenario(current),
-                      child: Text(
-                        'BEGIN SESSION',
-                        style: textTheme.bodySmall?.copyWith(
-                          color: AppColors.terracotta,
-                          letterSpacing: 2,
-                          decoration: TextDecoration.underline,
-                          decorationColor: AppColors.terracotta,
-                          decorationThickness: 1,
-                        ),
-                      ),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      onPressed: () => _showCategorySheet(context, controller),
-                      icon: const Icon(
-                        AppIcons.filter,
-                        size: 18,
-                        color: AppColors.terracotta,
                       ),
                     ),
                   ],
@@ -256,9 +224,15 @@ class _RehearseViewState extends State<RehearseView> {
 }
 
 class _ScenarioSlide extends StatelessWidget {
-  const _ScenarioSlide({required this.scenario});
+  const _ScenarioSlide({
+    required this.scenario,
+    required this.onBeginSession,
+    required this.onOpenFilters,
+  });
 
   final dynamic scenario;
+  final VoidCallback onBeginSession;
+  final VoidCallback onOpenFilters;
 
   @override
   Widget build(BuildContext context) {
@@ -270,6 +244,7 @@ class _ScenarioSlide extends StatelessWidget {
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 320),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
@@ -306,6 +281,41 @@ class _ScenarioSlide extends StatelessWidget {
                   fontSize: 16,
                   fontStyle: FontStyle.normal,
                 ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Text(
+                    '2 min',
+                    style: textTheme.bodySmall?.copyWith(
+                      color: const Color(0x80A3A3A3),
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(width: 24),
+                  TextButton(
+                    onPressed: onBeginSession,
+                    child: Text(
+                      'BEGIN SESSION',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: AppColors.terracotta,
+                        letterSpacing: 2,
+                        decoration: TextDecoration.underline,
+                        decorationColor: AppColors.terracotta,
+                        decorationThickness: 1,
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: onOpenFilters,
+                    icon: const Icon(
+                      AppIcons.filter,
+                      size: 18,
+                      color: AppColors.terracotta,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

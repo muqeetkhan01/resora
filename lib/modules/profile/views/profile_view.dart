@@ -1,267 +1,222 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/constants/app_icons.dart';
-import '../../../core/constants/app_spacing.dart';
 import '../../../core/controllers/app_session_controller.dart';
-import '../../../theme/app_colors.dart';
-import '../../../widgets/centered_back_header.dart';
+import '../../../routes/app_routes.dart';
 import '../controllers/profile_controller.dart';
+import 'widgets/settings_flow_widgets.dart';
 
 class ProfileView extends GetView<ProfileController> {
   const ProfileView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final session = Get.find<AppSessionController>();
 
-    return Scaffold(
-      backgroundColor: AppColors.canvas,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg,
-            AppSpacing.lg,
-            AppSpacing.lg,
-            AppSpacing.xl,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const CenteredBackHeader(title: 'settings'),
-              const SizedBox(height: AppSpacing.lg),
-              Obx(
-                () => Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(session.displayName, style: textTheme.headlineLarge),
-                    const SizedBox(height: AppSpacing.xs),
-                    Text(
-                      session.email ?? 'No email on file',
-                      style: textTheme.bodySmall,
-                    ),
-                    const SizedBox(height: AppSpacing.xs),
-                    Text(
-                      '${session.authProviderLabel} account',
-                      style: textTheme.bodySmall,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              TextButton(
-                onPressed: controller.openEditProfile,
-                style: TextButton.styleFrom(
+    return SettingsPageFrame(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+          child: Obx(
+            () => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                IconButton(
+                  onPressed: Get.back,
                   padding: EdgeInsets.zero,
-                  alignment: Alignment.centerLeft,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-                child: Text(
-                  'edit profile',
-                  style: textTheme.bodyMedium?.copyWith(
-                    color: AppColors.primary,
-                    decoration: TextDecoration.underline,
-                    decorationColor: AppColors.primary.withOpacity(0.5),
+                  constraints:
+                      const BoxConstraints.tightFor(width: 28, height: 28),
+                  icon: const Icon(
+                    Icons.arrow_back_ios_rounded,
+                    size: 16,
+                    color: Color(0xFFA3A3A3),
                   ),
                 ),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              Text(
-                'preferences',
-                style: textTheme.labelMedium?.copyWith(
-                  color: AppColors.placeholder,
-                  letterSpacing: 1.5,
-                  fontWeight: FontWeight.w700,
+                Text('settings',
+                    style: SettingsFlowText.display(context, size: 36)),
+                const SizedBox(height: 6),
+                Text(session.displayName,
+                    style: SettingsFlowText.title(context, size: 15)),
+                const SizedBox(height: 2),
+                Text('${session.authProviderLabel} Account',
+                    style: SettingsFlowText.body(context, size: 11)),
+                const SizedBox(height: 8),
+                SettingsUnderlineButton(
+                  label: 'edit profile',
+                  color: SettingsFlowColors.terracotta,
+                  onTap: controller.openEditProfile,
                 ),
+              ],
+            ),
+          ),
+        ),
+        const SectionLabel('your journey'),
+        const SettingsRule(horizontal: 0),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child: Row(
+            children: [
+              _JourneyStat(value: '12', label: 'days checked in'),
+              _JourneyStat(
+                value: '7',
+                label: 'quiet resets',
+                alignment: CrossAxisAlignment.center,
               ),
-              const SizedBox(height: AppSpacing.sm),
-              const Divider(height: 1),
-              Obx(
-                () => SwitchListTile.adaptive(
-                  value: controller.affirmationsEnabled.value,
-                  onChanged: controller.toggleAffirmations,
-                  contentPadding: EdgeInsets.zero,
-                  title: Text('affirmations', style: textTheme.titleMedium),
-                  activeColor: AppColors.primary,
-                ),
-              ),
-              const Divider(height: 1),
-              Obx(
-                () => _OptionRow(
-                  label: 'journal lock',
-                  subtitle: 'pin or biometrics',
-                  trailingText:
-                      controller.journalLockEnabled.value ? 'On' : 'Off',
-                  onTap: controller.openJournalLock,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              Text(
-                'account',
-                style: textTheme.labelMedium?.copyWith(
-                  color: AppColors.placeholder,
-                  letterSpacing: 1.5,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              const Divider(height: 1),
-              _OptionRow(
-                label: 'subscription',
-                onTap: controller.openSubscription,
-              ),
-              _OptionRow(
-                label: 'privacy policy',
-                onTap: controller.openPrivacyPolicy,
-              ),
-              _OptionRow(
-                label: 'help & support',
-                onTap: controller.openHelpSupport,
-              ),
-              _OptionRow(
-                label: 'log out',
-                danger: true,
-                onTap: () => _showLogoutSheet(context),
+              _JourneyStat(
+                value: '28',
+                label: 'journal entries',
+                alignment: CrossAxisAlignment.end,
               ),
             ],
           ),
         ),
-      ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 4),
+          child: Text(
+            'Keep showing up.\nYour future self is taking notes.',
+            style: SettingsFlowText.body(context, size: 12),
+          ),
+        ),
+        const SectionLabel('your space'),
+        const SettingsRule(horizontal: 0),
+        Obx(
+          () => SettingsRow(
+            label: 'journal lock',
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SettingsToggle(
+                  value: controller.journalLockEnabled.value,
+                  onChanged: (value) {
+                    if (value) {
+                      controller.openJournalLock();
+                    } else {
+                      controller.toggleJournalLock(false);
+                    }
+                  },
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  '›',
+                  style: SettingsFlowText.title(context, size: 18)
+                      .copyWith(color: SettingsFlowColors.terracotta),
+                ),
+              ],
+            ),
+            onTap: controller.openJournalLock,
+          ),
+        ),
+        const SettingsRule(horizontal: 0),
+        Obx(
+          () => SettingsRow(
+            label: 'affirmations',
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SettingsToggle(
+                  value: controller.affirmationsEnabled.value,
+                  onChanged: controller.toggleAffirmations,
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  '›',
+                  style: SettingsFlowText.title(context, size: 18)
+                      .copyWith(color: SettingsFlowColors.terracotta),
+                ),
+              ],
+            ),
+            onTap: () => controller.toggleAffirmations(
+              !controller.affirmationsEnabled.value,
+            ),
+          ),
+        ),
+        const SettingsRule(horizontal: 0),
+        const SectionLabel('membership'),
+        const SettingsRule(horizontal: 0),
+        SettingsRow(
+          label: 'membership',
+          subtitle: 'Elevate your experience.',
+          onTap: controller.openSubscription,
+        ),
+        const SettingsRule(horizontal: 0),
+        const SectionLabel('support & privacy'),
+        const SettingsRule(horizontal: 0),
+        SettingsRow(
+          label: 'help & support',
+          onTap: controller.openHelpSupport,
+        ),
+        const SettingsRule(horizontal: 0),
+        SettingsRow(
+          label: 'privacy policy',
+          onTap: controller.openPrivacyPolicy,
+        ),
+        const SettingsRule(horizontal: 0),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 8),
+          child: SettingsUnderlineButton(
+            label: 'log out',
+            color: SettingsFlowColors.terracotta,
+            onTap: () => _showLogoutSheet(context),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 24),
+          child: Center(
+            child: Column(
+              children: [
+                Text(
+                  'r e s o r a',
+                  style: SettingsFlowText.display(context, size: 18).copyWith(
+                    letterSpacing: 3,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text('version 2.1.0',
+                    style: SettingsFlowText.caps(context, size: 10)),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
   Future<void> _showLogoutSheet(BuildContext context) async {
-    final textTheme = Theme.of(context).textTheme;
-
-    await showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: AppColors.canvas,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg,
-            AppSpacing.md,
-            AppSpacing.lg,
-            AppSpacing.xl,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 36,
-                  height: 3,
-                  color: AppColors.line,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              Text('log out?', style: textTheme.headlineLarge),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                'You can always log back in. Your journal and progress will stay here.',
-                style: textTheme.bodyMedium,
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.terracotta,
-                    foregroundColor: AppColors.white,
-                    padding:
-                        const EdgeInsets.symmetric(vertical: AppSpacing.md),
-                  ),
-                  onPressed: () async {
-                    Navigator.of(context).pop();
-                    await controller.signOut();
-                  },
-                  child: Text(
-                    'log out',
-                    style: textTheme.bodySmall?.copyWith(
-                      color: AppColors.white,
-                      letterSpacing: 1,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              Align(
-                alignment: Alignment.center,
-                child: TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(
-                    'cancel',
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: AppColors.primary,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+    final confirmed = await showSettingsConfirm(
+      context,
+      title: 'Log out?',
+      message: 'You can always log back in. Your data will be waiting for you.',
+      confirmLabel: 'log out',
     );
+    if (confirmed) {
+      await controller.signOut();
+      Get.offAllNamed(AppRoutes.welcome);
+    }
   }
 }
 
-class _OptionRow extends StatelessWidget {
-  const _OptionRow({
+class _JourneyStat extends StatelessWidget {
+  const _JourneyStat({
+    required this.value,
     required this.label,
-    required this.onTap,
-    this.subtitle,
-    this.trailingText,
-    this.danger = false,
+    this.alignment = CrossAxisAlignment.start,
   });
 
+  final String value;
   final String label;
-  final String? subtitle;
-  final String? trailingText;
-  final VoidCallback onTap;
-  final bool danger;
+  final CrossAxisAlignment alignment;
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return Column(
-      children: [
-        ListTile(
-          onTap: onTap,
-          contentPadding: EdgeInsets.zero,
-          title: Text(
-            label,
-            style: textTheme.titleMedium?.copyWith(
-              color: danger ? AppColors.terracotta : AppColors.primary,
-            ),
-          ),
-          subtitle: subtitle == null
-              ? null
-              : Text(subtitle!, style: textTheme.bodySmall),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (trailingText != null)
-                Padding(
-                  padding: const EdgeInsets.only(right: AppSpacing.xs),
-                  child: Text(trailingText!, style: textTheme.bodySmall),
-                ),
-              const Icon(
-                AppIcons.forward,
-                color: AppColors.terracotta,
-                size: 15,
-              ),
-            ],
-          ),
-        ),
-        const Divider(height: 1),
-      ],
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: alignment,
+        children: [
+          Text(value, style: SettingsFlowText.display(context, size: 30)),
+          const SizedBox(height: 2),
+          Text(label, style: SettingsFlowText.caps(context, size: 10)),
+        ],
+      ),
     );
   }
 }

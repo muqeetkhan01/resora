@@ -1,218 +1,286 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/constants/app_spacing.dart';
-import '../../../theme/app_colors.dart';
-import '../../../widgets/centered_back_header.dart';
 import '../controllers/profile_controller.dart';
+import 'widgets/settings_flow_widgets.dart';
 
-class SubscriptionView extends GetView<ProfileController> {
+class SubscriptionView extends StatefulWidget {
   const SubscriptionView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+  State<SubscriptionView> createState() => _SubscriptionViewState();
+}
 
+class _SubscriptionViewState extends State<SubscriptionView> {
+  final controller = Get.find<ProfileController>();
+  var _stage = _MembershipStage.overview;
+  var _selectedPlan = 'monthly';
+
+  static const _features = [
+    'Unlimited journal conversations',
+    'All resets + expanded depth',
+    'Priority support from our team',
+    'Early access to new features',
+    'Cancel anytime',
+  ];
+
+  static const _plans = [
+    _Plan('monthly', 'Monthly', '\$9.99 / month', 'Cancel anytime', null),
+    _Plan('yearly', 'Yearly', '\$50.00 / year', null, 'Save 30%'),
+    _Plan('lifetime', 'Lifetime', '\$249.99', 'One payment', null),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.canvas,
+      backgroundColor: SettingsFlowColors.offWhite,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg,
-            AppSpacing.lg,
-            AppSpacing.lg,
-            AppSpacing.xl,
+        child: switch (_stage) {
+          _MembershipStage.overview => _overview(context),
+          _MembershipStage.plans => _plansView(context),
+          _MembershipStage.success => _success(context),
+        },
+      ),
+    );
+  }
+
+  Widget _overview(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SettingsTopBack(title: ''),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+          child: Text('membership',
+              style: SettingsFlowText.display(context, size: 32)),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 28),
+          child: Text(
+            'Unlock everything Resora has to offer.\nMore clarity. More support. More you.',
+            style: SettingsFlowText.title(context, size: 13),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const CenteredBackHeader(title: 'subscription'),
-              const SizedBox(height: AppSpacing.lg),
-              Obx(
-                () => Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                  color: AppColors.primary.withOpacity(0.04),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              children: _features.map((feature) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: SettingsFlowColors.border,
+                        width: 0.5,
+                      ),
+                    ),
+                  ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('current plan', style: textTheme.bodySmall),
-                      Text(
-                        controller.isPremium.value ? 'Resora Premium' : 'Free',
-                        style: textTheme.titleLarge,
+                      Container(
+                        width: 3,
+                        height: 3,
+                        color: SettingsFlowColors.terracotta,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          feature,
+                          style: SettingsFlowText.title(context, size: 13),
+                        ),
                       ),
                     ],
                   ),
-                ),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SettingsUnderlineButton(
+                label: 'restore purchase',
+                color: SettingsFlowColors.terracotta,
+                onTap: () {},
               ),
-              const SizedBox(height: AppSpacing.lg),
-              Text(
-                'plans',
-                style: textTheme.labelMedium?.copyWith(
-                  color: AppColors.placeholder,
-                  letterSpacing: 1.5,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Obx(
-                () => Column(
-                  children: [
-                    _PlanCard(
-                      title: 'Free',
-                      subtitle: 'Always free',
-                      selected: controller.activePlan.value == 'free',
-                      features: const [
-                        '3 journal prompts per day',
-                        'Limited gentle resets',
-                        'Community access',
-                      ],
-                      onTap: () => controller.setPlan('free'),
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-                    _PlanCard(
-                      title: 'Premium',
-                      subtitle:
-                          '\$9.99 / month · \$49.99 / year · \$249.99 lifetime',
-                      selected: controller.activePlan.value == 'premium',
-                      badge: 'most popular',
-                      features: const [
-                        'Unlimited journal prompts',
-                        'All gentle resets + Rehearse',
-                        'Talk to Resora (AI)',
-                        'Space library — full access',
-                        'Priority support',
-                        'Lifetime option: one payment, no renewals',
-                      ],
-                      onTap: () => controller.setPlan('premium'),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              Obx(
-                () => SizedBox(
-                  width: double.infinity,
-                  child: FilledButton(
-                    onPressed: () => controller.setPlan(
-                        controller.isPremium.value ? 'free' : 'premium'),
-                    style: FilledButton.styleFrom(
-                      backgroundColor: controller.isPremium.value
-                          ? Colors.transparent
-                          : AppColors.primary,
-                      foregroundColor: controller.isPremium.value
-                          ? AppColors.primary
-                          : AppColors.white,
-                      side: controller.isPremium.value
-                          ? const BorderSide(color: AppColors.primary)
-                          : null,
-                      padding:
-                          const EdgeInsets.symmetric(vertical: AppSpacing.md),
-                    ),
-                    child: Text(
-                      controller.isPremium.value
-                          ? 'downgrade to free'
-                          : 'start premium',
-                      style: textTheme.bodySmall?.copyWith(
-                        color: controller.isPremium.value
-                            ? AppColors.primary
-                            : AppColors.white,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              Align(
-                alignment: Alignment.center,
-                child: TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    'restore purchase',
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: AppColors.primary,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
+              SettingsUnderlineButton(
+                label: 'explore membership',
+                color: SettingsFlowColors.warmDark,
+                onTap: () => setState(() => _stage = _MembershipStage.plans),
               ),
             ],
           ),
         ),
-      ),
+      ],
     );
   }
-}
 
-class _PlanCard extends StatelessWidget {
-  const _PlanCard({
-    required this.title,
-    required this.subtitle,
-    required this.features,
-    required this.selected,
-    required this.onTap,
-    this.badge,
-  });
-
-  final String title;
-  final String subtitle;
-  final List<String> features;
-  final bool selected;
-  final VoidCallback onTap;
-  final String? badge;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(AppSpacing.md),
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: selected ? AppColors.primary : AppColors.line,
-            width: selected ? 1.3 : 1,
+  Widget _plansView(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SettingsTopBack(
+          title: '',
+          trailing: Obx(
+            () => Text(
+              controller.isPremium.value ? 'premium' : 'free',
+              style: SettingsFlowText.body(context, size: 12),
+            ),
           ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(title, style: textTheme.titleLarge),
-                const Spacer(),
-                if (badge != null)
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.terracotta),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 4),
+          child: Text('membership',
+              style: SettingsFlowText.display(context, size: 32)),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+          child: Text('CHOOSE YOUR PLAN',
+              style: SettingsFlowText.caps(context, size: 9)),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              children: _plans.map((plan) {
+                final selected = plan.id == _selectedPlan;
+                return GestureDetector(
+                  onTap: () => setState(() => _selectedPlan = plan.id),
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 16,
                     ),
-                    child: Text(
-                      badge!,
-                      style: textTheme.labelMedium?.copyWith(
-                        color: AppColors.terracotta,
-                        letterSpacing: 1,
+                    decoration: BoxDecoration(
+                      color: selected
+                          ? SettingsFlowColors.forestGreen.withOpacity(0.05)
+                          : Colors.transparent,
+                      border: Border.all(
+                        color: selected
+                            ? SettingsFlowColors.forestGreen
+                            : SettingsFlowColors.border,
+                        width: selected ? 0.75 : 0.5,
                       ),
                     ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(plan.label,
+                                  style: SettingsFlowText.title(context,
+                                      size: 14)),
+                              const SizedBox(height: 3),
+                              Text(
+                                plan.note == null
+                                    ? plan.price
+                                    : '${plan.price} · ${plan.note}',
+                                style: SettingsFlowText.body(context, size: 12),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (plan.badge != null)
+                          Text(
+                            plan.badge!,
+                            style: SettingsFlowText.caps(
+                              context,
+                              size: 10,
+                              color: SettingsFlowColors.terracotta,
+                            ),
+                          ),
+                        if (selected) ...[
+                          const SizedBox(width: 10),
+                          const Icon(
+                            Icons.check,
+                            color: SettingsFlowColors.forestGreen,
+                            size: 16,
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
-              ],
+                );
+              }).toList(),
             ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(subtitle, style: textTheme.bodySmall),
-            const SizedBox(height: AppSpacing.sm),
-            ...features.map(
-              (item) => Padding(
-                padding: const EdgeInsets.only(top: AppSpacing.xs),
-                child: Text('— $item', style: textTheme.bodySmall),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SettingsUnderlineButton(
+                label: 'restore purchase',
+                color: SettingsFlowColors.terracotta,
+                onTap: () {},
               ),
+              SettingsUnderlineButton(
+                label: 'continue',
+                color: SettingsFlowColors.warmDark,
+                onTap: () {
+                  controller.setPlan('premium');
+                  setState(() => _stage = _MembershipStage.success);
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _success(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'welcome to\nresora premium',
+              textAlign: TextAlign.center,
+              style: SettingsFlowText.display(context, size: 34),
+            ),
+            const SizedBox(height: 20),
+            Container(
+              width: 32,
+              height: 0.5,
+              color: SettingsFlowColors.terracotta,
+            ),
+            const SizedBox(height: 28),
+            Text(
+              "You now have full access\nto everything Resora offers.\nWe're honored to be part of\nyour journey.",
+              textAlign: TextAlign.center,
+              style: SettingsFlowText.body(context, size: 13),
+            ),
+            const SizedBox(height: 40),
+            SettingsUnderlineButton(
+              label: 'continue',
+              color: SettingsFlowColors.warmDark,
+              onTap: () => Navigator.of(context).pop(),
             ),
           ],
         ),
       ),
     );
   }
+}
+
+enum _MembershipStage { overview, plans, success }
+
+class _Plan {
+  const _Plan(this.id, this.label, this.price, this.note, this.badge);
+
+  final String id;
+  final String label;
+  final String price;
+  final String? note;
+  final String? badge;
 }
