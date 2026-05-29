@@ -95,12 +95,12 @@ class ProfileView extends GetView<ProfileController> {
                     }
                   },
                 ),
-                const SizedBox(width: 10),
-                Text(
-                  '›',
-                  style: SettingsFlowText.title(context, size: 18)
-                      .copyWith(color: SettingsFlowColors.terracotta),
-                ),
+                // const SizedBox(width: 10),
+                // Text(
+                //   '›',
+                //   style: SettingsFlowText.title(context, size: 18)
+                //       .copyWith(color: SettingsFlowColors.terracotta),
+                // ),
               ],
             ),
             onTap: controller.openJournalLock,
@@ -117,12 +117,12 @@ class ProfileView extends GetView<ProfileController> {
                   value: controller.affirmationsEnabled.value,
                   onChanged: controller.toggleAffirmations,
                 ),
-                const SizedBox(width: 10),
-                Text(
-                  '›',
-                  style: SettingsFlowText.title(context, size: 18)
-                      .copyWith(color: SettingsFlowColors.terracotta),
-                ),
+                // const SizedBox(width: 10),
+                // Text(
+                //   '›',
+                //   style: SettingsFlowText.title(context, size: 18)
+                //       .copyWith(color: SettingsFlowColors.terracotta),
+                // ),
               ],
             ),
             onTap: () => controller.toggleAffirmations(

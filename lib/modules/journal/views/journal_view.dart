@@ -243,106 +243,148 @@ class _JournalSlide extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 104, 42, 12),
-      child: Align(
-        alignment: Alignment.topLeft,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 320),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final actionTop = (constraints.maxHeight * 0.62).clamp(420.0, 520.0);
+
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(24, 104, 42, 12),
+          child: Stack(
             children: [
-              Text(
-                prompt.category.toUpperCase(),
-                style: textTheme.labelMedium?.copyWith(
-                  color: AppColors.terracotta,
-                  letterSpacing: 1.5,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                prompt.prompt,
-                style: textTheme.displayLarge?.copyWith(
-                  fontSize: 38,
-                  color: const Color(0xFF3B2C24),
-                  height: 1.2,
-                  fontStyle: FontStyle.normal,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Container(
-                width: 32,
-                height: 1,
-                color: const Color(0xFFE6E6E6),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'You do not need a perfect explanation.\nYou need a clear sentence.',
-                style: textTheme.bodyMedium?.copyWith(
-                  color: const Color(0xFFA3A3A3),
-                  height: 1.6,
-                  fontSize: 16,
-                  fontStyle: FontStyle.normal,
-                ),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  TextButton(
-                    onPressed: onWriteOwn,
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    child: Text(
-                      'WRITE YOUR OWN',
-                      style: textTheme.bodySmall?.copyWith(
-                        color: AppColors.terracotta,
-                        letterSpacing: 1.6,
-                        decoration: TextDecoration.underline,
-                        decorationColor: AppColors.terracotta,
-                      ),
+              Align(
+                alignment: Alignment.topLeft,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: 320,
+                    maxHeight: actionTop - 24,
+                  ),
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          prompt.category.toUpperCase(),
+                          style: textTheme.labelMedium?.copyWith(
+                            color: AppColors.terracotta,
+                            letterSpacing: 1.5,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          prompt.prompt,
+                          style: textTheme.displayLarge?.copyWith(
+                            fontSize: 38,
+                            color: const Color(0xFF3B2C24),
+                            height: 1.2,
+                            fontStyle: FontStyle.normal,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Container(
+                          width: 32,
+                          height: 1,
+                          color: const Color(0xFFE6E6E6),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'You do not need a perfect explanation.\nYou need a clear sentence.',
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: const Color(0xFFA3A3A3),
+                            height: 1.6,
+                            fontSize: 16,
+                            fontStyle: FontStyle.normal,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(width: 32),
-                  TextButton(
-                    onPressed: onStartWriting,
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    child: Text(
-                      'START WRITING',
-                      style: textTheme.bodySmall?.copyWith(
-                        color: AppColors.terracotta,
-                        letterSpacing: 1.8,
-                        decoration: TextDecoration.underline,
-                        decorationColor: AppColors.terracotta,
-                      ),
-                    ),
-                  ),
-                  const Spacer(),
-                  IconButton(
-                    onPressed: onOpenFilters,
-                    padding: EdgeInsets.zero,
-                    constraints:
-                        const BoxConstraints.tightFor(width: 40, height: 40),
-                    icon: const Icon(
-                      AppIcons.filter,
-                      size: 18,
-                      color: AppColors.terracotta,
-                    ),
-                  ),
-                ],
+                ),
+              ),
+              Positioned(
+                left: 0,
+                right: 0,
+                top: actionTop,
+                child: _JournalActionRow(
+                  onWriteOwn: onWriteOwn,
+                  onStartWriting: onStartWriting,
+                  onOpenFilters: onOpenFilters,
+                ),
               ),
             ],
           ),
+        );
+      },
+    );
+  }
+}
+
+class _JournalActionRow extends StatelessWidget {
+  const _JournalActionRow({
+    required this.onWriteOwn,
+    required this.onStartWriting,
+    required this.onOpenFilters,
+  });
+
+  final VoidCallback onWriteOwn;
+  final VoidCallback onStartWriting;
+  final VoidCallback onOpenFilters;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Row(
+      children: [
+        TextButton(
+          onPressed: onWriteOwn,
+          style: TextButton.styleFrom(
+            padding: EdgeInsets.zero,
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+          child: Text(
+            'WRITE YOUR OWN',
+            style: textTheme.bodySmall?.copyWith(
+              color: AppColors.terracotta,
+              letterSpacing: 1.6,
+              decoration: TextDecoration.underline,
+              decorationColor: AppColors.terracotta,
+            ),
+          ),
         ),
-      ),
+        const SizedBox(width: 32),
+        TextButton(
+          onPressed: onStartWriting,
+          style: TextButton.styleFrom(
+            padding: EdgeInsets.zero,
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+          child: Text(
+            'START WRITING',
+            style: textTheme.bodySmall?.copyWith(
+              color: AppColors.terracotta,
+              letterSpacing: 1.8,
+              decoration: TextDecoration.underline,
+              decorationColor: AppColors.terracotta,
+            ),
+          ),
+        ),
+        const Spacer(),
+        IconButton(
+          onPressed: onOpenFilters,
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints.tightFor(width: 40, height: 40),
+          icon: const Icon(
+            AppIcons.filter,
+            size: 18,
+            color: AppColors.terracotta,
+          ),
+        ),
+      ],
     );
   }
 }
