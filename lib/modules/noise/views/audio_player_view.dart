@@ -415,18 +415,21 @@ class _AudioPlayerArgs {
 
   factory _AudioPlayerArgs.from(dynamic arguments) {
     if (arguments is Map) {
+      final imagePath = (arguments['imagePath'] as String? ?? '').trim();
       return _AudioPlayerArgs(
         track: arguments['track'] as AudioTrack? ?? _fallbackTrack,
         minimal: arguments['minimal'] == true,
-        imagePath: arguments['imagePath'] as String? ?? AppAssets.curtainLight,
+        imagePath: imagePath.isEmpty ? AppAssets.curtainLight : imagePath,
         ritualFeature: arguments['ritualFeature'] as String?,
       );
     }
 
+    final track = arguments as AudioTrack? ?? _fallbackTrack;
     return _AudioPlayerArgs(
-      track: arguments as AudioTrack? ?? _fallbackTrack,
+      track: track,
       minimal: false,
-      imagePath: AppAssets.curtainLight,
+      imagePath:
+          track.imagePath.isEmpty ? AppAssets.curtainLight : track.imagePath,
       ritualFeature: null,
     );
   }
@@ -437,6 +440,7 @@ class _AudioPlayerArgs {
     description: 'Steady sound for nervous-system downshift',
     duration: '1 min',
     assetPath: AppAssets.ambientSoftRain,
+    imagePath: AppAssets.splashWaterfall,
   );
 }
 

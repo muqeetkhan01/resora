@@ -207,12 +207,13 @@ class ContentItemsService {
         continue;
       }
 
-      final mediaIds = _stringList(data['mediaIds']);
-      final media = mediaIds.isEmpty ? null : mediaById[mediaIds.first];
-      final audioPath = _firstNonEmpty([
-        media?.downloadUrl ?? '',
-        _bundleAudioPathFor(media?.fileName ?? ''),
-      ]);
+      final audioPath = _resolveAudioPathFor(data, mediaById);
+      final imagePath = _resolveContentImageFor(
+        data,
+        mediaById: mediaById,
+        fallback:
+            _imageForCategory(_string(data['category']), AppRoutes.resets),
+      );
 
       items.add(
         ResetOption(
@@ -231,6 +232,7 @@ class ContentItemsService {
           ]),
           icon: AppIcons.resets,
           audioPath: audioPath,
+          imagePath: imagePath,
         ),
       );
     }
@@ -260,12 +262,12 @@ class ContentItemsService {
         _string(data['category']),
         'Guided',
       ]);
-      final mediaIds = _stringList(data['mediaIds']);
-      final media = mediaIds.isEmpty ? null : mediaById[mediaIds.first];
-      final audioPath = _firstNonEmpty([
-        media?.downloadUrl ?? '',
-        _bundleAudioPathFor(media?.fileName ?? ''),
-      ]);
+      final audioPath = _resolveAudioPathFor(data, mediaById);
+      final imagePath = _resolveContentImageFor(
+        data,
+        mediaById: mediaById,
+        fallback: _imageForCategory(category, AppRoutes.noise),
+      );
 
       items.add(
         MindfulnessSession(
@@ -282,6 +284,7 @@ class ContentItemsService {
           color: _colorForSessionCategory(category),
           isPremium: _toBool(data['isPremium']),
           audioPath: audioPath,
+          imagePath: imagePath,
         ),
       );
     }
@@ -307,24 +310,26 @@ class ContentItemsService {
         'Audio track',
       ]);
 
-      final mediaIds = _stringList(data['mediaIds']);
-      final media = mediaIds.isEmpty ? null : mediaById[mediaIds.first];
-      final pathOrUrl = _firstNonEmpty([
-        media?.downloadUrl ?? '',
-        _bundleAudioPathFor(media?.fileName ?? ''),
-      ]);
+      final pathOrUrl = _resolveAudioPathFor(data, mediaById);
 
       if (title.isEmpty || pathOrUrl.isEmpty) {
         continue;
       }
 
+      final category = _firstNonEmpty([
+        _string(data['category']),
+        'General',
+      ]);
+      final imagePath = _resolveContentImageFor(
+        data,
+        mediaById: mediaById,
+        fallback: _imageForCategory(category, AppRoutes.noise),
+      );
+
       items.add(
         AudioTrack(
           title: title,
-          category: _firstNonEmpty([
-            _string(data['category']),
-            'General',
-          ]),
+          category: category,
           description: _firstNonEmpty([
             _string(data['subtitle']),
             _string(data['body']),
@@ -335,6 +340,7 @@ class ContentItemsService {
           ]),
           assetPath: pathOrUrl,
           isPremium: _toBool(data['isPremium']),
+          imagePath: imagePath,
         ),
       );
     }
@@ -365,12 +371,13 @@ class ContentItemsService {
         continue;
       }
 
-      final mediaIds = _stringList(data['mediaIds']);
-      final media = mediaIds.isEmpty ? null : mediaById[mediaIds.first];
-      final audioPath = _firstNonEmpty([
-        media?.downloadUrl ?? '',
-        _bundleAudioPathFor(media?.fileName ?? ''),
-      ]);
+      final audioPath = _resolveAudioPathFor(data, mediaById);
+      final imagePath = _resolveContentImageFor(
+        data,
+        mediaById: mediaById,
+        fallback:
+            _imageForCategory(_string(data['category']), AppRoutes.rehearse),
+      );
 
       items.add(
         RehearsalScenario(
@@ -391,6 +398,7 @@ class ContentItemsService {
           steps: _stringList(data['bulletPoints']),
           isPremium: _toBool(data['isPremium']),
           audioPath: audioPath,
+          imagePath: imagePath,
         ),
       );
     }
@@ -828,6 +836,81 @@ class ContentItemsService {
     ]);
   }
 
+  String _resolveAudioPathFor(
+    Map<String, dynamic> data,
+    Map<String, _MediaItem> mediaById,
+  ) {
+    final direct = _firstNonEmpty([
+      _string(data['audioPath']),
+      _string(data['audioUrl']),
+      _string(data['assetPath']),
+      _string(data['soundPath']),
+      _string(data['soundUrl']),
+    ]);
+    if (direct.isNotEmpty) {
+      return direct;
+    }
+
+    final mediaIds = [
+      ..._stringList(data['audioMediaIds']),
+      ..._stringList(data['mediaIds']),
+    ];
+    for (final id in mediaIds) {
+      final media = mediaById[id];
+      if (media == null ||
+          !_looksLikeAudio(media.fileName, media.downloadUrl)) {
+        continue;
+      }
+
+      return _firstNonEmpty([
+        media.downloadUrl,
+        _bundleAudioPathFor(media.fileName),
+      ]);
+    }
+
+    return '';
+  }
+
+  String _resolveContentImageFor(
+    Map<String, dynamic> data, {
+    required Map<String, _MediaItem> mediaById,
+    required String fallback,
+  }) {
+    final direct = _firstNonEmpty([
+      _string(data['imagePath']),
+      _string(data['imageUrl']),
+      _string(data['coverImagePath']),
+      _string(data['coverImageUrl']),
+      _string(data['backgroundImagePath']),
+      _string(data['backgroundImageUrl']),
+      _string(data['thumbnailPath']),
+      _string(data['thumbnailUrl']),
+    ]);
+    if (direct.isNotEmpty) {
+      return direct;
+    }
+
+    final mediaIds = [
+      ..._stringList(data['imageMediaIds']),
+      ..._stringList(data['coverMediaIds']),
+      ..._stringList(data['mediaIds']),
+    ];
+    for (final id in mediaIds) {
+      final media = mediaById[id];
+      if (media == null ||
+          !_looksLikeImage(media.fileName, media.downloadUrl)) {
+        continue;
+      }
+
+      return _firstNonEmpty([
+        media.downloadUrl,
+        _bundleImagePathFor(media.fileName),
+      ]);
+    }
+
+    return fallback;
+  }
+
   static String _resolveRouteTarget(
     String routeTarget, {
     required String fallbackTitle,
@@ -978,6 +1061,37 @@ class ContentItemsService {
     return AppColors.categoryColor(value);
   }
 
+  static String _imageForCategory(String category, String route) {
+    final value = category.trim().toLowerCase();
+    if (route == AppRoutes.resets) {
+      if (value.contains('ground')) return AppAssets.archway;
+      if (value.contains('release')) return AppAssets.spaceGarden;
+      if (value.contains('clarity')) return AppAssets.splashWaterfall;
+      if (value.contains('connect')) return AppAssets.curtainLight;
+      if (value.contains('restore')) return AppAssets.splashLivingRoom;
+      return AppAssets.archway;
+    }
+
+    if (route == AppRoutes.rehearse) {
+      if (value.contains('connect')) return AppAssets.curtainLight;
+      if (value.contains('clarity')) return AppAssets.splashWaterfall;
+      if (value.contains('release')) return AppAssets.spaceGarden;
+      if (value.contains('ground')) return AppAssets.archway;
+      if (value.contains('restore')) return AppAssets.splashLivingRoom;
+      return AppAssets.curtainLight;
+    }
+
+    if (route == AppRoutes.noise) {
+      if (value.contains('brown')) return AppAssets.spaceRoom;
+      if (value.contains('guided')) return AppAssets.archway;
+      if (value.contains('visual')) return AppAssets.curtainLight;
+      if (value.contains('nature')) return AppAssets.splashWaterfall;
+      return AppAssets.spaceRoom;
+    }
+
+    return _defaultImageForRoute(route);
+  }
+
   static String _defaultImageForRoute(String route) {
     switch (route) {
       case AppRoutes.chat:
@@ -1059,6 +1173,23 @@ class ContentItemsService {
       default:
         return '';
     }
+  }
+
+  static bool _looksLikeAudio(String fileName, String url) {
+    final value = '${fileName.trim()} ${url.trim()}'.toLowerCase();
+    return value.contains('.mp3') ||
+        value.contains('.m4a') ||
+        value.contains('.aac') ||
+        value.contains('.wav') ||
+        value.contains('.ogg');
+  }
+
+  static bool _looksLikeImage(String fileName, String url) {
+    final value = '${fileName.trim()} ${url.trim()}'.toLowerCase();
+    return value.contains('.png') ||
+        value.contains('.jpg') ||
+        value.contains('.jpeg') ||
+        value.contains('.webp');
   }
 
   static String _firstNonEmpty(List<String> values) {

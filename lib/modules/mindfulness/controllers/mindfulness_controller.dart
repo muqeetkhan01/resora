@@ -33,9 +33,7 @@ class MindfulnessController extends GetxController {
     final safeIndex = selectedTab.value.clamp(0, availableTabs.length - 1);
     final currentType = availableTabs[safeIndex];
 
-    return _sessions
-        .where((session) => session.type == currentType)
-        .toList();
+    return _sessions.where((session) => session.type == currentType).toList();
   }
 
   MindfulnessSession? get featuredSession {
@@ -100,7 +98,14 @@ class MindfulnessController extends GetxController {
       duration: session.length,
       assetPath: session.audioPath,
       isPremium: session.isPremium,
+      imagePath: session.imagePath,
     );
-    Get.toNamed(AppRoutes.audioPlayer, arguments: track);
+    Get.toNamed(
+      AppRoutes.audioPlayer,
+      arguments: {
+        'track': track,
+        'imagePath': session.imagePath,
+      },
+    );
   }
 }

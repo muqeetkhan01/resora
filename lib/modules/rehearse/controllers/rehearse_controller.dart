@@ -75,17 +75,23 @@ class RehearseController extends GetxController {
   }
 
   void openScenario(RehearsalScenario scenario) {
+    final audioPath = scenario.audioPath.isEmpty
+        ? _fallbackAudioFor(scenario)
+        : scenario.audioPath;
+    final imagePath = scenario.imagePath.isEmpty
+        ? _fallbackImageFor(scenario)
+        : scenario.imagePath;
+
     final playerArgs = {
       'track': AudioTrack(
         title: scenario.title,
         category: scenario.category,
         description: scenario.reframe,
         duration: '7 min',
-        assetPath: scenario.audioPath.isEmpty
-            ? AppAssets.rehearseAskForNeed
-            : scenario.audioPath,
+        assetPath: audioPath,
+        imagePath: imagePath,
       ),
-      'imagePath': AppAssets.curtainLight,
+      'imagePath': imagePath,
       'minimal': true,
       'ritualFeature': RitualWrapFeature.visualization,
     };
@@ -106,5 +112,30 @@ class RehearseController extends GetxController {
 
   void practiceAgain(RehearsalScenario scenario) {
     AppNavigation.openTalkTab();
+  }
+
+  String _fallbackAudioFor(RehearsalScenario scenario) {
+    final title = scenario.title.toLowerCase();
+    final category = scenario.category.toLowerCase();
+    if (title.contains('partner') || category.contains('connect')) {
+      return AppAssets.rehearsePartnerAfterHardNight;
+    }
+    if (title.contains('work') || category.contains('clarity')) {
+      return AppAssets.rehearseHardConversationWork;
+    }
+    if (title.contains('limit') || category.contains('release')) {
+      return AppAssets.rehearseSettingLimit;
+    }
+    if (title.contains('temper')) return AppAssets.rehearseRepairAfterTemper;
+    return AppAssets.rehearseAskForNeed;
+  }
+
+  String _fallbackImageFor(RehearsalScenario scenario) {
+    final category = scenario.category.toLowerCase();
+    if (category.contains('ground')) return AppAssets.archway;
+    if (category.contains('release')) return AppAssets.spaceGarden;
+    if (category.contains('clarity')) return AppAssets.splashWaterfall;
+    if (category.contains('restore')) return AppAssets.splashLivingRoom;
+    return AppAssets.curtainLight;
   }
 }

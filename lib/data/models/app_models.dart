@@ -95,6 +95,7 @@ class MindfulnessSession {
     required this.color,
     this.isPremium = false,
     this.audioPath = '',
+    this.imagePath = '',
   });
 
   final String title;
@@ -104,6 +105,7 @@ class MindfulnessSession {
   final Color color;
   final bool isPremium;
   final String audioPath;
+  final String imagePath;
 }
 
 class QaItem {
@@ -204,6 +206,7 @@ class ResetOption {
     required this.duration,
     required this.icon,
     this.audioPath = '',
+    this.imagePath = '',
   });
 
   final String category;
@@ -212,6 +215,7 @@ class ResetOption {
   final String duration;
   final IconData icon;
   final String audioPath;
+  final String imagePath;
 }
 
 class JournalPrompt {
@@ -232,6 +236,7 @@ class AudioTrack {
     required this.duration,
     required this.assetPath,
     this.isPremium = false,
+    this.imagePath = '',
   });
 
   final String title;
@@ -240,6 +245,7 @@ class AudioTrack {
   final String duration;
   final String assetPath;
   final bool isPremium;
+  final String imagePath;
 }
 
 class RehearsalScenario {
@@ -251,6 +257,7 @@ class RehearsalScenario {
     required this.steps,
     this.isPremium = false,
     this.audioPath = '',
+    this.imagePath = '',
   });
 
   final String title;
@@ -260,6 +267,7 @@ class RehearsalScenario {
   final List<String> steps;
   final bool isPremium;
   final String audioPath;
+  final String imagePath;
 }
 
 class KeyTermItem {

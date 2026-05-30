@@ -75,17 +75,21 @@ class ResetsController extends GetxController {
   }
 
   void openReset(ResetOption option) {
+    final audioPath =
+        option.audioPath.isEmpty ? _fallbackAudioFor(option) : option.audioPath;
+    final imagePath =
+        option.imagePath.isEmpty ? _fallbackImageFor(option) : option.imagePath;
+
     final playerArgs = {
       'track': AudioTrack(
         title: option.title,
         category: option.category,
         description: option.subtitle,
         duration: option.duration,
-        assetPath: option.audioPath.isEmpty
-            ? AppAssets.resetBreathReset
-            : option.audioPath,
+        assetPath: audioPath,
+        imagePath: imagePath,
       ),
-      'imagePath': AppAssets.archway,
+      'imagePath': imagePath,
       'minimal': true,
       'ritualFeature': RitualWrapFeature.meditation,
     };
@@ -98,5 +102,29 @@ class ResetsController extends GetxController {
         nextArguments: playerArgs,
       ).toMap(),
     );
+  }
+
+  String _fallbackAudioFor(ResetOption option) {
+    final title = option.title.toLowerCase();
+    final category = option.category.toLowerCase();
+    if (title.contains('step away')) return AppAssets.resetStepAway;
+    if (title.contains('box')) return AppAssets.resetBoxBreath;
+    if (title.contains('cold')) return AppAssets.resetColdWater;
+    if (title.contains('54321') || title.contains('5-4-3')) {
+      return AppAssets.resetGroundFiveFourThreeTwoOne;
+    }
+    if (category.contains('release')) return AppAssets.resetStepAway;
+    if (category.contains('clarity')) return AppAssets.resetBoxBreath;
+    if (category.contains('restore')) return AppAssets.resetColdWater;
+    return AppAssets.resetBreathReset;
+  }
+
+  String _fallbackImageFor(ResetOption option) {
+    final category = option.category.toLowerCase();
+    if (category.contains('release')) return AppAssets.spaceGarden;
+    if (category.contains('clarity')) return AppAssets.splashWaterfall;
+    if (category.contains('connect')) return AppAssets.curtainLight;
+    if (category.contains('restore')) return AppAssets.splashLivingRoom;
+    return AppAssets.archway;
   }
 }

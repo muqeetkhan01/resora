@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 
+import '../../../core/constants/app_assets.dart';
 import '../../../core/services/content_items_service.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
@@ -68,9 +69,21 @@ class NoiseController extends GetxController {
         nextRoute: AppRoutes.audioPlayer,
         nextArguments: {
           'track': track,
+          'imagePath': track.imagePath.isEmpty
+              ? _fallbackImageFor(track)
+              : track.imagePath,
           'ritualFeature': RitualWrapFeature.asmr,
         },
       ).toMap(),
     );
+  }
+
+  String _fallbackImageFor(AudioTrack track) {
+    final category = track.category.toLowerCase();
+    if (category.contains('brown')) return AppAssets.spaceRoom;
+    if (category.contains('guided')) return AppAssets.archway;
+    if (category.contains('visual')) return AppAssets.curtainLight;
+    if (category.contains('nature')) return AppAssets.splashWaterfall;
+    return AppAssets.spaceRoom;
   }
 }

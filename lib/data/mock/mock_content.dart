@@ -253,6 +253,8 @@ abstract final class MockContent {
       subtitle: 'A guided inhale and exhale loop to slow the body down.',
       duration: '2 min',
       icon: AppIcons.resets,
+      audioPath: AppAssets.resetBreathReset,
+      imagePath: AppAssets.archway,
     ),
     ResetOption(
       category: 'release',
@@ -260,6 +262,8 @@ abstract final class MockContent {
       subtitle: 'A slow body scan to release what you are holding right now.',
       duration: '3 min',
       icon: AppIcons.resets,
+      audioPath: AppAssets.resetStepAway,
+      imagePath: AppAssets.spaceGarden,
     ),
     ResetOption(
       category: 'clarity',
@@ -267,6 +271,8 @@ abstract final class MockContent {
       subtitle: 'A simple prompt sequence to settle a busy or scattered mind.',
       duration: '4 min',
       icon: AppIcons.resets,
+      audioPath: AppAssets.resetBoxBreath,
+      imagePath: AppAssets.splashWaterfall,
     ),
     ResetOption(
       category: 'connect',
@@ -275,6 +281,8 @@ abstract final class MockContent {
           'A reset for when you feel closed off or guarded around others.',
       duration: '3 min',
       icon: AppIcons.resets,
+      audioPath: AppAssets.resetGroundFiveFourThreeTwoOne,
+      imagePath: AppAssets.curtainLight,
     ),
     ResetOption(
       category: 'restore',
@@ -282,6 +290,8 @@ abstract final class MockContent {
       subtitle: 'Permission to do absolutely nothing for a few minutes.',
       duration: '5 min',
       icon: AppIcons.resets,
+      audioPath: AppAssets.resetColdWater,
+      imagePath: AppAssets.splashLivingRoom,
     ),
   ];
 
@@ -293,6 +303,7 @@ abstract final class MockContent {
           'Steady sound for nervous-system downshift. Let the rhythm of rain do the work your mind has been trying to do.',
       duration: '8 min',
       assetPath: AppAssets.ambientSoftRain,
+      imagePath: AppAssets.splashWaterfall,
     ),
     AudioTrack(
       title: 'Brown noise for the background',
@@ -301,6 +312,7 @@ abstract final class MockContent {
           'Mask the noise and quiet the edges. Brown noise sits lower than white — warmer, less harsh.',
       duration: '20 min',
       assetPath: AppAssets.ambientBrownNoise,
+      imagePath: AppAssets.spaceRoom,
     ),
     AudioTrack(
       title: 'Five minute guided exhale',
@@ -309,6 +321,7 @@ abstract final class MockContent {
           'Voice-led support for the first few minutes. You don\'t need to do anything except follow the breath.',
       duration: '5 min',
       assetPath: AppAssets.guidedExhale,
+      imagePath: AppAssets.archway,
     ),
     AudioTrack(
       title: 'Still water visualization',
@@ -317,6 +330,7 @@ abstract final class MockContent {
           'A short guided image to bring mental clarity when everything feels murky.',
       duration: '7 min',
       assetPath: AppAssets.guidedParentingCalm,
+      imagePath: AppAssets.curtainLight,
     ),
   ];
 
@@ -399,6 +413,8 @@ abstract final class MockContent {
       length: '18 min',
       type: 'Nature',
       color: AppColors.success,
+      audioPath: AppAssets.ambientSoftRain,
+      imagePath: AppAssets.splashWaterfall,
     ),
     MindfulnessSession(
       title: 'Brown noise for the background',
@@ -406,6 +422,8 @@ abstract final class MockContent {
       length: '45 min',
       type: 'Noise',
       color: AppColors.surface,
+      audioPath: AppAssets.ambientBrownNoise,
+      imagePath: AppAssets.spaceRoom,
     ),
     MindfulnessSession(
       title: 'Five-minute guided exhale',
@@ -413,6 +431,8 @@ abstract final class MockContent {
       length: '5 min',
       type: 'Guided',
       color: AppColors.terracotta,
+      audioPath: AppAssets.guidedExhale,
+      imagePath: AppAssets.archway,
     ),
     MindfulnessSession(
       title: 'Parenting calm visualization',
@@ -421,6 +441,8 @@ abstract final class MockContent {
       type: 'Guided',
       color: AppColors.primary,
       isPremium: true,
+      audioPath: AppAssets.guidedParentingCalm,
+      imagePath: AppAssets.curtainLight,
     ),
   ];
 
@@ -437,6 +459,8 @@ abstract final class MockContent {
         'Name what you need next.',
         'Stop after the ask is clear.',
       ],
+      audioPath: AppAssets.rehearsePartnerAfterHardNight,
+      imagePath: AppAssets.curtainLight,
     ),
     RehearsalScenario(
       title: 'Asking for what I need at work',
@@ -449,6 +473,8 @@ abstract final class MockContent {
         'Keep the request specific.',
         'Pause before over-explaining.',
       ],
+      audioPath: AppAssets.rehearseHardConversationWork,
+      imagePath: AppAssets.splashWaterfall,
     ),
     RehearsalScenario(
       title: 'Setting a limit with someone close',
@@ -461,6 +487,8 @@ abstract final class MockContent {
         'Keep it one clear sentence.',
         'Stop before you justify.',
       ],
+      audioPath: AppAssets.rehearseSettingLimit,
+      imagePath: AppAssets.spaceGarden,
     ),
     RehearsalScenario(
       title: 'Re-entering a room after stepping away',
@@ -473,6 +501,8 @@ abstract final class MockContent {
         'Say one steady line.',
         'Keep your pace slow.',
       ],
+      audioPath: AppAssets.rehearseAskForNeed,
+      imagePath: AppAssets.archway,
     ),
     RehearsalScenario(
       title: 'Saying no without explaining yourself',
@@ -484,6 +514,8 @@ abstract final class MockContent {
         'Do not add extra reasons.',
         'Hold the pause after speaking.',
       ],
+      audioPath: AppAssets.rehearseRepairAfterTemper,
+      imagePath: AppAssets.splashLivingRoom,
     ),
   ];
 
