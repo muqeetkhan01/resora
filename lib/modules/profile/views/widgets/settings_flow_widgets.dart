@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../theme/app_colors.dart';
 
 class SettingsFlowText {
-  static const displayFamily = 'Cormorant Garamond Regular';
-  static const bodyFamily = '.SF UI Text';
-
   static TextStyle display(BuildContext context, {double size = 50}) {
-    return TextStyle(
-      fontFamily: displayFamily,
+    return GoogleFonts.jost(
       fontSize: size,
       height: 1.18,
       letterSpacing: size * 0.02,
@@ -20,8 +17,7 @@ class SettingsFlowText {
   }
 
   static TextStyle title(BuildContext context, {double size = 15}) {
-    return TextStyle(
-      fontFamily: bodyFamily,
+    return GoogleFonts.jost(
       fontSize: size,
       color: SettingsFlowColors.warmDark,
       fontWeight: FontWeight.w400,
@@ -32,8 +28,7 @@ class SettingsFlowText {
 
   static TextStyle body(BuildContext context,
       {double size = 13, Color? color}) {
-    return TextStyle(
-      fontFamily: bodyFamily,
+    return GoogleFonts.jost(
       fontSize: size,
       color: color ?? SettingsFlowColors.muted,
       letterSpacing: 0.2,
@@ -44,8 +39,7 @@ class SettingsFlowText {
 
   static TextStyle caps(BuildContext context,
       {double size = 10, Color? color}) {
-    return TextStyle(
-      fontFamily: bodyFamily,
+    return GoogleFonts.jost(
       fontSize: size,
       color: color ?? SettingsFlowColors.terracotta,
       letterSpacing: size * 0.14,

@@ -53,13 +53,6 @@ abstract final class MockContent {
 
   static const quickActions = [
     QuickActionItem(
-      title: 'Is This Normal?',
-      subtitle: 'Quick reassurance',
-      icon: AppIcons.isNormal,
-      accentColor: AppColors.terracotta,
-      route: AppRoutes.normal,
-    ),
-    QuickActionItem(
       title: 'Gentle Resets',
       subtitle: 'Regulate first',
       icon: AppIcons.resets,
@@ -83,14 +76,6 @@ abstract final class MockContent {
   ];
 
   static const spaces = [
-    QuickActionItem(
-      title: 'Is This Normal?',
-      subtitle: 'Short, reassuring answers',
-      icon: AppIcons.isNormal,
-      accentColor: AppColors.terracotta,
-      route: AppRoutes.normal,
-      imagePath: AppAssets.homeNormalStem,
-    ),
     QuickActionItem(
       title: 'Gentle Resets',
       subtitle: 'Breath, grounding, step away',

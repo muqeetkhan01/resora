@@ -29,7 +29,7 @@ class HomeController extends GetxController {
   Future<void> _loadContent() async {
     try {
       final actions = await _contentItemsService.loadQuickActions();
-      _quickActions.assignAll(actions);
+      _quickActions.assignAll(actions.where(_isVisibleAction));
     } catch (_) {
       _quickActions.clear();
     }
@@ -111,8 +111,6 @@ class HomeController extends GetxController {
     }
 
     _routeHasContent[AppRoutes.chat] = true;
-    _routeHasContent[AppRoutes.normal] =
-        await has(_contentItemsService.loadNormalTopics);
     _routeHasContent[AppRoutes.journal] =
         await has(_contentItemsService.loadJournalPrompts);
     _routeHasContent[AppRoutes.resets] =
@@ -125,10 +123,6 @@ class HomeController extends GetxController {
 
   void openJournal() {
     Get.toNamed(AppRoutes.journal);
-  }
-
-  void openNormal() {
-    Get.toNamed(AppRoutes.normal);
   }
 
   void openNoise() {
@@ -153,5 +147,12 @@ class HomeController extends GetxController {
 
   void openPremium() {
     Get.toNamed(AppRoutes.premium);
+  }
+
+  bool _isVisibleAction(QuickActionItem item) {
+    final title = item.title.toLowerCase();
+    return item.route != AppRoutes.normal &&
+        item.route != AppRoutes.normalAsk &&
+        !title.contains('is this normal');
   }
 }

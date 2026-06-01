@@ -22,9 +22,6 @@ import '../modules/mindfulness/views/mindfulness_view.dart';
 import '../modules/noise/controllers/noise_controller.dart';
 import '../modules/noise/views/audio_player_view.dart';
 import '../modules/noise/views/noise_view.dart';
-import '../modules/normal/controllers/normal_controller.dart';
-import '../modules/normal/views/normal_ask_view.dart';
-import '../modules/normal/views/normal_view.dart';
 import '../modules/onboarding/controllers/onboarding_controller.dart';
 import '../modules/onboarding/views/onboarding_view.dart';
 import '../modules/premium/controllers/premium_controller.dart';
@@ -125,22 +122,6 @@ abstract final class AppPages {
       page: SpacesView.new,
       binding: BindingsBuilder(() {
         Get.lazyPut(SpacesController.new);
-      }),
-    ),
-    GetPage(
-      name: AppRoutes.normal,
-      page: NormalView.new,
-      binding: BindingsBuilder(() {
-        Get.lazyPut(NormalController.new);
-      }),
-    ),
-    GetPage(
-      name: AppRoutes.normalAsk,
-      page: NormalAskView.new,
-      binding: BindingsBuilder(() {
-        if (!Get.isRegistered<NormalController>()) {
-          Get.put(NormalController());
-        }
       }),
     ),
     GetPage(

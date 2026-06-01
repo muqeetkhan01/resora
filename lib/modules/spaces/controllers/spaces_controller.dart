@@ -25,7 +25,7 @@ class SpacesController extends GetxController {
   Future<void> _loadSpaces() async {
     try {
       final items = await _contentItemsService.loadSpaces();
-      _spaces.assignAll(items);
+      _spaces.assignAll(items.where(_isVisibleSpace));
     } catch (_) {
       _spaces.clear();
     }
@@ -44,8 +44,6 @@ class SpacesController extends GetxController {
     }
 
     _routeHasContent[AppRoutes.chat] = true;
-    _routeHasContent[AppRoutes.normal] =
-        await has(_contentItemsService.loadNormalTopics);
     _routeHasContent[AppRoutes.resets] =
         await has(_contentItemsService.loadResetOptions);
     _routeHasContent[AppRoutes.noise] =
@@ -110,5 +108,12 @@ class SpacesController extends GetxController {
 
   void openProfile() {
     Get.toNamed(AppRoutes.profile);
+  }
+
+  bool _isVisibleSpace(QuickActionItem item) {
+    final title = item.title.toLowerCase();
+    return item.route != AppRoutes.normal &&
+        item.route != AppRoutes.normalAsk &&
+        !title.contains('is this normal');
   }
 }

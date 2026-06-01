@@ -504,29 +504,6 @@ const _specs = <_HomeSlideSpec>[
     ),
     imageAlignment: Alignment(0, 0.1),
   ),
-  _HomeSlideSpec(
-    route: AppRoutes.normal,
-    titleHint: 'normal',
-    defaultTitle: 'is this normal?',
-    defaultSubtitle: 'A community of honest questions and honest answers.',
-    defaultImage: AppAssets.homeNormalStem,
-    label: 'IS THIS NORMAL',
-    labelColor: Color(0xFF8FAF92),
-    headline: 'Whatever this is,\nyou\'re not the\nonly one.',
-    cta: 'EXPLORE',
-    overlayGradient: LinearGradient(
-      begin: Alignment.topCenter,
-      end: Alignment.bottomCenter,
-      colors: [
-        Color(0x6B080E0A),
-        Color(0x14080E0A),
-        Color(0x8A080E0A),
-        Color(0xE6060C08),
-      ],
-      stops: [0, 0.30, 0.62, 1],
-    ),
-    imageAlignment: Alignment(0, 0),
-  ),
 ];
 
 _ResolvedHomeSlot _resolveSlot({

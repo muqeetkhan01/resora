@@ -309,14 +309,6 @@ const _specs = <_SpaceSpec>[
     defaultImage: AppAssets.homeJournalBed,
   ),
   _SpaceSpec(
-    route: AppRoutes.normal,
-    titleHint: 'normal',
-    defaultTitle: 'Is This Normal',
-    defaultSubtitle:
-        'Real moments from real people. You are not alone in what you are experiencing.',
-    defaultImage: AppAssets.homeNormalStem,
-  ),
-  _SpaceSpec(
     route: AppRoutes.rehearse,
     titleHint: 'rehearse',
     defaultTitle: 'Rehearse the Moment',

@@ -12,7 +12,7 @@ abstract final class AppTheme {
       FontStyle style = FontStyle.normal,
       Color color = AppColors.primary,
     }) {
-      return GoogleFonts.cormorantGaramond(
+      return GoogleFonts.jost(
         fontSize: size,
         fontWeight: FontWeight.w300,
         height: height,

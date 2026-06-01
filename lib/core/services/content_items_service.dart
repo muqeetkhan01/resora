@@ -917,6 +917,9 @@ class ContentItemsService {
   }) {
     final raw = routeTarget.trim();
     if (raw.isNotEmpty) {
+      if (raw == AppRoutes.normal || raw == AppRoutes.normalAsk) {
+        return AppRoutes.spaces;
+      }
       if (raw.startsWith('/')) {
         return raw;
       }
@@ -930,7 +933,7 @@ class ContentItemsService {
           return AppRoutes.chat;
         case 'normal':
         case 'is_this_normal':
-          return AppRoutes.normal;
+          return AppRoutes.spaces;
         case 'resets':
         case 'gentle_reset':
         case 'gentle_resets':
@@ -957,7 +960,7 @@ class ContentItemsService {
       return AppRoutes.chat;
     }
     if (title.contains('normal')) {
-      return AppRoutes.normal;
+      return AppRoutes.spaces;
     }
     if (title.contains('reset')) {
       return AppRoutes.resets;
@@ -982,8 +985,6 @@ class ContentItemsService {
     switch (route) {
       case AppRoutes.chat:
         return AppIcons.aiChat;
-      case AppRoutes.normal:
-        return AppIcons.isNormal;
       case AppRoutes.resets:
         return AppIcons.resets;
       case AppRoutes.noise:
@@ -1096,8 +1097,6 @@ class ContentItemsService {
     switch (route) {
       case AppRoutes.chat:
         return AppAssets.homeTalkOcean;
-      case AppRoutes.normal:
-        return AppAssets.homeNormalStem;
       case AppRoutes.journal:
         return AppAssets.homeJournalBed;
       case AppRoutes.noise:

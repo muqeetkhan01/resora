@@ -41,11 +41,6 @@ class OnboardingController extends GetxController {
           'Instant AI guidance designed by our licensed behavioral specialists.',
     ),
     (
-      title: 'Is this normal?',
-      body:
-          'Discover you are not alone. Community answers to the questions we all have but rarely ask.',
-    ),
-    (
       title: 'Guided meditations',
       body: 'Effortless sessions for mental clarity.',
     ),

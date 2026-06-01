@@ -215,6 +215,8 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
           backgroundColor: Colors.black,
           body: _MuseumMinimalPlayer(
             imagePath: _args.imagePath,
+            title: track.title,
+            category: track.category,
             progress: _progress,
             positionLabel: _formatDuration(_position),
             remainingLabel: _remainingDurationLabel(track.duration),
@@ -447,6 +449,8 @@ class _AudioPlayerArgs {
 class _MuseumMinimalPlayer extends StatelessWidget {
   const _MuseumMinimalPlayer({
     required this.imagePath,
+    required this.title,
+    required this.category,
     required this.progress,
     required this.positionLabel,
     required this.remainingLabel,
@@ -461,6 +465,8 @@ class _MuseumMinimalPlayer extends StatelessWidget {
   });
 
   final String imagePath;
+  final String title;
+  final String category;
   final double progress;
   final String positionLabel;
   final String remainingLabel;
@@ -476,134 +482,161 @@ class _MuseumMinimalPlayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final slider = progress.clamp(0.0, 1.0);
+    final isNetwork = imagePath.startsWith('http');
 
     return Stack(
       fit: StackFit.expand,
       children: [
-        Image.asset(
-          imagePath,
-          fit: BoxFit.cover,
-          alignment: Alignment.topCenter,
-        ),
-        DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Colors.black.withOpacity(0.02),
-                Colors.black.withOpacity(0.16),
-                Colors.black.withOpacity(0.28),
-                Colors.black.withOpacity(0.44),
-              ],
-              stops: const [0.0, 0.6, 0.82, 1.0],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+        isNetwork
+            ? Image.network(
+                imagePath,
+                fit: BoxFit.cover,
+                alignment: Alignment.topCenter,
+              )
+            : Image.asset(
+                imagePath,
+                fit: BoxFit.cover,
+                alignment: Alignment.topCenter,
+              ),
+        const _MuseumBottomVignette(),
+        SafeArea(
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 24, top: 28),
+              child: GestureDetector(
+                onTap: onBack,
+                behavior: HitTestBehavior.opaque,
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: CustomPaint(
+                    size: const Size(16, 16),
+                    painter: _CloseXPainter(
+                      color: AppColors.white.withOpacity(0.9),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
         ),
-        SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.lg,
-              AppSpacing.md,
-              AppSpacing.lg,
-              44,
-            ),
-            child: Column(
-              children: [
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: IconButton(
-                    onPressed: onBack,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints.tightFor(
-                      width: 32,
-                      height: 32,
-                    ),
-                    icon: const Icon(
-                      AppIcons.close,
-                      color: AppColors.white,
-                      size: 20,
-                    ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(32, 0, 32, 52),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    category.toUpperCase(),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.white.withOpacity(0.55),
+                          fontSize: 9,
+                          fontWeight: FontWeight.w400,
+                          letterSpacing: 1.98,
+                          height: 1.2,
+                        ),
                   ),
-                ),
-                const Spacer(),
-                Row(
-                  children: [
+                  const SizedBox(height: 10),
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                          color: AppColors.white.withOpacity(0.95),
+                          fontSize: 34,
+                          fontWeight: FontWeight.w300,
+                          letterSpacing: 1.7,
+                          height: 1.15,
+                        ),
+                  ),
+                  const SizedBox(height: 28),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        positionLabel,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.white.withOpacity(0.5),
+                              fontSize: 9,
+                              fontWeight: FontWeight.w400,
+                              letterSpacing: 0.54,
+                            ),
+                      ),
+                      Text(
+                        remainingLabel,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.white.withOpacity(0.5),
+                              fontSize: 9,
+                              fontWeight: FontWeight.w400,
+                              letterSpacing: 0.54,
+                            ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  _ResoraProgressSlider(
+                    progress: slider,
+                    onSeek: onSeek,
+                  ),
+                  if (errorText != null) ...[
+                    const SizedBox(height: AppSpacing.sm),
                     Text(
-                      positionLabel,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                            letterSpacing: 0.2,
+                      errorText!,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.terracotta,
                           ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      remainingLabel,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                            letterSpacing: 0.2,
-                          ),
+                      textAlign: TextAlign.center,
                     ),
                   ],
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                SliderTheme(
-                  data: SliderTheme.of(context).copyWith(
-                    trackHeight: 1,
-                    activeTrackColor: AppColors.white,
-                    inactiveTrackColor: AppColors.white.withOpacity(0.22),
-                    thumbColor: AppColors.terracotta,
-                    thumbShape:
-                        const RoundSliderThumbShape(enabledThumbRadius: 6),
-                    overlayShape: SliderComponentShape.noOverlay,
-                  ),
-                  child: Slider(
-                    min: 0,
-                    max: 1,
-                    value: slider,
-                    onChanged: onSeek,
-                  ),
-                ),
-                if (errorText != null) ...[
-                  const SizedBox(height: AppSpacing.md),
-                  Text(
-                    errorText!,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.terracotta,
+                  const SizedBox(height: 28),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _PlayerPaintButton(
+                        onTap: onSeekBackward,
+                        size: const Size(34, 34),
+                        painter: _SkipBackPainter(
+                          color: AppColors.white.withOpacity(0.85),
                         ),
-                    textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(width: 56),
+                      if (isLoading)
+                        SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 1,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              AppColors.white.withOpacity(0.7),
+                            ),
+                          ),
+                        )
+                      else
+                        _PlayerPaintButton(
+                          onTap: onPlayPause,
+                          size: const Size(22, 22),
+                          painter: isPlaying
+                              ? _PausePainter(
+                                  color: AppColors.white.withOpacity(0.92),
+                                )
+                              : _PlayPainter(
+                                  color: AppColors.white.withOpacity(0.92),
+                                ),
+                        ),
+                      const SizedBox(width: 56),
+                      _PlayerPaintButton(
+                        onTap: onSeekForward,
+                        size: const Size(34, 34),
+                        painter: _SkipForwardPainter(
+                          color: AppColors.white.withOpacity(0.85),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
-                const SizedBox(height: AppSpacing.lg),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _MinimalTransportButton(
-                      backward: true,
-                      onTap: onSeekBackward,
-                    ),
-                    const SizedBox(width: AppSpacing.xl),
-                    _TransportGlyph(
-                      icon: isLoading
-                          ? Icons.hourglass_top_rounded
-                          : (isPlaying
-                              ? Icons.pause_rounded
-                              : Icons.play_arrow_rounded),
-                      onTap: onPlayPause,
-                      iconSize: 36,
-                    ),
-                    const SizedBox(width: AppSpacing.xl),
-                    _MinimalTransportButton(
-                      backward: false,
-                      onTap: onSeekForward,
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
           ),
         ),
@@ -612,66 +645,300 @@ class _MuseumMinimalPlayer extends StatelessWidget {
   }
 }
 
-class _TransportGlyph extends StatelessWidget {
-  const _TransportGlyph({
-    required this.icon,
-    this.onTap,
-    this.iconSize = 30,
-  });
-
-  final IconData icon;
-  final VoidCallback? onTap;
-  final double iconSize;
+class _MuseumBottomVignette extends StatelessWidget {
+  const _MuseumBottomVignette();
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      splashColor: AppColors.terracotta.withOpacity(0.18),
-      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-      child: SizedBox(
-        width: 48,
-        height: 48,
-        child: Icon(
-          icon,
-          color: AppColors.white,
-          size: iconSize,
+    return const Align(
+      alignment: Alignment.bottomCenter,
+      child: FractionallySizedBox(
+        heightFactor: 0.55,
+        widthFactor: 1,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.bottomCenter,
+              end: Alignment.topCenter,
+              stops: [0, 0.35, 0.65, 1],
+              colors: [
+                Color(0xB8000000),
+                Color(0x73000000),
+                Color(0x26000000),
+                Color(0x00000000),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 }
 
-class _MinimalTransportButton extends StatelessWidget {
-  const _MinimalTransportButton({
-    required this.backward,
-    required this.onTap,
+class _ResoraProgressSlider extends StatelessWidget {
+  const _ResoraProgressSlider({
+    required this.progress,
+    required this.onSeek,
   });
 
-  final bool backward;
-  final VoidCallback onTap;
+  final double progress;
+  final ValueChanged<double> onSeek;
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-      splashColor: AppColors.terracotta.withOpacity(0.16),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onHorizontalDragUpdate: (details) {
+        final box = context.findRenderObject() as RenderBox;
+        final pct = (details.localPosition.dx / box.size.width).clamp(0.0, 1.0);
+        onSeek(pct);
+      },
+      onTapDown: (details) {
+        final box = context.findRenderObject() as RenderBox;
+        final pct = (details.localPosition.dx / box.size.width).clamp(0.0, 1.0);
+        onSeek(pct);
+      },
       child: SizedBox(
-        width: 48,
-        height: 48,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Icon(
-              backward ? Icons.replay_10 : Icons.forward_10,
-              size: 25,
-              color: AppColors.white.withOpacity(0.95),
-            ),
-          ],
+        height: 20,
+        child: CustomPaint(
+          painter: _ProgressTrackPainter(progress: progress),
+          size: const Size(double.infinity, 20),
         ),
       ),
     );
+  }
+}
+
+class _ProgressTrackPainter extends CustomPainter {
+  const _ProgressTrackPainter({required this.progress});
+
+  final double progress;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final cy = size.height / 2;
+    final trackPaint = Paint()
+      ..color = AppColors.white.withOpacity(0.25)
+      ..strokeWidth = 0.5
+      ..style = PaintingStyle.stroke;
+    canvas.drawLine(Offset(0, cy), Offset(size.width, cy), trackPaint);
+
+    final fillPaint = Paint()
+      ..color = AppColors.white.withOpacity(0.9)
+      ..strokeWidth = 0.5
+      ..style = PaintingStyle.stroke;
+    canvas.drawLine(
+      Offset(0, cy),
+      Offset(size.width * progress.clamp(0.0, 1.0), cy),
+      fillPaint,
+    );
+
+    final thumbPaint = Paint()
+      ..color = AppColors.white
+      ..style = PaintingStyle.fill;
+    canvas.drawRect(
+      Rect.fromCenter(
+        center: Offset(size.width * progress.clamp(0.0, 1.0), cy),
+        width: 5,
+        height: 5,
+      ),
+      thumbPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_ProgressTrackPainter oldDelegate) {
+    return oldDelegate.progress != progress;
+  }
+}
+
+class _PlayerPaintButton extends StatelessWidget {
+  const _PlayerPaintButton({
+    required this.onTap,
+    required this.size,
+    required this.painter,
+  });
+
+  final VoidCallback onTap;
+  final Size size;
+  final CustomPainter painter;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: CustomPaint(
+          size: size,
+          painter: painter,
+        ),
+      ),
+    );
+  }
+}
+
+class _CloseXPainter extends CustomPainter {
+  const _CloseXPainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 1.2
+      ..strokeCap = StrokeCap.square
+      ..style = PaintingStyle.stroke;
+    canvas.drawLine(Offset.zero, Offset(size.width, size.height), paint);
+    canvas.drawLine(Offset(size.width, 0), Offset(0, size.height), paint);
+  }
+
+  @override
+  bool shouldRepaint(_CloseXPainter oldDelegate) {
+    return oldDelegate.color != color;
+  }
+}
+
+class _PausePainter extends CustomPainter {
+  const _PausePainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+    canvas
+      ..drawRect(Rect.fromLTWH(3, 2, 4.5, size.height - 4), paint)
+      ..drawRect(Rect.fromLTWH(14.5, 2, 4.5, size.height - 4), paint);
+  }
+
+  @override
+  bool shouldRepaint(_PausePainter oldDelegate) {
+    return oldDelegate.color != color;
+  }
+}
+
+class _PlayPainter extends CustomPainter {
+  const _PlayPainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+    final path = Path()
+      ..moveTo(4, 2)
+      ..lineTo(size.width, size.height / 2)
+      ..lineTo(4, size.height - 2)
+      ..close();
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(_PlayPainter oldDelegate) {
+    return oldDelegate.color != color;
+  }
+}
+
+class _SkipBackPainter extends CustomPainter {
+  const _SkipBackPainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final cx = size.width / 2;
+    final cy = size.height / 2;
+    final radius = size.width * 0.38;
+    final arcPaint = Paint()
+      ..color = color
+      ..strokeWidth = 1.5
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawArc(
+      Rect.fromCircle(center: Offset(cx, cy), radius: radius),
+      -math.pi / 2,
+      -3 * math.pi / 2,
+      false,
+      arcPaint,
+    );
+
+    final arrowPaint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+    final p1 = Path()
+      ..moveTo(cx - 1, cy - radius - 4)
+      ..lineTo(cx - 6, cy - radius + 2)
+      ..lineTo(cx - 1, cy - radius + 2)
+      ..close();
+    final p2 = Path()
+      ..moveTo(cx - 5, cy - radius - 4)
+      ..lineTo(cx - 10, cy - radius + 2)
+      ..lineTo(cx - 5, cy - radius + 2)
+      ..close();
+    canvas
+      ..drawPath(p1, arrowPaint)
+      ..drawPath(p2, arrowPaint);
+  }
+
+  @override
+  bool shouldRepaint(_SkipBackPainter oldDelegate) {
+    return oldDelegate.color != color;
+  }
+}
+
+class _SkipForwardPainter extends CustomPainter {
+  const _SkipForwardPainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final cx = size.width / 2;
+    final cy = size.height / 2;
+    final radius = size.width * 0.38;
+    final arcPaint = Paint()
+      ..color = color
+      ..strokeWidth = 1.5
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawArc(
+      Rect.fromCircle(center: Offset(cx, cy), radius: radius),
+      -math.pi / 2,
+      3 * math.pi / 2,
+      false,
+      arcPaint,
+    );
+
+    final arrowPaint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+    final p1 = Path()
+      ..moveTo(cx + 1, cy - radius - 4)
+      ..lineTo(cx + 6, cy - radius + 2)
+      ..lineTo(cx + 1, cy - radius + 2)
+      ..close();
+    final p2 = Path()
+      ..moveTo(cx + 5, cy - radius - 4)
+      ..lineTo(cx + 10, cy - radius + 2)
+      ..lineTo(cx + 5, cy - radius + 2)
+      ..close();
+    canvas
+      ..drawPath(p1, arrowPaint)
+      ..drawPath(p2, arrowPaint);
+  }
+
+  @override
+  bool shouldRepaint(_SkipForwardPainter oldDelegate) {
+    return oldDelegate.color != color;
   }
 }
 
@@ -1027,22 +1294,40 @@ class _TransportRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _MinimalTransportButton(
-          backward: true,
+        _PlayerPaintButton(
           onTap: onPrevious,
+          size: const Size(34, 34),
+          painter: _SkipBackPainter(
+            color: AppColors.white.withOpacity(0.86),
+          ),
         ),
-        const SizedBox(width: AppSpacing.xl),
-        _TransportGlyph(
-          icon: isLoading
-              ? Icons.hourglass_top_rounded
-              : (isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded),
-          iconSize: 34,
-          onTap: onPlayPause,
-        ),
-        const SizedBox(width: AppSpacing.xl),
-        _MinimalTransportButton(
-          backward: false,
+        const SizedBox(width: 48),
+        if (isLoading)
+          SizedBox(
+            width: 22,
+            height: 22,
+            child: CircularProgressIndicator(
+              strokeWidth: 1,
+              valueColor: AlwaysStoppedAnimation<Color>(
+                AppColors.white.withOpacity(0.72),
+              ),
+            ),
+          )
+        else
+          _PlayerPaintButton(
+            onTap: onPlayPause,
+            size: const Size(22, 22),
+            painter: isPlaying
+                ? _PausePainter(color: AppColors.white.withOpacity(0.92))
+                : _PlayPainter(color: AppColors.white.withOpacity(0.92)),
+          ),
+        const SizedBox(width: 48),
+        _PlayerPaintButton(
           onTap: onNext,
+          size: const Size(34, 34),
+          painter: _SkipForwardPainter(
+            color: AppColors.white.withOpacity(0.86),
+          ),
         ),
       ],
     );

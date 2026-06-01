@@ -50,33 +50,6 @@ class ProfileView extends GetView<ProfileController> {
             ),
           ),
         ),
-        const SectionLabel('your journey'),
-        const SettingsRule(horizontal: 0),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: Row(
-            children: [
-              _JourneyStat(value: '12', label: 'days checked in'),
-              _JourneyStat(
-                value: '7',
-                label: 'quiet resets',
-                alignment: CrossAxisAlignment.center,
-              ),
-              _JourneyStat(
-                value: '28',
-                label: 'journal entries',
-                alignment: CrossAxisAlignment.end,
-              ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 4),
-          child: Text(
-            'Keep showing up.\nYour future self is taking notes.',
-            style: SettingsFlowText.body(context, size: 12),
-          ),
-        ),
         const SectionLabel('your space'),
         const SettingsRule(horizontal: 0),
         Obx(
@@ -192,31 +165,5 @@ class ProfileView extends GetView<ProfileController> {
       await controller.signOut();
       Get.offAllNamed(AppRoutes.welcome);
     }
-  }
-}
-
-class _JourneyStat extends StatelessWidget {
-  const _JourneyStat({
-    required this.value,
-    required this.label,
-    this.alignment = CrossAxisAlignment.start,
-  });
-
-  final String value;
-  final String label;
-  final CrossAxisAlignment alignment;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: alignment,
-        children: [
-          Text(value, style: SettingsFlowText.display(context, size: 30)),
-          const SizedBox(height: 2),
-          Text(label, style: SettingsFlowText.caps(context, size: 10)),
-        ],
-      ),
-    );
   }
 }
