@@ -25,20 +25,28 @@ class ChatView extends GetView<ChatController> {
     return PopScope(
       canPop: !showRitualExit,
       onPopInvoked: (didPop) {
+        controller.dismissKeyboard();
         if (!didPop && showRitualExit) {
           _openRitualExit(routeArgs.ritualFeature!);
         }
       },
-      child: Scaffold(
-        backgroundColor: AppColors.canvas,
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-            child: _ChatContent(
-              rootTab: rootTab,
-              onBack: showRitualExit
-                  ? () => _openRitualExit(routeArgs.ritualFeature!)
-                  : () => Get.back(),
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: controller.dismissKeyboard,
+        child: Scaffold(
+          backgroundColor: AppColors.canvas,
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+              child: _ChatContent(
+                rootTab: rootTab,
+                onBack: showRitualExit
+                    ? () => _openRitualExit(routeArgs.ritualFeature!)
+                    : () {
+                        controller.dismissKeyboard();
+                        Get.back();
+                      },
+              ),
             ),
           ),
         ),
@@ -47,6 +55,7 @@ class ChatView extends GetView<ChatController> {
   }
 
   void _openRitualExit(String feature) {
+    controller.dismissKeyboard();
     Get.offNamed(
       AppRoutes.ritualWrap,
       arguments: RitualWrapArgs.exit(feature: feature).toMap(),
@@ -295,6 +304,7 @@ class _ChatInputBar extends GetView<ChatController> {
               Expanded(
                 child: TextField(
                   controller: controller.inputController,
+                  focusNode: controller.inputFocusNode,
                   minLines: 1,
                   maxLines: 4,
                   maxLength: ChatController.maxCharacters,
@@ -306,8 +316,7 @@ class _ChatInputBar extends GetView<ChatController> {
                   ],
                   textInputAction: TextInputAction.send,
                   onSubmitted: (_) => controller.sendMessage(),
-                  onTapOutside: (_) =>
-                      FocusManager.instance.primaryFocus?.unfocus(),
+                  onTapOutside: (_) => controller.dismissKeyboard(),
                   cursorColor: AppColors.primary,
                   style: textTheme.bodyLarge?.copyWith(
                     color: AppColors.primary,

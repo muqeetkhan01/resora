@@ -594,16 +594,10 @@ class _MuseumMinimalPlayer extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.forward_10,
-                          color: AppColors.white.withOpacity(0.85), size: 35),
-
-                      // _PlayerPaintButton(
-                      //   onTap: onSeekBackward,
-                      //   size: const Size(34, 34),
-                      //   painter: _SkipBackPainter(
-                      //     color: AppColors.white.withOpacity(0.85),
-                      //   ),
-                      // ),
+                      _SeekIconButton(
+                        icon: CupertinoIcons.gobackward,
+                        onTap: onSeekBackward,
+                      ),
                       const SizedBox(width: 56),
                       if (isLoading)
                         SizedBox(
@@ -619,7 +613,7 @@ class _MuseumMinimalPlayer extends StatelessWidget {
                       else
                         _PlayerPaintButton(
                           onTap: onPlayPause,
-                          size: const Size(22, 22),
+                          size: const Size(28, 28),
                           painter: isPlaying
                               ? _PausePainter(
                                   color: AppColors.white.withOpacity(0.92),
@@ -629,15 +623,10 @@ class _MuseumMinimalPlayer extends StatelessWidget {
                                 ),
                         ),
                       const SizedBox(width: 56),
-                      Icon(Icons.replay,
-                          color: AppColors.white.withOpacity(0.85), size: 35),
-                      // _PlayerPaintButton(
-                      //   onTap: onSeekForward,
-                      //   size: const Size(34, 34),
-                      //   painter: _SkipForwardPainter(
-                      //     color: AppColors.white.withOpacity(0.85),
-                      //   ),
-                      // ),
+                      _SeekIconButton(
+                        icon: CupertinoIcons.goforward,
+                        onTap: onSeekForward,
+                      ),
                     ],
                   ),
                 ],
@@ -646,6 +635,33 @@ class _MuseumMinimalPlayer extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _SeekIconButton extends StatelessWidget {
+  const _SeekIconButton({
+    required this.icon,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: SizedBox(
+        width: 34,
+        height: 34,
+        child: Icon(
+          icon,
+          color: AppColors.white.withOpacity(0.86),
+          size: 28,
+        ),
+      ),
     );
   }
 }

@@ -52,32 +52,6 @@ class ProfileView extends GetView<ProfileController> {
         const SettingsRule(horizontal: 0),
         SettingsRow(
           label: 'journal lock',
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // SettingsToggle(
-              //   value: controller.journalLockEnabled.value,
-              //   onChanged: (value) {
-              //     if (value) {
-              //       controller.openJournalLock();
-              //     } else {
-              //       controller.toggleJournalLock(false);
-              //     }
-              //   },
-              // ),
-              // const SizedBox(width: 10),
-              InkWell(
-                onTap: () {
-                  controller.openJournalLock();
-                },
-                child: Text(
-                  '›',
-                  style: SettingsFlowText.title(context, size: 18)
-                      .copyWith(color: SettingsFlowColors.terracotta),
-                ),
-              ),
-            ],
-          ),
           onTap: controller.openJournalLock,
         ),
         const SettingsRule(horizontal: 0),

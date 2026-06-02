@@ -105,14 +105,16 @@ class _SpacesViewState extends State<SpacesView> {
                 height: 548,
                 child: PageView.builder(
                   controller: _pageController,
-                  padEnds: true,
+                  padEnds: false,
                   itemCount: slots.length,
                   onPageChanged: (value) => setState(() => _active = value),
                   itemBuilder: (context, index) {
                     final slot = slots[index];
                     return Padding(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: _cardGap / 2),
+                      padding: EdgeInsets.only(
+                        left: index == 0 ? AppSpacing.xl : _cardGap / 2,
+                        right: _cardGap / 2,
+                      ),
                       child: _SpaceCard(
                         slot: slot,
                         width: _cardWidth,

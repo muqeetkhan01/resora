@@ -1,5 +1,8 @@
-import '../../../routes/app_routes.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+
+import '../../../routes/app_routes.dart';
 
 class DashboardController extends GetxController {
   final selectedIndex = 0.obs;
@@ -14,6 +17,8 @@ class DashboardController extends GetxController {
   }
 
   void switchTab(int index) {
+    FocusManager.instance.primaryFocus?.unfocus();
+    SystemChannels.textInput.invokeMethod<void>('TextInput.hide');
     selectedIndex.value = index;
   }
 

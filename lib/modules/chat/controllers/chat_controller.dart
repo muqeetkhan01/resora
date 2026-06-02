@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
@@ -21,6 +22,7 @@ class ChatController extends GetxController {
   final _session = Get.find<AppSessionController>();
 
   final inputController = TextEditingController();
+  final inputFocusNode = FocusNode();
   final scrollController = ScrollController();
   final messages = <ChatMessageModel>[].obs;
   final isTyping = false.obs;
@@ -64,6 +66,12 @@ class ChatController extends GetxController {
   int get characterCount => draftText.value.characters.length;
   bool get shouldShowCharacterWarning => characterCount >= warningCharacters;
 
+  void dismissKeyboard() {
+    inputFocusNode.unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
+    SystemChannels.textInput.invokeMethod<void>('TextInput.hide');
+  }
+
   @override
   void onInit() {
     super.onInit();
@@ -73,6 +81,7 @@ class ChatController extends GetxController {
 
   Future<void> sendMessage([String? preset]) async {
     final text = (preset ?? inputController.text).trim();
+    dismissKeyboard();
     if (text.isEmpty || isSendCooldownActive.value || isTyping.value) return;
     if (text.characters.length > maxCharacters) return;
 
@@ -281,10 +290,12 @@ class ChatController extends GetxController {
 
   @override
   void onClose() {
+    dismissKeyboard();
     inputController.removeListener(_handleDraftChanged);
     _sendCooldownTimer?.cancel();
     _sessionInactivityTimer?.cancel();
     unawaited(_closeSessionAndUpdateMemory(reason: 'session_end'));
+    inputFocusNode.dispose();
     inputController.dispose();
     scrollController.dispose();
     super.onClose();

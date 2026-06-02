@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:resora/core/constants/app_icons.dart';
 
+import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
 import '../controllers/noise_controller.dart';
@@ -144,6 +145,10 @@ class _NoiseViewState extends State<NoiseView> {
                       itemBuilder: (context, index) => _NoiseSlide(
                         track: tracks[index],
                         onPlay: () => controller.openTrack(tracks[index]),
+                        onOpenFilters: () => _showCategorySheet(
+                          context,
+                          controller: controller,
+                        ),
                       ),
                     ),
                     Positioned(
@@ -167,16 +172,79 @@ class _NoiseViewState extends State<NoiseView> {
       ),
     );
   }
+
+  Future<void> _showCategorySheet(
+    BuildContext context, {
+    required NoiseController controller,
+  }) async {
+    final selected = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: const Color(0xFFFAFBF9),
+      useSafeArea: true,
+      builder: (context) {
+        final selectedCategory = controller.selectedCategory.value;
+
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.xl,
+            AppSpacing.sm,
+            AppSpacing.xl,
+            AppSpacing.xl,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(width: 34, height: 3, color: AppColors.line),
+              const SizedBox(height: AppSpacing.md),
+              for (final category in controller.categories)
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    category.toLowerCase(),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: category == selectedCategory
+                              ? const Color(0xFF4A342B)
+                              : const Color(0xFFA3A3A3),
+                          fontSize: 14,
+                        ),
+                  ),
+                  trailing: category == selectedCategory
+                      ? const Icon(
+                          Icons.check_rounded,
+                          color: AppColors.terracotta,
+                          size: 18,
+                        )
+                      : null,
+                  onTap: () => Navigator.of(context).pop(category),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (selected == null) return;
+    controller.selectCategory(selected);
+    _active = 0;
+    if (_pageController.hasClients) {
+      _pageController.jumpToPage(0);
+    }
+    if (mounted) {
+      setState(() {});
+    }
+  }
 }
 
 class _NoiseSlide extends StatelessWidget {
   const _NoiseSlide({
     required this.track,
     required this.onPlay,
+    required this.onOpenFilters,
   });
 
   final AudioTrack track;
   final VoidCallback onPlay;
+  final VoidCallback onOpenFilters;
 
   @override
   Widget build(BuildContext context) {
@@ -264,7 +332,7 @@ class _NoiseSlide extends StatelessWidget {
                   ),
                   const Spacer(),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: onOpenFilters,
                     icon: const Icon(
                       AppIcons.filter,
                       size: 18,
