@@ -75,7 +75,7 @@ class _ResetsViewState extends State<ResetsView> {
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+                padding: const EdgeInsets.fromLTRB(0, 24, 24, 0),
                 child: Row(
                   children: [
                     IconButton(
@@ -86,31 +86,32 @@ class _ResetsViewState extends State<ResetsView> {
                       icon: const Icon(
                         Icons.arrow_back_ios_rounded,
                         size: 16,
-                        color: Color(0xFFA3A3A3),
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
-                    Text(
-                      'gentle reset',
-                      style: textTheme.bodyMedium?.copyWith(
-                        fontSize: 14,
-                        color: const Color(0xFFA3A3A3),
-                        fontWeight: FontWeight.w400,
-                        fontStyle: FontStyle.normal,
+                        color: AppColors.terracotta,
                       ),
                     ),
                     const Spacer(),
                     Text(
-                      '$currentNumber / $totalNumber',
+                      'gentle reset',
                       style: textTheme.bodyMedium?.copyWith(
                         fontSize: 14,
-                        color: const Color(0xFFA3A3A3),
+                        color: AppColors.primary,
                         fontWeight: FontWeight.w400,
+                        fontStyle: FontStyle.normal,
                       ),
                     ),
+                    // const Spacer(),
+                    // Text(
+                    //   '$currentNumber / $totalNumber',
+                    //   style: textTheme.bodyMedium?.copyWith(
+                    //     fontSize: 14,
+                    //     color: const Color(0xFFA3A3A3),
+                    //     fontWeight: FontWeight.w400,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
+              const SizedBox(height: 8),
               SizedBox(
                 height: 46,
                 child: ListView.separated(
@@ -265,7 +266,7 @@ class _ResetSlide extends StatelessWidget {
               Text(
                 option.category.toUpperCase(),
                 style: textTheme.labelMedium?.copyWith(
-                  color: AppColors.terracotta,
+                  color: AppColors.primary,
                   letterSpacing: 1.5,
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
@@ -283,11 +284,11 @@ class _ResetSlide extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              Container(
-                width: 32,
-                height: 1,
-                color: const Color(0xFFE6E6E6),
-              ),
+              // Container(
+              //   width: 32,
+              //   height: 1,
+              //   color: const Color(0xFFE6E6E6),
+              // ),
               const SizedBox(height: 16),
               Text(
                 option.subtitle,

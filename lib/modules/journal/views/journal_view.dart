@@ -63,7 +63,7 @@ class _JournalViewState extends State<JournalView> {
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+                padding: const EdgeInsets.fromLTRB(0, 24, 24, 0),
                 child: Row(
                   children: [
                     IconButton(
@@ -74,40 +74,29 @@ class _JournalViewState extends State<JournalView> {
                       icon: const Icon(
                         Icons.arrow_back_ios_rounded,
                         size: 16,
-                        color: Color(0xFFA3A3A3),
+                        color: AppColors.terracotta,
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const Spacer(),
                     Text(
                       'journal',
                       style: textTheme.bodyMedium?.copyWith(
                         fontSize: 14,
-                        color: const Color(0xFFA3A3A3),
+                        color: AppColors.primary,
                         fontWeight: FontWeight.w400,
                         fontStyle: FontStyle.normal,
                       ),
                     ),
-                    const Spacer(),
-                    TextButton(
-                      onPressed: controller.openHistory,
-                      child: Text(
-                        'history',
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: const Color(0xFFC48A74),
-                          fontSize: 14,
-                          decoration: TextDecoration.underline,
-                          decorationThickness: 1,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      '$currentNumber / $totalNumber',
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: const Color(0xFFA3A3A3),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
+                    // const Spacer(),
+
+                    // Text(
+                    //   '$currentNumber / $totalNumber',
+                    //   style: textTheme.bodyMedium?.copyWith(
+                    //     color: const Color(0xFFA3A3A3),
+                    //     fontSize: 14,
+                    //     fontWeight: FontWeight.w400,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -266,7 +255,7 @@ class _JournalSlide extends StatelessWidget {
                         Text(
                           prompt.category.toUpperCase(),
                           style: textTheme.labelMedium?.copyWith(
-                            color: AppColors.terracotta,
+                            color: AppColors.primary,
                             letterSpacing: 1.5,
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
@@ -283,11 +272,11 @@ class _JournalSlide extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        Container(
-                          width: 32,
-                          height: 1,
-                          color: const Color(0xFFE6E6E6),
-                        ),
+                        // Container(
+                        //   width: 32,
+                        //   height: 1,
+                        //   color: const Color(0xFFE6E6E6),
+                        // ),
                         const SizedBox(height: 16),
                         Text(
                           'You do not need a perfect explanation.\nYou need a clear sentence.',
@@ -355,7 +344,7 @@ class _JournalActionRow extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(width: 32),
+        const SizedBox(width: 12),
         TextButton(
           onPressed: onStartWriting,
           style: TextButton.styleFrom(
@@ -365,6 +354,20 @@ class _JournalActionRow extends StatelessWidget {
           ),
           child: Text(
             'START WRITING',
+            style: textTheme.bodySmall?.copyWith(
+              color: AppColors.terracotta,
+              letterSpacing: 1.8,
+              decoration: TextDecoration.underline,
+              decorationColor: AppColors.terracotta,
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        TextButton(
+          onPressed: () {},
+          // onPressed: controller.openHistory,
+          child: Text(
+            'HISTORY',
             style: textTheme.bodySmall?.copyWith(
               color: AppColors.terracotta,
               letterSpacing: 1.8,

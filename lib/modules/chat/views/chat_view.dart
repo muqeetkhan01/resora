@@ -107,19 +107,19 @@ class _ChatContent extends GetView<ChatController> {
             );
           }),
         ),
-        Obx(() {
-          final showQuickStart =
-              controller.messages.isEmpty && !controller.isTyping.value;
-          if (!showQuickStart) {
-            return const SizedBox.shrink();
-          }
-          return const _QuickStartActionsRow();
-        }),
-        const SizedBox(height: AppSpacing.sm),
+        // Obx(() {
+        //   final showQuickStart =
+        //       controller.messages.isEmpty && !controller.isTyping.value;
+        //   if (!showQuickStart) {
+        //     return const SizedBox.shrink();
+        //   }
+        //   return const _QuickStartActionsRow();
+        // }),
+        const SizedBox(height: AppSpacing.lg + 30),
         const _ChatInputBar(),
         if (rootTab) ...[
           const SizedBox(height: AppSpacing.sm),
-          const Divider(height: 1, color: AppColors.line),
+          // const Divider(height: 1, color: AppColors.line),
         ],
         const SizedBox(height: AppSpacing.lg),
       ],
@@ -186,7 +186,7 @@ class _EmptyStatePrompt extends StatelessWidget {
             Text(
               'resora',
               style: textTheme.bodySmall?.copyWith(
-                color: AppColors.terracotta,
+                color: Colors.black.withOpacity(.5),
                 letterSpacing: 1.5,
                 fontWeight: FontWeight.w400,
               ),
@@ -231,10 +231,10 @@ class _QuickStartActionsRow extends GetView<ChatController> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         border: Border(
-          top: BorderSide(color: AppColors.primary.withOpacity(0.08)),
-        ),
+            // top: BorderSide(color: AppColors.primary.withOpacity(0.08)),
+            ),
       ),
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.sm,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:resora/core/constants/app_icons.dart';
 
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
@@ -59,7 +60,7 @@ class _NoiseViewState extends State<NoiseView> {
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+                padding: const EdgeInsets.fromLTRB(0, 24, 24, 0),
                 child: Row(
                   children: [
                     IconButton(
@@ -70,21 +71,22 @@ class _NoiseViewState extends State<NoiseView> {
                       icon: const Icon(
                         Icons.arrow_back_ios_rounded,
                         size: 16,
-                        color: Color(0xFFA3A3A3),
+                        color: AppColors.terracotta,
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const Spacer(),
                     Text(
                       'quiet the noise',
                       style: textTheme.bodyMedium?.copyWith(
                         fontSize: 14,
-                        color: const Color(0xFFA3A3A3),
+                        color: AppColors.primary,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
                   ],
                 ),
               ),
+              const SizedBox(height: 8),
               SizedBox(
                 height: 46,
                 child: ListView.separated(
@@ -193,20 +195,20 @@ class _NoiseSlide extends StatelessWidget {
                   Text(
                     track.category.toUpperCase(),
                     style: textTheme.labelMedium?.copyWith(
-                      color: AppColors.terracotta,
+                      color: AppColors.primary,
                       letterSpacing: 1.5,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   const Spacer(),
-                  Text(
-                    track.duration,
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: const Color(0xFFA3A3A3),
-                      fontSize: 12,
-                    ),
-                  ),
+                  // Text(
+                  //   track.duration,
+                  //   style: textTheme.bodyMedium?.copyWith(
+                  //     color: const Color(0xFFA3A3A3),
+                  //     fontSize: 12,
+                  //   ),
+                  // ),
                 ],
               ),
               const SizedBox(height: 24),
@@ -219,12 +221,12 @@ class _NoiseSlide extends StatelessWidget {
                   fontStyle: FontStyle.normal,
                 ),
               ),
-              const SizedBox(height: 24),
-              Container(
-                width: double.infinity,
-                height: 1,
-                color: const Color(0xFFE6E6E6),
-              ),
+              // const SizedBox(height: 24),
+              // Container(
+              //   width: double.infinity,
+              //   height: 1,
+              //   color: const Color(0xFFE6E6E6),
+              // ),
               const SizedBox(height: 24),
               Text(
                 track.description,
@@ -236,16 +238,40 @@ class _NoiseSlide extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              OutlinedButton.icon(
-                onPressed: onPlay,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.terracotta,
-                  side: const BorderSide(color: AppColors.terracotta),
-                  fixedSize: const Size(150, 48),
-                  shape: const RoundedRectangleBorder(),
-                ),
-                icon: const Icon(Icons.play_arrow_rounded, size: 18),
-                label: const Text('Play'),
+              Row(
+                children: [
+                  Text(
+                    track.duration,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: const Color(0x80A3A3A3),
+                      letterSpacing: 1,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(width: 24),
+                  TextButton(
+                    onPressed: onPlay,
+                    child: Text(
+                      'PLAY',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: AppColors.terracotta,
+                        letterSpacing: 2,
+                        decoration: TextDecoration.underline,
+                        decorationColor: AppColors.terracotta,
+                        decorationThickness: 1,
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      AppIcons.filter,
+                      size: 18,
+                      color: AppColors.terracotta,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

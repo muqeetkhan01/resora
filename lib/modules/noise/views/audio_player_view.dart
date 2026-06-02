@@ -594,13 +594,16 @@ class _MuseumMinimalPlayer extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      _PlayerPaintButton(
-                        onTap: onSeekBackward,
-                        size: const Size(34, 34),
-                        painter: _SkipBackPainter(
-                          color: AppColors.white.withOpacity(0.85),
-                        ),
-                      ),
+                      Icon(Icons.forward_10,
+                          color: AppColors.white.withOpacity(0.85), size: 35),
+
+                      // _PlayerPaintButton(
+                      //   onTap: onSeekBackward,
+                      //   size: const Size(34, 34),
+                      //   painter: _SkipBackPainter(
+                      //     color: AppColors.white.withOpacity(0.85),
+                      //   ),
+                      // ),
                       const SizedBox(width: 56),
                       if (isLoading)
                         SizedBox(
@@ -626,13 +629,15 @@ class _MuseumMinimalPlayer extends StatelessWidget {
                                 ),
                         ),
                       const SizedBox(width: 56),
-                      _PlayerPaintButton(
-                        onTap: onSeekForward,
-                        size: const Size(34, 34),
-                        painter: _SkipForwardPainter(
-                          color: AppColors.white.withOpacity(0.85),
-                        ),
-                      ),
+                      Icon(Icons.replay,
+                          color: AppColors.white.withOpacity(0.85), size: 35),
+                      // _PlayerPaintButton(
+                      //   onTap: onSeekForward,
+                      //   size: const Size(34, 34),
+                      //   painter: _SkipForwardPainter(
+                      //     color: AppColors.white.withOpacity(0.85),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ],

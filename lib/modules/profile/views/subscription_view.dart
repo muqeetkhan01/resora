@@ -49,6 +49,7 @@ class _SubscriptionViewState extends State<SubscriptionView> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SettingsTopBack(title: ''),
+        const SizedBox(height: 58),
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
           child: Text('membership',
@@ -61,42 +62,41 @@ class _SubscriptionViewState extends State<SubscriptionView> {
             style: SettingsFlowText.title(context, size: 13),
           ),
         ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              children: _features.map((feature) {
-                return Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  decoration: const BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: SettingsFlowColors.border,
-                        width: 0.5,
-                      ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            children: _features.map((feature) {
+              return Container(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                decoration: const BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: SettingsFlowColors.border,
+                      width: 0.5,
                     ),
                   ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 3,
-                        height: 3,
-                        color: SettingsFlowColors.terracotta,
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 3,
+                      height: 3,
+                      color: SettingsFlowColors.terracotta,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        feature,
+                        style: SettingsFlowText.title(context, size: 13),
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          feature,
-                          style: SettingsFlowText.title(context, size: 13),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
-            ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
           ),
         ),
+        SizedBox(height: Get.height * .1),
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
           child: Row(
@@ -109,7 +109,7 @@ class _SubscriptionViewState extends State<SubscriptionView> {
               ),
               SettingsUnderlineButton(
                 label: 'explore membership',
-                color: SettingsFlowColors.warmDark,
+                color: SettingsFlowColors.terracotta,
                 onTap: () => setState(() => _stage = _MembershipStage.plans),
               ),
             ],
@@ -249,11 +249,11 @@ class _SubscriptionViewState extends State<SubscriptionView> {
               style: SettingsFlowText.display(context, size: 34),
             ),
             const SizedBox(height: 20),
-            Container(
-              width: 32,
-              height: 0.5,
-              color: SettingsFlowColors.terracotta,
-            ),
+            // Container(
+            //   width: 32,
+            //   height: 0.5,
+            //   color: SettingsFlowColors.terracotta,
+            // ),
             const SizedBox(height: 28),
             Text(
               "You now have full access\nto everything Resora offers.\nWe're honored to be part of\nyour journey.",

@@ -21,20 +21,18 @@ class ProfileView extends GetView<ProfileController> {
             () => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                IconButton(
-                  onPressed: Get.back,
-                  padding: EdgeInsets.zero,
-                  constraints:
-                      const BoxConstraints.tightFor(width: 28, height: 28),
-                  icon: const Icon(
-                    Icons.arrow_back_ios_rounded,
-                    size: 16,
-                    color: Color(0xFFA3A3A3),
+                InkWell(
+                  onTap: Get.back,
+                  child: const Icon(
+                    Icons.close,
+                    size: 18,
+                    color: SettingsFlowColors.terracotta,
                   ),
                 ),
-                Text('settings',
-                    style: SettingsFlowText.display(context, size: 36)),
-                const SizedBox(height: 6),
+                const SizedBox(height: 78),
+                // Text('settings',
+                //     style: SettingsFlowText.display(context, size: 36)),
+                // const SizedBox(height: 6),
                 Text(session.displayName,
                     style: SettingsFlowText.title(context, size: 15)),
                 const SizedBox(height: 2),
@@ -50,61 +48,40 @@ class ProfileView extends GetView<ProfileController> {
             ),
           ),
         ),
-        const SectionLabel('your space'),
+        const SectionLabel('your space', isColorGreen: true),
         const SettingsRule(horizontal: 0),
-        Obx(
-          () => SettingsRow(
-            label: 'journal lock',
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SettingsToggle(
-                  value: controller.journalLockEnabled.value,
-                  onChanged: (value) {
-                    if (value) {
-                      controller.openJournalLock();
-                    } else {
-                      controller.toggleJournalLock(false);
-                    }
-                  },
+        SettingsRow(
+          label: 'journal lock',
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // SettingsToggle(
+              //   value: controller.journalLockEnabled.value,
+              //   onChanged: (value) {
+              //     if (value) {
+              //       controller.openJournalLock();
+              //     } else {
+              //       controller.toggleJournalLock(false);
+              //     }
+              //   },
+              // ),
+              // const SizedBox(width: 10),
+              InkWell(
+                onTap: () {
+                  controller.openJournalLock();
+                },
+                child: Text(
+                  '›',
+                  style: SettingsFlowText.title(context, size: 18)
+                      .copyWith(color: SettingsFlowColors.terracotta),
                 ),
-                // const SizedBox(width: 10),
-                // Text(
-                //   '›',
-                //   style: SettingsFlowText.title(context, size: 18)
-                //       .copyWith(color: SettingsFlowColors.terracotta),
-                // ),
-              ],
-            ),
-            onTap: controller.openJournalLock,
+              ),
+            ],
           ),
+          onTap: controller.openJournalLock,
         ),
         const SettingsRule(horizontal: 0),
-        Obx(
-          () => SettingsRow(
-            label: 'affirmations',
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SettingsToggle(
-                  value: controller.affirmationsEnabled.value,
-                  onChanged: controller.toggleAffirmations,
-                ),
-                // const SizedBox(width: 10),
-                // Text(
-                //   '›',
-                //   style: SettingsFlowText.title(context, size: 18)
-                //       .copyWith(color: SettingsFlowColors.terracotta),
-                // ),
-              ],
-            ),
-            onTap: () => controller.toggleAffirmations(
-              !controller.affirmationsEnabled.value,
-            ),
-          ),
-        ),
-        const SettingsRule(horizontal: 0),
-        const SectionLabel('membership'),
+        const SectionLabel('membership', isColorGreen: true),
         const SettingsRule(horizontal: 0),
         SettingsRow(
           label: 'membership',
@@ -112,7 +89,7 @@ class ProfileView extends GetView<ProfileController> {
           onTap: controller.openSubscription,
         ),
         const SettingsRule(horizontal: 0),
-        const SectionLabel('support & privacy'),
+        const SectionLabel('support & privacy', isColorGreen: true),
         const SettingsRule(horizontal: 0),
         SettingsRow(
           label: 'help & support',
@@ -137,13 +114,14 @@ class ProfileView extends GetView<ProfileController> {
           child: Center(
             child: Column(
               children: [
+                SizedBox(height: Get.height * 0.2),
                 Text(
                   'r e s o r a',
                   style: SettingsFlowText.display(context, size: 18).copyWith(
                     letterSpacing: 3,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text('version 2.1.0',
                     style: SettingsFlowText.caps(context, size: 10)),
               ],

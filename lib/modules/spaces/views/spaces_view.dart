@@ -66,14 +66,14 @@ class _SpacesViewState extends State<SpacesView> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 28, 24, 0),
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Expanded(
                       child: Text(
                         'spaces',
                         style: textTheme.displayLarge?.copyWith(
                           fontSize: 40,
-                          color: const Color(0xFF4A342B),
+                          color: AppColors.primary,
                           height: 1,
                           letterSpacing: 0.2,
                           fontWeight: FontWeight.w300,
@@ -85,7 +85,7 @@ class _SpacesViewState extends State<SpacesView> {
                       onPressed: controller.openProfile,
                       icon: const Icon(
                         AppIcons.profileOutline,
-                        color: Color(0xFF4A342B),
+                        color: AppColors.terracotta,
                         size: 20,
                       ),
                       splashRadius: 20,
@@ -93,14 +93,14 @@ class _SpacesViewState extends State<SpacesView> {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
-                child: Container(
-                  height: 0.5,
-                  color: const Color(0x1F145C4F),
-                ),
-              ),
-              const SizedBox(height: 24),
+              // Padding(
+              //   padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+              //   child: Container(
+              //     height: 0.5,
+              //     color: const Color(0x1F145C4F),
+              //   ),
+              // ),
+              const SizedBox(height: 48),
               SizedBox(
                 height: 548,
                 child: PageView.builder(
@@ -142,7 +142,7 @@ class _SpacesViewState extends State<SpacesView> {
                       height: 5,
                       decoration: BoxDecoration(
                         color: selected
-                            ? const Color(0xFF145C4F)
+                            ? AppColors.terracotta
                             : const Color(0x1F145C4F),
                       ),
                     ),
@@ -205,11 +205,11 @@ class _SpaceCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.sm),
-                  Container(
-                    width: 32,
-                    height: 0.5,
-                    color: AppColors.terracotta,
-                  ),
+                  // Container(
+                  //   width: 32,
+                  //   height: 0.5,
+                  //   color: AppColors.terracotta,
+                  // ),
                   const SizedBox(height: AppSpacing.sm),
                   Text(
                     slot.subtitle,

@@ -86,9 +86,10 @@ class SettingsRule extends StatelessWidget {
 }
 
 class SectionLabel extends StatelessWidget {
-  const SectionLabel(this.text, {super.key});
+  const SectionLabel(this.text, {super.key, this.isColorGreen = false});
 
   final String text;
+  final bool isColorGreen;
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +97,9 @@ class SectionLabel extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(
           AppSpacing.xl, AppSpacing.lg, AppSpacing.xl, 8),
       child: Text(text.toUpperCase(),
-          style: SettingsFlowText.caps(context, size: 9)),
+          style: SettingsFlowText.caps(context, size: 9).copyWith(
+            color: isColorGreen ? SettingsFlowColors.forestGreen : null,
+          )),
     );
   }
 }
@@ -403,14 +406,14 @@ Future<bool> showSettingsConfirm(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Center(
-            child: Container(
-              width: 32,
-              height: 3,
-              color: SettingsFlowColors.mutedLight,
-              margin: const EdgeInsets.only(bottom: 24),
-            ),
-          ),
+          // Center(
+          //   child: Container(
+          //     width: 32,
+          //     height: 3,
+          //     color: SettingsFlowColors.mutedLight,
+          //     margin: const EdgeInsets.only(bottom: 24),
+          //   ),
+          // ),
           Text(title, style: SettingsFlowText.display(context, size: 24)),
           const SizedBox(height: 10),
           Text(message, style: SettingsFlowText.body(context, size: 13)),

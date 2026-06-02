@@ -83,7 +83,7 @@ class _JournalLockViewState extends State<JournalLockView> {
                   alignment: Alignment.centerLeft,
                   child: SettingsTopBack(title: ''),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 66),
                 Text('journal lock',
                     style: SettingsFlowText.display(context, size: 32)),
                 const SizedBox(height: 20),

@@ -69,7 +69,7 @@ class _TermsViewState extends State<TermsView> {
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+                padding: const EdgeInsets.fromLTRB(0, 24, 24, 0),
                 child: Row(
                   children: [
                     IconButton(
@@ -80,30 +80,31 @@ class _TermsViewState extends State<TermsView> {
                       icon: const Icon(
                         Icons.arrow_back_ios_rounded,
                         size: 16,
-                        color: Color(0xFFA3A3A3),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'key terms',
-                      style: textTheme.bodyMedium?.copyWith(
-                        fontSize: 14,
-                        color: const Color(0xFFA3A3A3),
-                        fontWeight: FontWeight.w400,
+                        color: AppColors.terracotta,
                       ),
                     ),
                     const Spacer(),
                     Text(
-                      '$currentNumber / $totalNumber',
+                      'key terms',
                       style: textTheme.bodyMedium?.copyWith(
                         fontSize: 14,
-                        color: const Color(0xFFA3A3A3),
+                        color: AppColors.primary,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
+                    // const Spacer(),
+                    // Text(
+                    //   '$currentNumber / $totalNumber',
+                    //   style: textTheme.bodyMedium?.copyWith(
+                    //     fontSize: 14,
+                    //     color: const Color(0xFFA3A3A3),
+                    //     fontWeight: FontWeight.w400,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
+              const SizedBox(height: 8),
               SizedBox(
                 height: 46,
                 child: ListView.separated(
@@ -193,8 +194,8 @@ class _TermsViewState extends State<TermsView> {
       context: context,
       useSafeArea: true,
       backgroundColor: const Color(0xFFFAFBF9),
-      builder: (context) => Padding(
-        padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+      builder: (context) => SizedBox(
+        // padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -252,7 +253,7 @@ class _TermSlide extends StatelessWidget {
               Text(
                 'GROUND',
                 style: textTheme.labelMedium?.copyWith(
-                  color: AppColors.terracotta,
+                  color: AppColors.primary,
                   letterSpacing: 1.5,
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
@@ -268,9 +269,9 @@ class _TermSlide extends StatelessWidget {
                   fontStyle: FontStyle.normal,
                 ),
               ),
-              const SizedBox(height: 20),
-              Container(width: 32, height: 1, color: const Color(0xFFE6E6E6)),
-              const SizedBox(height: 20),
+              // const SizedBox(height: 20),
+              // Container(width: 32, height: 1, color: const Color(0xFFE6E6E6)),
+              const SizedBox(height: 24),
               Text(
                 _previewDefinition(item.definition.toString()),
                 style: textTheme.bodyMedium?.copyWith(
@@ -281,6 +282,7 @@ class _TermSlide extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
+
               InkWell(
                 onTap: onReadDefinition,
                 child: Container(

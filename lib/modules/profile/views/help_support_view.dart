@@ -45,6 +45,7 @@ class _HelpSupportViewState extends State<HelpSupportView> {
       scrollable: false,
       children: [
         const SettingsTopBack(title: ''),
+        const SizedBox(height: 58),
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
           child: Text(
@@ -147,13 +148,13 @@ class _HelpSupportViewState extends State<HelpSupportView> {
                   ],
                 );
               }),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
-                child: Text(
-                  'version 2.1.0 · the resora team',
-                  style: SettingsFlowText.caps(context, size: 10),
-                ),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
+              //   child: Text(
+              //     'version 2.1.0 · the resora team',
+              //     style: SettingsFlowText.caps(context, size: 10),
+              //   ),
+              // ),
             ],
           ),
         ),

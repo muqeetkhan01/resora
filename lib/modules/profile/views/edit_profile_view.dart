@@ -17,6 +17,7 @@ class EditProfileView extends GetView<EditProfileController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SettingsTopBack(title: ''),
+              const SizedBox(height: 58),
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
                 child: Text('edit profile',
@@ -28,7 +29,8 @@ class EditProfileView extends GetView<EditProfileController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('display name',
-                        style: SettingsFlowText.caps(context, size: 9)),
+                        style: SettingsFlowText.caps(context,
+                            size: 9, color: SettingsFlowColors.forestGreen)),
                     const SizedBox(height: 8),
                     SettingsTextField(
                       controller: controller.nameController,
@@ -36,7 +38,8 @@ class EditProfileView extends GetView<EditProfileController> {
                     ),
                     const SizedBox(height: 28),
                     Text('email',
-                        style: SettingsFlowText.caps(context, size: 9)),
+                        style: SettingsFlowText.caps(context,
+                            size: 9, color: SettingsFlowColors.forestGreen)),
                     const SizedBox(height: 8),
                     SettingsTextField(
                       controller: controller.emailController,
@@ -53,7 +56,8 @@ class EditProfileView extends GetView<EditProfileController> {
                   ],
                 ),
               ),
-              const Spacer(),
+              SizedBox(height: Get.height * 0.15),
+              // const Spacer(),
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
                 child: Row(
@@ -68,7 +72,7 @@ class EditProfileView extends GetView<EditProfileController> {
                       label: controller.isSaving.value
                           ? 'saving...'
                           : 'save changes',
-                      color: SettingsFlowColors.warmDark,
+                      color: SettingsFlowColors.terracotta,
                       onTap: controller.isSaving.value
                           ? () {}
                           : controller.saveProfile,
