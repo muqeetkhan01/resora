@@ -9,6 +9,13 @@ class AppUserProfile {
     required this.providerIds,
     required this.journalLockEnabled,
     required this.journalPin,
+    this.isPremium = false,
+    this.activePlan = 'free',
+    this.hasSubscriptionHistory = false,
+    this.revenueCatAppUserId,
+    this.revenueCatProductIds = const <String>[],
+    this.revenueCatActiveEntitlements = const <String>[],
+    this.subscriptionUpdatedAt,
     this.createdAt,
     this.updatedAt,
   });
@@ -20,6 +27,13 @@ class AppUserProfile {
   final List<String> providerIds;
   final bool journalLockEnabled;
   final String? journalPin;
+  final bool isPremium;
+  final String activePlan;
+  final bool hasSubscriptionHistory;
+  final String? revenueCatAppUserId;
+  final List<String> revenueCatProductIds;
+  final List<String> revenueCatActiveEntitlements;
+  final DateTime? subscriptionUpdatedAt;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -55,6 +69,21 @@ class AppUserProfile {
           .toList(),
       journalLockEnabled: data['journalLockEnabled'] == true,
       journalPin: (data['journalPin'] as String?)?.trim(),
+      isPremium: data['isPremium'] == true,
+      activePlan: (data['activePlan'] as String? ?? 'free').trim().isEmpty
+          ? 'free'
+          : (data['activePlan'] as String? ?? 'free').trim(),
+      hasSubscriptionHistory: data['hasSubscriptionHistory'] == true,
+      revenueCatAppUserId: (data['revenueCatAppUserId'] as String?)?.trim(),
+      revenueCatProductIds:
+          ((data['revenueCatProductIds'] as List<dynamic>?) ?? const [])
+              .whereType<String>()
+              .toList(),
+      revenueCatActiveEntitlements:
+          ((data['revenueCatActiveEntitlements'] as List<dynamic>?) ?? const [])
+              .whereType<String>()
+              .toList(),
+      subscriptionUpdatedAt: _toDateTime(data['subscriptionUpdatedAt']),
       createdAt: _toDateTime(data['createdAt']),
       updatedAt: _toDateTime(data['updatedAt']),
     );

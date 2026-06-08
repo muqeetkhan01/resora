@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../core/constants/app_spacing.dart';
+import '../core/services/subscription_service.dart';
 import '../theme/app_colors.dart';
 
 class PremiumLockOverlay extends StatelessWidget {
@@ -17,6 +19,19 @@ class PremiumLockOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!show) return const SizedBox.shrink();
 
+    if (Get.isRegistered<SubscriptionService>()) {
+      return Obx(() {
+        if (Get.find<SubscriptionService>().isPremium.value) {
+          return const SizedBox.shrink();
+        }
+        return _badge(context);
+      });
+    }
+
+    return _badge(context);
+  }
+
+  Widget _badge(BuildContext context) {
     return Positioned(
       top: compact ? 10 : AppSpacing.md,
       right: compact ? 10 : AppSpacing.md,

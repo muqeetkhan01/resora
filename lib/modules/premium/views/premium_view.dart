@@ -23,7 +23,8 @@ class PremiumView extends GetView<PremiumController> {
 
     return AppBackground(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.only(top: AppSpacing.md, bottom: AppSpacing.xxl),
+        padding:
+            const EdgeInsets.only(top: AppSpacing.md, bottom: AppSpacing.xxl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -90,20 +91,22 @@ class PremiumView extends GetView<PremiumController> {
               ),
               child: Row(
                 children: [
-                    Container(
-                      width: 52,
-                      height: 52,
-                      decoration: BoxDecoration(
+                  Container(
+                    width: 52,
+                    height: 52,
+                    decoration: BoxDecoration(
                       color: AppColors.white.withOpacity(0.6),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    child: const Icon(AppIcons.premium, color: AppColors.terracotta),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Icon(AppIcons.premium,
+                        color: AppColors.terracotta),
                   ),
                   const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: Text(
                       'Unlock premium visualizations, deeper answers, guided journal, and extended audio sessions.',
-                      style: textTheme.bodyMedium?.copyWith(color: AppColors.warmDark),
+                      style: textTheme.bodyMedium
+                          ?.copyWith(color: AppColors.warmDark),
                     ),
                   ),
                 ],
@@ -136,7 +139,8 @@ class PremiumView extends GetView<PremiumController> {
                           curve: Curves.easeInOut,
                           padding: const EdgeInsets.all(AppSpacing.lg),
                           decoration: BoxDecoration(
-                            color: selected ? AppColors.surface : AppColors.white,
+                            color:
+                                selected ? AppColors.surface : AppColors.white,
                             borderRadius: BorderRadius.circular(18),
                             border: Border.all(
                               color:
@@ -179,7 +183,8 @@ class PremiumView extends GetView<PremiumController> {
                                       ],
                                     ),
                                     const SizedBox(height: AppSpacing.xs),
-                                    Text(plan.caption, style: textTheme.bodySmall),
+                                    Text(plan.caption,
+                                        style: textTheme.bodySmall),
                                   ],
                                 ),
                               ),
@@ -199,12 +204,19 @@ class PremiumView extends GetView<PremiumController> {
               },
             ),
             const SizedBox(height: AppSpacing.md),
-            AppButton(label: 'Start 7-day trial', onPressed: controller.startTrial),
-            const SizedBox(height: AppSpacing.md),
             AppButton(
-              label: 'Restore purchases',
-              style: AppButtonStyle.ghost,
-              onPressed: controller.restorePurchases,
+                label: 'Explore membership', onPressed: controller.startTrial),
+            const SizedBox(height: AppSpacing.md),
+            Obx(
+              () => controller.canShowRestore
+                  ? AppButton(
+                      label: controller.isBusy
+                          ? 'Restoring...'
+                          : 'Restore purchases',
+                      style: AppButtonStyle.ghost,
+                      onPressed: controller.restorePurchases,
+                    )
+                  : const SizedBox.shrink(),
             ),
           ],
         ),

@@ -65,8 +65,6 @@ class _RehearseViewState extends State<RehearseView> {
 
           final categories = controller.categories;
           final selectedCategory = controller.selectedCategory.value;
-          final currentNumber = (_active + 1).toString().padLeft(2, '0');
-          final totalNumber = scenarios.length.toString().padLeft(2, '0');
 
           return Column(
             children: [

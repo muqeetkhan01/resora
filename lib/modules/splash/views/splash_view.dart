@@ -221,22 +221,22 @@ class _BrandLockup extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            AnimatedScale(
-              scale: textVisible ? 1 : 0,
-              duration: const Duration(
-                  milliseconds: _SplashSequenceState._textFadeInMs),
-              curve: Curves.easeOut,
-              child: AnimatedOpacity(
-                opacity: textVisible ? 1 : 0,
-                duration: const Duration(
-                    milliseconds: _SplashSequenceState._textFadeInMs),
-                child: Container(
-                  width: 36,
-                  height: 0.5,
-                  color: AppColors.terracotta,
-                ),
-              ),
-            ),
+            // AnimatedScale(
+            //   scale: textVisible ? 1 : 0,
+            //   duration: const Duration(
+            //       milliseconds: _SplashSequenceState._textFadeInMs),
+            //   curve: Curves.easeOut,
+            //   child: AnimatedOpacity(
+            //     opacity: textVisible ? 1 : 0,
+            //     duration: const Duration(
+            //         milliseconds: _SplashSequenceState._textFadeInMs),
+            //     child: Container(
+            //       width: 36,
+            //       height: 0.5,
+            //       color: AppColors.terracotta,
+            //     ),
+            //   ),
+            // ),
             const SizedBox(height: 16),
             AnimatedOpacity(
               opacity: textVisible ? 0.82 : 0,
@@ -246,7 +246,7 @@ class _BrandLockup extends StatelessWidget {
               child: Text(
                 'LIFE GETS BETTER WHEN YOU DO',
                 style: GoogleFonts.jost(
-                  fontSize: 10.5,
+                  fontSize: 13.5,
                   fontWeight: FontWeight.w300,
                   letterSpacing: 2.5,
                   color: const Color(0xFFFAFBF9),

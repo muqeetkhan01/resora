@@ -234,56 +234,6 @@ class _ChatRouteArgs {
   }
 }
 
-class _QuickStartActionsRow extends GetView<ChatController> {
-  const _QuickStartActionsRow();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        border: Border(
-            // top: BorderSide(color: AppColors.primary.withOpacity(0.08)),
-            ),
-      ),
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.sm,
-        AppSpacing.sm,
-        AppSpacing.sm,
-        AppSpacing.xs,
-      ),
-      child: Row(
-        children: ChatController.quickStartActions.map((label) {
-          return Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 3),
-              child: OutlinedButton(
-                onPressed: () => controller.sendMessage(label),
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: AppColors.primary.withOpacity(0.16)),
-                  foregroundColor: AppColors.placeholder,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: AppSpacing.sm,
-                  ),
-                  shape: const RoundedRectangleBorder(),
-                ),
-                child: Text(
-                  label,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.placeholder,
-                        letterSpacing: 0.15,
-                        fontStyle: FontStyle.normal,
-                      ),
-                ),
-              ),
-            ),
-          );
-        }).toList(growable: false),
-      ),
-    );
-  }
-}
-
 class _ChatInputBar extends GetView<ChatController> {
   const _ChatInputBar();
 

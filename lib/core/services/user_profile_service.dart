@@ -98,6 +98,30 @@ class UserProfileService {
     );
   }
 
+  Future<void> updateSubscriptionStatus({
+    required String uid,
+    required bool isPremium,
+    required String activePlan,
+    required bool hasSubscriptionHistory,
+    required String revenueCatAppUserId,
+    required List<String> productIds,
+    required List<String> activeEntitlementIds,
+  }) {
+    return _users.doc(uid).set(
+      <String, dynamic>{
+        'isPremium': isPremium,
+        'activePlan': isPremium ? activePlan : 'free',
+        'hasSubscriptionHistory': hasSubscriptionHistory,
+        'revenueCatAppUserId': revenueCatAppUserId,
+        'revenueCatProductIds': productIds,
+        'revenueCatActiveEntitlements': activeEntitlementIds,
+        'subscriptionUpdatedAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      },
+      SetOptions(merge: true),
+    );
+  }
+
   static String _firstNonEmpty(List<String?> values) {
     for (final value in values) {
       final trimmed = value?.trim();

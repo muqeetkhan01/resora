@@ -221,12 +221,12 @@ class _HomeSlide extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Container(width: 1, height: 30, color: slot.labelColor),
+                  Container(width: 1, height: 30, color: AppColors.white),
                   const SizedBox(width: AppSpacing.sm),
                   Text(
                     slot.label,
                     style: textTheme.labelMedium?.copyWith(
-                      color: slot.labelColor,
+                      color: AppColors.white,
                       letterSpacing: 2.2,
                       fontSize: 9,
                       fontStyle: FontStyle.normal,

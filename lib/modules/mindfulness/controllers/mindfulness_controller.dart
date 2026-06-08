@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 
 import '../../../core/services/content_items_service.dart';
+import '../../../core/services/subscription_service.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 
@@ -82,8 +83,8 @@ class MindfulnessController extends GetxController {
   }
 
   void openSession(MindfulnessSession session) {
-    if (session.isPremium) {
-      Get.toNamed(AppRoutes.premium);
+    if (_requiresSubscription(session.isPremium)) {
+      Get.toNamed(AppRoutes.subscription);
       return;
     }
 
@@ -91,6 +92,11 @@ class MindfulnessController extends GetxController {
   }
 
   void playSession(MindfulnessSession session) {
+    if (_requiresSubscription(session.isPremium)) {
+      Get.toNamed(AppRoutes.subscription);
+      return;
+    }
+
     final track = AudioTrack(
       title: session.title,
       category: session.type,
@@ -107,5 +113,15 @@ class MindfulnessController extends GetxController {
         'imagePath': session.imagePath,
       },
     );
+  }
+
+  bool _requiresSubscription(bool isPremiumContent) {
+    if (!isPremiumContent) {
+      return false;
+    }
+    if (!Get.isRegistered<SubscriptionService>()) {
+      return true;
+    }
+    return !Get.find<SubscriptionService>().isPremium.value;
   }
 }

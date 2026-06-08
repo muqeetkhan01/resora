@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import 'core/controllers/app_session_controller.dart';
+import 'core/services/subscription_service.dart';
 import 'routes/app_pages.dart';
 import 'routes/app_routes.dart';
 import 'theme/app_colors.dart';
@@ -13,6 +14,8 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   Get.put(AppSessionController(), permanent: true);
+  Get.put(SubscriptionService(), permanent: true);
+  await Get.find<SubscriptionService>().init();
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.dark,

@@ -146,7 +146,7 @@ class HomeController extends GetxController {
   }
 
   void openPremium() {
-    Get.toNamed(AppRoutes.premium);
+    Get.toNamed(AppRoutes.subscription);
   }
 
   bool _isVisibleAction(QuickActionItem item) {

@@ -1,6 +1,4 @@
-# ios/Podfile (Cupid) — FIXED
-
-platform :ios, '15.0'
+platform :ios, '17.0'
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
 project 'Runner', {

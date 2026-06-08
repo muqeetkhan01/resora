@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 
 import '../../../core/controllers/app_session_controller.dart';
+import '../../../core/services/subscription_service.dart';
 import '../../../core/services/user_profile_service.dart';
 import '../../../data/models/app_user_profile.dart';
 import '../../../routes/app_routes.dart';
@@ -8,6 +9,7 @@ import '../../../widgets/app_snackbar.dart';
 
 class ProfileController extends GetxController {
   final _session = Get.find<AppSessionController>();
+  final _subscriptions = Get.find<SubscriptionService>();
   final _profileService = UserProfileService();
 
   final affirmationsEnabled = true.obs;
@@ -22,6 +24,8 @@ class ProfileController extends GetxController {
     super.onInit();
     _syncFromProfile(_session.profile);
     ever<AppUserProfile?>(_session.profileRx, _syncFromProfile);
+    ever<bool>(_subscriptions.isPremium, (_) => _syncSubscriptionState());
+    ever<String>(_subscriptions.activePlan, (_) => _syncSubscriptionState());
   }
 
   void _syncFromProfile(AppUserProfile? profile) {
@@ -29,6 +33,7 @@ class ProfileController extends GetxController {
       journalPin.value = null;
       journalLockEnabled.value = false;
       journalUnlockedForSession.value = false;
+      _syncSubscriptionState();
       return;
     }
 
@@ -37,6 +42,19 @@ class ProfileController extends GetxController {
     journalLockEnabled.value =
         profile.journalLockEnabled && (journalPin.value != null);
     journalUnlockedForSession.value = false;
+    _syncSubscriptionState();
+  }
+
+  void _syncSubscriptionState() {
+    final profile = _session.profile;
+    final hasPremium = _subscriptions.isPremium.value ||
+        (profile != null && profile.isPremium);
+    isPremium.value = hasPremium;
+    activePlan.value = hasPremium
+        ? (_subscriptions.activePlan.value != 'free'
+            ? _subscriptions.activePlan.value
+            : (profile?.activePlan ?? 'premium'))
+        : 'free';
   }
 
   void openEditProfile() {
@@ -112,9 +130,64 @@ class ProfileController extends GetxController {
     _persistJournalLock();
   }
 
-  void setPlan(String plan) {
-    activePlan.value = plan;
-    isPremium.value = plan == 'premium';
+  bool get canShowRestore => _subscriptions.canShowRestore;
+
+  bool get isSubscriptionBusy =>
+      _subscriptions.isLoading.value ||
+      _subscriptions.isPurchasing.value ||
+      _subscriptions.isRestoring.value;
+
+  String? priceForPlan(String planId) => _subscriptions.priceForPlan(planId);
+
+  Future<void> refreshSubscriptions() => _subscriptions.refresh();
+
+  Future<bool> purchasePlan(String planId) async {
+    try {
+      final purchased = await _subscriptions.purchasePlan(planId);
+      if (!purchased) {
+        return false;
+      }
+      showAppSnackbar(
+        'Premium unlocked',
+        'Your Resora membership is active.',
+      );
+      return true;
+    } on SubscriptionException catch (error) {
+      showAppSnackbar('Could not start membership', error.message);
+      return false;
+    } catch (_) {
+      showAppSnackbar(
+        'Could not start membership',
+        'Please try again in a moment.',
+      );
+      return false;
+    }
+  }
+
+  Future<bool> restorePurchases() async {
+    if (!canShowRestore) {
+      return false;
+    }
+
+    try {
+      final restored = await _subscriptions.restorePurchases();
+      showAppSnackbar(
+        restored ? 'Restored' : 'Nothing active found',
+        restored
+            ? 'Your Resora premium access is active.'
+            : 'We did not find an active subscription for this account.',
+      );
+      return restored;
+    } on SubscriptionException catch (error) {
+      showAppSnackbar('Could not restore', error.message);
+      return false;
+    } catch (_) {
+      showAppSnackbar(
+        'Could not restore',
+        'Please try again in a moment.',
+      );
+      return false;
+    }
   }
 
   Future<void> _persistJournalLock() async {

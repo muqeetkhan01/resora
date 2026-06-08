@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/constants/app_icons.dart';
-import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
 import '../controllers/resets_controller.dart';
@@ -69,8 +68,6 @@ class _ResetsViewState extends State<ResetsView> {
 
           final categories = controller.categories;
           final selectedCategory = controller.selectedCategory.value;
-          final currentNumber = (_active + 1).toString().padLeft(2, '0');
-          final totalNumber = options.length.toString().padLeft(2, '0');
 
           return Column(
             children: [

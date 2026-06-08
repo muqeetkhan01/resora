@@ -57,8 +57,6 @@ class _JournalViewState extends State<JournalView> {
 
           final selectedCategory = controller.selectedCategory.value;
           final categories = controller.categories;
-          final currentNumber = (_active + 1).toString().padLeft(2, '0');
-          final totalNumber = prompts.length.toString().padLeft(2, '0');
 
           return Column(
             children: [

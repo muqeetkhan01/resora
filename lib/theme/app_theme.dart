@@ -113,7 +113,7 @@ abstract final class AppTheme {
         foregroundColor: AppColors.text,
         elevation: 0,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.white,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
