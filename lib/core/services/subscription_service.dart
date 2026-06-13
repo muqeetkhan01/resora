@@ -112,7 +112,11 @@ class SubscriptionService extends GetxService {
           offerings.all[SubscriptionConstants.currentOfferingId];
       packages.assignAll(offering?.availablePackages ?? const []);
     } catch (error) {
-      debugPrint('RevenueCat offerings failed: $error');
+      debugPrint(
+        'RevenueCat offerings failed for offering '
+        '"${SubscriptionConstants.currentOfferingId}" with products '
+        '${SubscriptionConstants.productIdsByPlan.values.join(', ')}: $error',
+      );
       packages.clear();
     }
   }

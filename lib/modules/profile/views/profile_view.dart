@@ -51,15 +51,8 @@ class ProfileView extends GetView<ProfileController> {
         const SectionLabel('your space', isColorGreen: true),
         const SettingsRule(horizontal: 0),
         SettingsRow(
-          label: 'journal lock',
-          onTap: controller.openJournalLock,
-        ),
-        const SettingsRule(horizontal: 0),
-        const SectionLabel('membership', isColorGreen: true),
-        const SettingsRule(horizontal: 0),
-        SettingsRow(
           label: 'membership',
-          subtitle: 'Elevate your experience.',
+          subtitle: 'View your plan and manage your access.',
           onTap: controller.openSubscription,
         ),
         const SettingsRule(horizontal: 0),
@@ -67,12 +60,26 @@ class ProfileView extends GetView<ProfileController> {
         const SettingsRule(horizontal: 0),
         SettingsRow(
           label: 'help & support',
+          subtitle: 'Get help, send feedback, or report an issue.',
           onTap: controller.openHelpSupport,
         ),
         const SettingsRule(horizontal: 0),
         SettingsRow(
           label: 'privacy policy',
+          subtitle: 'Learn how Resora handles your information.',
           onTap: controller.openPrivacyPolicy,
+        ),
+        const SettingsRule(horizontal: 0),
+        SettingsRow(
+          label: 'terms of use',
+          subtitle: 'Review Resora\'s terms and safety information.',
+          onTap: controller.openTermsOfUse,
+        ),
+        const SettingsRule(horizontal: 0),
+        SettingsRow(
+          label: 'delete account',
+          subtitle: 'Request deletion of your account and saved data.',
+          onTap: controller.openDeleteAccount,
         ),
         const SettingsRule(horizontal: 0),
         Padding(

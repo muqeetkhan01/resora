@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
+import '../../../widgets/expanded_category_selector.dart';
 import '../controllers/normal_controller.dart';
 
 const _normalOffWhite = Color(0xFFFAFBF9);
@@ -58,6 +59,7 @@ class _NormalViewState extends State<NormalView> {
   final Set<String> _likedTopics = <String>{};
   final Map<String, int> _topicLikeDeltas = <String, int>{};
   int _active = 0;
+  bool _categoriesExpanded = false;
   bool _threadOpen = false;
   bool _composerOpen = false;
   bool _composerPosting = false;
@@ -154,50 +156,22 @@ class _NormalViewState extends State<NormalView> {
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 46,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      itemCount: categories.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 24),
-                      itemBuilder: (context, index) {
-                        final category = categories[index];
-                        final selected = category == selectedCategory;
-                        return InkWell(
-                          onTap: () {
-                            controller.selectCategory(category);
-                            _active = 0;
-                            if (_pageController.hasClients) {
-                              _pageController.jumpToPage(0);
-                            }
-                            setState(() {});
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: selected
-                                      ? AppColors.terracotta
-                                      : Colors.transparent,
-                                  width: 1.5,
-                                ),
-                              ),
-                            ),
-                            child: Text(
-                              controller.categoryLabel(category),
-                              style: textTheme.bodyMedium?.copyWith(
-                                fontSize: 14,
-                                color: selected
-                                    ? const Color(0xFF4A342B)
-                                    : const Color(0xFFA3A3A3),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                  ExpandedCategorySelector(
+                    categories: categories,
+                    selectedCategory: selectedCategory,
+                    expanded: _categoriesExpanded,
+                    labelBuilder: controller.categoryLabel,
+                    onExpandedChanged: (expanded) =>
+                        setState(() => _categoriesExpanded = expanded),
+                    onSelect: (category) {
+                      controller.selectCategory(category);
+                      _active = 0;
+                      _categoriesExpanded = false;
+                      if (_pageController.hasClients) {
+                        _pageController.jumpToPage(0);
+                      }
+                      setState(() {});
+                    },
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../theme/app_colors.dart';
+import '../../../widgets/expanded_category_selector.dart';
 import '../controllers/terms_controller.dart';
 
 class TermsView extends StatefulWidget {
@@ -16,6 +17,7 @@ class _TermsViewState extends State<TermsView> {
   int _active = 0;
   int _tabIndex = 0;
   int? _expandedIndex;
+  bool _categoriesExpanded = false;
 
   static const _tabs = <String>[
     'all',
@@ -104,45 +106,17 @@ class _TermsViewState extends State<TermsView> {
                 ),
               ),
               const SizedBox(height: 8),
-              SizedBox(
-                height: 46,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  itemCount: _tabs.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 24),
-                  itemBuilder: (context, index) {
-                    final selected = index == _tabIndex;
-                    return InkWell(
-                      onTap: () => setState(() {
-                        _tabIndex = index;
-                        _expandedIndex = null;
-                      }),
-                      child: Container(
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: selected
-                                  ? AppColors.terracotta
-                                  : Colors.transparent,
-                              width: 1.5,
-                            ),
-                          ),
-                        ),
-                        child: Text(
-                          _tabs[index],
-                          style: textTheme.bodyMedium?.copyWith(
-                            fontSize: 14,
-                            color: selected
-                                ? const Color(0xFF4A342B)
-                                : const Color(0xFFA3A3A3),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
+              ExpandedCategorySelector(
+                categories: _tabs,
+                selectedCategory: _tabs[_tabIndex],
+                expanded: _categoriesExpanded,
+                onExpandedChanged: (expanded) =>
+                    setState(() => _categoriesExpanded = expanded),
+                onSelect: (category) => setState(() {
+                  _tabIndex = _tabs.indexOf(category);
+                  _expandedIndex = null;
+                  _categoriesExpanded = false;
+                }),
               ),
               const Divider(height: 1, color: AppColors.line),
               Expanded(

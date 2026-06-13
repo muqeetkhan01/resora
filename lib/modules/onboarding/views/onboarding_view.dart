@@ -646,9 +646,9 @@ class _PaywallScreen extends StatelessWidget {
             Text(
               switch (selectedPlan) {
                 'year' =>
-                  'Free for 7 days, then less than \$5 a month. We will remind you 48 hours before.',
+                  'Subscriptions renew automatically unless canceled in your Apple account settings.',
                 'month' =>
-                  'Free for 7 days, then \$9.99/month. We will remind you 48 hours before.',
+                  'Subscriptions renew automatically unless canceled in your Apple account settings.',
                 _ => 'One payment. Full access. No renewals.',
               },
               style: textTheme.bodySmall?.copyWith(

@@ -237,7 +237,7 @@ class _BrandLockup extends StatelessWidget {
             //     ),
             //   ),
             // ),
-            const SizedBox(height: 16),
+            // const SizedBox(height: 16),
             AnimatedOpacity(
               opacity: textVisible ? 0.82 : 0,
               duration: const Duration(

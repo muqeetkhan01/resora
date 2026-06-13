@@ -300,14 +300,14 @@ const _specs = <_SpaceSpec>[
     titleHint: 'reset',
     defaultTitle: 'Gentle Resets',
     defaultSubtitle:
-        'Short pauses that help you step back, breathe, and return to yourself.',
+        'Small guided pauses to help you breathe, soften, and return to yourself.',
     defaultImage: AppAssets.spaceGarden,
   ),
   _SpaceSpec(
     route: AppRoutes.journal,
     titleHint: 'journal',
-    defaultTitle: 'Journal Prompts',
-    defaultSubtitle: 'Questions that dig deeper. Reflection without judgment.',
+    defaultTitle: 'Journal',
+    defaultSubtitle: 'A place to put your thoughts down and let them settle.',
     defaultImage: AppAssets.homeJournalBed,
   ),
   _SpaceSpec(
@@ -315,7 +315,7 @@ const _specs = <_SpaceSpec>[
     titleHint: 'rehearse',
     defaultTitle: 'Rehearse the Moment',
     defaultSubtitle:
-        'See it clearly. Mental rehearsal that readies your mind for what comes next.',
+        'Guided visualization audios to help you feel ready before the moment arrives.',
     defaultImage: AppAssets.spaceMountain,
   ),
   _SpaceSpec(
@@ -323,7 +323,7 @@ const _specs = <_SpaceSpec>[
     titleHint: 'noise',
     defaultTitle: 'Quiet the Noise',
     defaultSubtitle:
-        'Ambient audio designed to calm your nervous system. Let sound become your anchor.',
+        'Soft sounds to help you settle, focus, or come back to yourself.',
     defaultImage: AppAssets.spaceRoom,
   ),
   _SpaceSpec(
@@ -331,7 +331,7 @@ const _specs = <_SpaceSpec>[
     titleHint: 'term',
     defaultTitle: 'Key Terms',
     defaultSubtitle:
-        'Understand the language we use. Clear definitions for everyday concepts in Resora.',
+        'Simple explanations for the words and ideas you\'ll see in Resora.',
     defaultImage: AppAssets.homeComingSoonFlower,
   ),
 ];

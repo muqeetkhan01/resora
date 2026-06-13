@@ -15,10 +15,12 @@ class PremiumView extends GetView<PremiumController> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     const benefits = [
-      'Unlimited Help Me Now conversations',
-      'Full Quiet the Noise and visualization library',
-      'Unlimited journal entries and guided reflections',
-      'Expanded Q&A, Rehearse the Moment, and premium content updates',
+      'Unlimited Talk to Resora conversations',
+      'Full access to Gentle Reset audios',
+      'Full access to Rehearse the Moment audios',
+      'Full access to Quiet the Noise audios',
+      'Early access to new features',
+      'Cancel anytime',
     ];
 
     return AppBackground(
@@ -32,10 +34,10 @@ class PremiumView extends GetView<PremiumController> {
               onPressed: Get.back,
               icon: const Icon(AppIcons.back, color: AppColors.primary),
             ),
-            Text('unlock everything', style: textTheme.displayMedium),
+            Text('membership', style: textTheme.displayMedium),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              'Go deeper with full access to every space, every audio session, and unlimited support.',
+              'Get more from your time in Resora.\nMore space. More support. More ways to return to yourself.',
               style: textTheme.bodyMedium,
             ),
             const SizedBox(height: AppSpacing.xl),
@@ -104,7 +106,7 @@ class PremiumView extends GetView<PremiumController> {
                   const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: Text(
-                      'Unlock premium visualizations, deeper answers, guided journal, and extended audio sessions.',
+                      'Subscriptions renew automatically unless canceled in your Apple account settings.',
                       style: textTheme.bodyMedium
                           ?.copyWith(color: AppColors.warmDark),
                     ),

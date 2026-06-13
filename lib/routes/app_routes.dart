@@ -28,6 +28,8 @@ abstract final class AppRoutes {
   static const journalUnlock = '/journal-unlock';
   static const helpSupport = '/help-support';
   static const privacyPolicy = '/privacy-policy';
+  static const termsOfUse = '/terms-of-use';
+  static const deleteAccount = '/delete-account';
   static const rehearseDetail = '/rehearse-detail';
   static const thatMattered = '/that-mattered';
   static const ritualWrap = '/ritual-wrap';

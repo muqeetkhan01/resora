@@ -14,28 +14,22 @@ class _HelpSupportViewState extends State<HelpSupportView> {
 
   static const _items = [
     _SupportItem(
-      'faq',
-      'frequently asked questions',
-      'Answers to common questions.',
-      'Content for frequently asked questions is being finalized by the Resora team. Check back soon.',
-    ),
-    _SupportItem(
       'contact',
       'contact us',
       'Reach the Resora team directly.',
-      'To reach the Resora team directly, email us at hello@resora.com. We respond within one business day.',
+      'Email us at hello@resoraco.com.\nWe\'ll get back to you within one business day.',
     ),
     _SupportItem(
       'feedback',
       'send feedback',
-      'Tell us what you think.',
-      'Your feedback shapes Resora. Send notes, requests, or thoughts directly to the team.',
+      'Share notes, requests, or ideas with us.',
+      'Your feedback helps shape Resora.\nSend us your thoughts, requests, or ideas.\nhello@resoraco.com',
     ),
     _SupportItem(
       'issue',
       'report an issue',
-      'Something not working properly?',
-      'Please describe the issue and what you were doing when it happened so the team can look into it.',
+      'Tell us if something isn\'t working.',
+      'Tell us what happened and what you were doing when the issue came up.\nThis helps our team look into it.\nhello@resoraco.com',
     ),
   ];
 
@@ -56,7 +50,7 @@ class _HelpSupportViewState extends State<HelpSupportView> {
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
           child: Text(
-            'We are here if you need us.\nEverything below goes directly to the Resora team.',
+            'We\'re here if you need us.\nChoose the option that fits best below.',
             style: SettingsFlowText.body(context, size: 13),
           ),
         ),

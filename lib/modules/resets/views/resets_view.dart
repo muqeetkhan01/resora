@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../core/constants/app_icons.dart';
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
+import '../../../widgets/expanded_category_selector.dart';
 import '../controllers/resets_controller.dart';
 
 class ResetsView extends StatefulWidget {
@@ -16,6 +17,7 @@ class ResetsView extends StatefulWidget {
 class _ResetsViewState extends State<ResetsView> {
   late final PageController _pageController;
   int _active = 0;
+  bool _categoriesExpanded = false;
 
   @override
   void initState() {
@@ -109,51 +111,21 @@ class _ResetsViewState extends State<ResetsView> {
                 ),
               ),
               const SizedBox(height: 8),
-              SizedBox(
-                height: 46,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  itemCount: categories.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 24),
-                  itemBuilder: (context, index) {
-                    final category = categories[index];
-                    final selected = selectedCategory == category;
-                    return InkWell(
-                      onTap: () {
-                        controller.selectCategory(category);
-                        _active = 0;
-                        if (_pageController.hasClients) {
-                          _pageController.jumpToPage(0);
-                        }
-                        setState(() {});
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: selected
-                                  ? AppColors.terracotta
-                                  : Colors.transparent,
-                              width: 1.5,
-                            ),
-                          ),
-                        ),
-                        child: Text(
-                          category,
-                          style: textTheme.bodyMedium?.copyWith(
-                            fontSize: 14,
-                            color: selected
-                                ? const Color(0xFF4A342B)
-                                : const Color(0xFFA3A3A3),
-                            letterSpacing: 0.1,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
+              ExpandedCategorySelector(
+                categories: categories,
+                selectedCategory: selectedCategory,
+                expanded: _categoriesExpanded,
+                onExpandedChanged: (expanded) =>
+                    setState(() => _categoriesExpanded = expanded),
+                onSelect: (category) {
+                  controller.selectCategory(category);
+                  _active = 0;
+                  _categoriesExpanded = false;
+                  if (_pageController.hasClients) {
+                    _pageController.jumpToPage(0);
+                  }
+                  setState(() {});
+                },
               ),
               const Divider(height: 1, color: AppColors.line),
               Expanded(
@@ -172,9 +144,8 @@ class _ResetsViewState extends State<ResetsView> {
                         return _ResetSlide(
                           option: option,
                           onBeginSession: () => controller.openReset(option),
-                          onOpenFilters: () => _showCategorySheet(
-                            context,
-                            controller: controller,
+                          onOpenFilters: () => setState(
+                            () => _categoriesExpanded = !_categoriesExpanded,
                           ),
                         );
                       },
@@ -198,40 +169,6 @@ class _ResetsViewState extends State<ResetsView> {
         }),
       ),
     );
-  }
-
-  Future<void> _showCategorySheet(
-    BuildContext context, {
-    required ResetsController controller,
-  }) async {
-    final selected = await showModalBottomSheet<String>(
-      context: context,
-      backgroundColor: const Color(0xFFFAFBF9),
-      useSafeArea: true,
-      builder: (context) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 10),
-          Container(width: 34, height: 3, color: AppColors.line),
-          const SizedBox(height: 10),
-          for (final category in controller.categories)
-            ListTile(
-              title: Text(category),
-              onTap: () => Navigator.of(context).pop(category),
-            ),
-        ],
-      ),
-    );
-
-    if (selected == null) return;
-    controller.selectCategory(selected);
-    _active = 0;
-    if (_pageController.hasClients) {
-      _pageController.jumpToPage(0);
-    }
-    if (mounted) {
-      setState(() {});
-    }
   }
 }
 

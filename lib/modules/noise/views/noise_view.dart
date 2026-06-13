@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:resora/core/constants/app_icons.dart';
 
-import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
+import '../../../widgets/expanded_category_selector.dart';
 import '../controllers/noise_controller.dart';
 
 class NoiseView extends StatefulWidget {
@@ -17,6 +17,7 @@ class NoiseView extends StatefulWidget {
 class _NoiseViewState extends State<NoiseView> {
   late final PageController _pageController;
   int _active = 0;
+  bool _categoriesExpanded = false;
 
   @override
   void initState() {
@@ -88,50 +89,22 @@ class _NoiseViewState extends State<NoiseView> {
                 ),
               ),
               const SizedBox(height: 8),
-              SizedBox(
-                height: 46,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  itemCount: categories.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 24),
-                  itemBuilder: (context, index) {
-                    final category = categories[index];
-                    final selected = category == selectedCategory;
-                    return InkWell(
-                      onTap: () {
-                        controller.selectCategory(category);
-                        _active = 0;
-                        if (_pageController.hasClients) {
-                          _pageController.jumpToPage(0);
-                        }
-                        setState(() {});
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: selected
-                                  ? AppColors.terracotta
-                                  : Colors.transparent,
-                              width: 1.5,
-                            ),
-                          ),
-                        ),
-                        child: Text(
-                          category.toLowerCase(),
-                          style: textTheme.bodyMedium?.copyWith(
-                            fontSize: 14,
-                            color: selected
-                                ? const Color(0xFF4A342B)
-                                : const Color(0xFFA3A3A3),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
+              ExpandedCategorySelector(
+                categories: categories,
+                selectedCategory: selectedCategory,
+                expanded: _categoriesExpanded,
+                labelBuilder: (category) => category.toLowerCase(),
+                onExpandedChanged: (expanded) =>
+                    setState(() => _categoriesExpanded = expanded),
+                onSelect: (category) {
+                  controller.selectCategory(category);
+                  _active = 0;
+                  _categoriesExpanded = false;
+                  if (_pageController.hasClients) {
+                    _pageController.jumpToPage(0);
+                  }
+                  setState(() {});
+                },
               ),
               const Divider(height: 1, color: AppColors.line),
               Expanded(
@@ -145,9 +118,8 @@ class _NoiseViewState extends State<NoiseView> {
                       itemBuilder: (context, index) => _NoiseSlide(
                         track: tracks[index],
                         onPlay: () => controller.openTrack(tracks[index]),
-                        onOpenFilters: () => _showCategorySheet(
-                          context,
-                          controller: controller,
+                        onOpenFilters: () => setState(
+                          () => _categoriesExpanded = !_categoriesExpanded,
                         ),
                       ),
                     ),
@@ -171,67 +143,6 @@ class _NoiseViewState extends State<NoiseView> {
         }),
       ),
     );
-  }
-
-  Future<void> _showCategorySheet(
-    BuildContext context, {
-    required NoiseController controller,
-  }) async {
-    final selected = await showModalBottomSheet<String>(
-      context: context,
-      backgroundColor: const Color(0xFFFAFBF9),
-      useSafeArea: true,
-      builder: (context) {
-        final selectedCategory = controller.selectedCategory.value;
-
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.xl,
-            AppSpacing.sm,
-            AppSpacing.xl,
-            AppSpacing.xl,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(width: 34, height: 3, color: AppColors.line),
-              const SizedBox(height: AppSpacing.md),
-              for (final category in controller.categories)
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(
-                    category.toLowerCase(),
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: category == selectedCategory
-                              ? const Color(0xFF4A342B)
-                              : const Color(0xFFA3A3A3),
-                          fontSize: 14,
-                        ),
-                  ),
-                  trailing: category == selectedCategory
-                      ? const Icon(
-                          Icons.check_rounded,
-                          color: AppColors.terracotta,
-                          size: 18,
-                        )
-                      : null,
-                  onTap: () => Navigator.of(context).pop(category),
-                ),
-            ],
-          ),
-        );
-      },
-    );
-
-    if (selected == null) return;
-    controller.selectCategory(selected);
-    _active = 0;
-    if (_pageController.hasClients) {
-      _pageController.jumpToPage(0);
-    }
-    if (mounted) {
-      setState(() {});
-    }
   }
 }
 

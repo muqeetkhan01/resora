@@ -17,17 +17,36 @@ class _SubscriptionViewState extends State<SubscriptionView> {
   var _selectedPlan = 'monthly';
 
   static const _features = [
-    'Unlimited journal conversations',
-    'All resets + expanded depth',
-    'Priority support from our team',
+    'Unlimited Talk to Resora conversations',
+    'Full access to Gentle Reset audios',
+    'Full access to Rehearse the Moment audios',
+    'Full access to Quiet the Noise audios',
     'Early access to new features',
     'Cancel anytime',
   ];
 
   static const _plans = [
-    _Plan('monthly', 'Monthly', '\$9.99 / month', 'Cancel anytime', null),
-    _Plan('yearly', 'Yearly', '\$50.00 / year', null, 'Save 30%'),
-    _Plan('lifetime', 'Lifetime', '\$249.99', 'One payment', null),
+    _Plan(
+      'monthly',
+      'Monthly',
+      '\$9.99 / month',
+      'Flexible access, cancel anytime.',
+      null,
+    ),
+    _Plan(
+      'yearly',
+      'Yearly',
+      '\$49.99 / year',
+      'Our best value. Save 30%.',
+      null,
+    ),
+    _Plan(
+      'lifetime',
+      'Lifetime',
+      '\$249.99',
+      'One payment, yours forever.',
+      null,
+    ),
   ];
 
   @override
@@ -58,8 +77,19 @@ class _SubscriptionViewState extends State<SubscriptionView> {
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 0, 24, 28),
               child: Text(
-                'Unlock everything Resora has to offer.\nMore clarity. More support. More you.',
+                'Get more from your time in Resora.\nMore space. More support. More ways to return to yourself.',
                 style: SettingsFlowText.title(context, size: 13),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 10),
+              child: Text(
+                'included with premium:',
+                style: SettingsFlowText.caps(
+                  context,
+                  size: 10,
+                  color: SettingsFlowColors.terracotta,
+                ),
               ),
             ),
             Padding(
@@ -145,7 +175,7 @@ class _SubscriptionViewState extends State<SubscriptionView> {
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-          child: Text('CHOOSE YOUR PLAN',
+          child: Text('CHOOSE THE EXPERIENCE THAT SUPPORTS YOU',
               style: SettingsFlowText.caps(context, size: 9)),
         ),
         Expanded(
@@ -191,9 +221,7 @@ class _SubscriptionViewState extends State<SubscriptionView> {
                                           size: 14)),
                                   const SizedBox(height: 3),
                                   Text(
-                                    plan.note == null
-                                        ? price
-                                        : '$price · ${plan.note}',
+                                    '$price\n${plan.note}',
                                     style: SettingsFlowText.body(context,
                                         size: 12),
                                   ),
@@ -223,6 +251,13 @@ class _SubscriptionViewState extends State<SubscriptionView> {
                     );
                   }).toList(),
                 )),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 18),
+          child: Text(
+            'Subscriptions renew automatically unless canceled in your Apple account settings.',
+            style: SettingsFlowText.body(context, size: 10),
           ),
         ),
         Obx(
@@ -286,7 +321,7 @@ class _SubscriptionViewState extends State<SubscriptionView> {
             // ),
             const SizedBox(height: 28),
             Text(
-              "You now have full access\nto everything Resora offers.\nWe're honored to be part of\nyour journey.",
+              "You now have full access to Resora.\nWe're glad you're here.",
               textAlign: TextAlign.center,
               style: SettingsFlowText.body(context, size: 13),
             ),

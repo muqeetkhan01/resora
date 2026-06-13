@@ -54,21 +54,21 @@ abstract final class MockContent {
   static const quickActions = [
     QuickActionItem(
       title: 'Gentle Resets',
-      subtitle: 'Regulate first',
+      subtitle: 'Start with one small pause.',
       icon: AppIcons.resets,
       accentColor: AppColors.primary,
       route: AppRoutes.resets,
     ),
     QuickActionItem(
       title: 'Quiet the Noise',
-      subtitle: 'Audio support',
+      subtitle: 'Soft sounds to help you settle.',
       icon: AppIcons.noise,
       accentColor: AppColors.success,
       route: AppRoutes.noise,
     ),
     QuickActionItem(
       title: 'Rehearse the Moment',
-      subtitle: 'Practice the script',
+      subtitle: 'Practice calm before the moment comes.',
       icon: AppIcons.rehearse,
       accentColor: AppColors.surface,
       route: AppRoutes.rehearse,
@@ -78,39 +78,43 @@ abstract final class MockContent {
   static const spaces = [
     QuickActionItem(
       title: 'Gentle Resets',
-      subtitle: 'Breath, grounding, step away',
+      subtitle:
+          'Small guided pauses to help you breathe, soften, and return to yourself.',
       icon: AppIcons.resets,
       accentColor: AppColors.primary,
       route: AppRoutes.resets,
       imagePath: AppAssets.spaceGarden,
     ),
     QuickActionItem(
-      title: 'Quiet the Noise',
-      subtitle: 'Ambient audio and guided calm',
-      icon: AppIcons.noise,
-      accentColor: AppColors.success,
-      route: AppRoutes.noise,
-      imagePath: AppAssets.spaceRoom,
-    ),
-    QuickActionItem(
-      title: 'Rehearse the Moment',
-      subtitle: 'Scripts for the hard part',
-      icon: AppIcons.rehearse,
-      accentColor: AppColors.terracotta,
-      route: AppRoutes.rehearse,
-      imagePath: AppAssets.spaceMountain,
-    ),
-    QuickActionItem(
       title: 'Journal',
-      subtitle: 'Reflect after you reset',
+      subtitle: 'A place to put your thoughts down and let them settle.',
       icon: AppIcons.journal,
       accentColor: AppColors.surface,
       route: AppRoutes.journal,
       imagePath: AppAssets.homeJournalBed,
     ),
     QuickActionItem(
+      title: 'Rehearse the Moment',
+      subtitle:
+          'Guided visualization audios to help you feel ready before the moment arrives.',
+      icon: AppIcons.rehearse,
+      accentColor: AppColors.terracotta,
+      route: AppRoutes.rehearse,
+      imagePath: AppAssets.spaceMountain,
+    ),
+    QuickActionItem(
+      title: 'Quiet the Noise',
+      subtitle:
+          'Soft sounds to help you settle, focus, or come back to yourself.',
+      icon: AppIcons.noise,
+      accentColor: AppColors.success,
+      route: AppRoutes.noise,
+      imagePath: AppAssets.spaceRoom,
+    ),
+    QuickActionItem(
       title: 'Key Terms',
-      subtitle: 'Plain-language definitions',
+      subtitle:
+          "Simple explanations for the words and ideas you'll see in Resora.",
       icon: AppIcons.terms,
       accentColor: AppColors.success,
       route: AppRoutes.terms,

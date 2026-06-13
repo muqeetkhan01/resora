@@ -29,12 +29,14 @@ import '../modules/premium/views/premium_view.dart';
 import '../modules/profile/controllers/edit_profile_controller.dart';
 import '../modules/profile/controllers/profile_controller.dart';
 import '../modules/profile/views/edit_profile_view.dart';
+import '../modules/profile/views/delete_account_view.dart';
 import '../modules/profile/views/help_support_view.dart';
 import '../modules/profile/views/journal_lock_view.dart';
 import '../modules/profile/views/journal_unlock_view.dart';
 import '../modules/profile/views/privacy_policy_view.dart';
 import '../modules/profile/views/profile_view.dart';
 import '../modules/profile/views/subscription_view.dart';
+import '../modules/profile/views/terms_of_use_view.dart';
 import '../modules/rehearse/controllers/rehearse_controller.dart';
 import '../modules/rehearse/views/rehearse_detail_view.dart';
 import '../modules/rehearse/views/rehearse_view.dart';
@@ -230,6 +232,14 @@ abstract final class AppPages {
     GetPage(
       name: AppRoutes.privacyPolicy,
       page: PrivacyPolicyView.new,
+    ),
+    GetPage(
+      name: AppRoutes.termsOfUse,
+      page: TermsOfUseView.new,
+    ),
+    GetPage(
+      name: AppRoutes.deleteAccount,
+      page: DeleteAccountView.new,
     ),
     GetPage(
       name: AppRoutes.premium,

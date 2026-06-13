@@ -90,6 +90,14 @@ class ProfileController extends GetxController {
     Get.toNamed(AppRoutes.privacyPolicy);
   }
 
+  void openTermsOfUse() {
+    Get.toNamed(AppRoutes.termsOfUse);
+  }
+
+  void openDeleteAccount() {
+    Get.toNamed(AppRoutes.deleteAccount);
+  }
+
   Future<void> signOut() async {
     await _session.signOut();
   }
