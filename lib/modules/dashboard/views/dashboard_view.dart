@@ -12,6 +12,8 @@ class DashboardView extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
+    final keyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
+
     const pages = [
       HomeView(),
       ChatView(rootTab: true),
@@ -24,10 +26,13 @@ class DashboardView extends GetView<DashboardController> {
           index: controller.selectedIndex.value,
           children: pages,
         ),
-        bottomNavigationBar: AppBottomNav(
-          currentIndex: controller.selectedIndex.value,
-          onTap: controller.switchTab,
-        ),
+        bottomNavigationBar:
+            keyboardVisible && controller.selectedIndex.value == 1
+                ? null
+                : AppBottomNav(
+                    currentIndex: controller.selectedIndex.value,
+                    onTap: controller.switchTab,
+                  ),
       ),
     );
   }

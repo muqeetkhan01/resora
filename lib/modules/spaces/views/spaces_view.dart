@@ -192,7 +192,7 @@ class _SpaceCard extends StatelessWidget {
               child: _SpaceImage(imagePath: slot.imagePath),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 28),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -240,6 +240,7 @@ class _SpaceImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cropBottomEdge = imagePath == AppAssets.spaceGarden;
     final fallback = Image.asset(
       AppAssets.homeComingSoonFlower,
       fit: BoxFit.cover,
@@ -247,19 +248,31 @@ class _SpaceImage extends StatelessWidget {
     );
 
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-      return Image.network(
-        imagePath,
-        fit: BoxFit.cover,
-        alignment: Alignment.topCenter,
-        errorBuilder: (_, __, ___) => fallback,
+      return ClipRect(
+        child: Transform.scale(
+          scale: cropBottomEdge ? 1.025 : 1,
+          alignment: Alignment.topCenter,
+          child: Image.network(
+            imagePath,
+            fit: BoxFit.cover,
+            alignment: Alignment.topCenter,
+            errorBuilder: (_, __, ___) => fallback,
+          ),
+        ),
       );
     }
 
-    return Image.asset(
-      imagePath,
-      fit: BoxFit.cover,
-      alignment: Alignment.topCenter,
-      errorBuilder: (_, __, ___) => fallback,
+    return ClipRect(
+      child: Transform.scale(
+        scale: cropBottomEdge ? 1.025 : 1,
+        alignment: Alignment.topCenter,
+        child: Image.asset(
+          imagePath,
+          fit: BoxFit.cover,
+          alignment: Alignment.topCenter,
+          errorBuilder: (_, __, ___) => fallback,
+        ),
+      ),
     );
   }
 }

@@ -76,6 +76,7 @@ class ChatController extends GetxController {
   void onInit() {
     super.onInit();
     inputController.addListener(_handleDraftChanged);
+    inputFocusNode.addListener(_handleInputFocusChanged);
     _bootstrapSessionHistory();
   }
 
@@ -161,6 +162,15 @@ class ChatController extends GetxController {
 
   void _handleDraftChanged() {
     draftText.value = inputController.text;
+  }
+
+  void _handleInputFocusChanged() {
+    if (!inputFocusNode.hasFocus) {
+      return;
+    }
+
+    _scrollToBottom();
+    Future<void>.delayed(const Duration(milliseconds: 320), _scrollToBottom);
   }
 
   Future<void> _bootstrapSessionHistory() async {
@@ -292,6 +302,7 @@ class ChatController extends GetxController {
   void onClose() {
     dismissKeyboard();
     inputController.removeListener(_handleDraftChanged);
+    inputFocusNode.removeListener(_handleInputFocusChanged);
     _sendCooldownTimer?.cancel();
     _sessionInactivityTimer?.cancel();
     unawaited(_closeSessionAndUpdateMemory(reason: 'session_end'));

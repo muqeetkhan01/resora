@@ -168,7 +168,7 @@ class SettingsToggle extends StatelessWidget {
         height: 20,
         decoration: BoxDecoration(
           color: value
-              ? SettingsFlowColors.forestGreen.withOpacity(0.08)
+              ? SettingsFlowColors.forestGreen.withValues(alpha: 0.08)
               : Colors.transparent,
           border: Border.all(
             color: value
@@ -363,17 +363,21 @@ class SettingsPrimaryButton extends StatelessWidget {
     required this.label,
     required this.onTap,
     this.background = SettingsFlowColors.forestGreen,
+    this.width,
   });
 
   final String label;
   final VoidCallback onTap;
   final Color background;
+  final double? width;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        width: width,
+        alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 12),
         color: background,
         child: Text(

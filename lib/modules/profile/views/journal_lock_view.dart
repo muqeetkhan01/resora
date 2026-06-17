@@ -117,6 +117,8 @@ class _JournalLockViewState extends State<JournalLockView> {
           const SizedBox(height: 32),
           SettingsPrimaryButton(
             label: 'change pin',
+            width: 248,
+            background: SettingsFlowColors.forestGreen,
             onTap: () {
               setState(() {
                 _step = 'set';

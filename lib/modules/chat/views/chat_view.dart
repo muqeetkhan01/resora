@@ -24,7 +24,7 @@ class ChatView extends GetView<ChatController> {
 
     return PopScope(
       canPop: !showRitualExit,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, _) {
         controller.dismissKeyboard();
         if (!didPop && showRitualExit) {
           _openRitualExit(routeArgs.ritualFeature!);
@@ -74,6 +74,8 @@ class _ChatContent extends GetView<ChatController> {
 
   @override
   Widget build(BuildContext context) {
+    final keyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -101,9 +103,9 @@ class _ChatContent extends GetView<ChatController> {
                 parent: AlwaysScrollableScrollPhysics(),
               ),
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              padding: const EdgeInsets.only(
+              padding: EdgeInsets.only(
                 top: AppSpacing.xs,
-                bottom: AppSpacing.md,
+                bottom: keyboardVisible ? AppSpacing.lg : AppSpacing.md,
               ),
               itemCount: totalCount,
               itemBuilder: (context, index) {
@@ -124,13 +126,13 @@ class _ChatContent extends GetView<ChatController> {
         //   }
         //   return const _QuickStartActionsRow();
         // }),
-        const SizedBox(height: AppSpacing.lg + 30),
+        SizedBox(height: keyboardVisible ? AppSpacing.sm : AppSpacing.lg),
         const _ChatInputBar(),
         if (rootTab) ...[
-          const SizedBox(height: AppSpacing.sm),
+          SizedBox(height: keyboardVisible ? AppSpacing.xs : AppSpacing.sm),
           // const Divider(height: 1, color: AppColors.line),
         ],
-        const SizedBox(height: AppSpacing.lg),
+        SizedBox(height: keyboardVisible ? AppSpacing.sm : AppSpacing.lg),
       ],
     );
   }
@@ -195,7 +197,7 @@ class _EmptyStatePrompt extends StatelessWidget {
             Text(
               'resora',
               style: textTheme.bodySmall?.copyWith(
-                color: Colors.black.withOpacity(.5),
+                color: Colors.black.withValues(alpha: 0.5),
                 letterSpacing: 1.5,
                 fontWeight: FontWeight.w400,
               ),
@@ -304,7 +306,7 @@ class _ChatInputBar extends GetView<ChatController> {
                     size: 16,
                     color: canSend
                         ? AppColors.terracotta
-                        : AppColors.terracotta.withOpacity(0.4),
+                        : AppColors.terracotta.withValues(alpha: 0.4),
                   ),
                 ),
               ),
@@ -312,7 +314,7 @@ class _ChatInputBar extends GetView<ChatController> {
           ),
           Container(
             height: 1,
-            color: AppColors.primary.withOpacity(0.15),
+            color: AppColors.primary.withValues(alpha: 0.15),
           ),
           if (showWarning)
             Padding(
@@ -375,7 +377,7 @@ class _MessageBubble extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: isUser
-                        ? AppColors.terracotta.withOpacity(0.08)
+                        ? AppColors.terracotta.withValues(alpha: 0.08)
                         : AppColors.white,
                     borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(16),
@@ -385,7 +387,7 @@ class _MessageBubble extends StatelessWidget {
                     ),
                     border: Border.all(
                       color: isUser
-                          ? AppColors.terracotta.withOpacity(0.25)
+                          ? AppColors.terracotta.withValues(alpha: 0.25)
                           : AppColors.line,
                     ),
                   ),
