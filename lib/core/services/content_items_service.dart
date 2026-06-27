@@ -182,6 +182,7 @@ class ContentItemsService {
             'clarity',
           ]).toLowerCase(),
           prompt: prompt,
+          isPremium: _toBool(data['isPremium']),
         ),
       );
     }
@@ -717,7 +718,9 @@ class ContentItemsService {
     String type, {
     List<String> aliases = const [],
   }) async {
-    final snapshot = await _contentItems.get();
+    final queryTypes = <String>{type, ...aliases}.toList();
+    final snapshot =
+        await _contentItems.where('type', whereIn: queryTypes).get();
     final allowedTypes = <String>{
       _normalizeToken(type),
       ...aliases.map(_normalizeToken),
@@ -798,18 +801,29 @@ class ContentItemsService {
       return const {};
     }
 
-    final map = <String, _MediaItem>{};
-    for (final id in ids) {
-      final snapshot = await _mediaAssets.doc(id).get();
-      final data = snapshot.data();
-      if (data == null) {
-        continue;
-      }
+    final idList = ids.toList();
+    final chunks = <List<String>>[];
+    for (var start = 0; start < idList.length; start += 30) {
+      final end = (start + 30).clamp(0, idList.length);
+      chunks.add(idList.sublist(start, end));
+    }
 
-      map[id] = _MediaItem(
-        downloadUrl: _string(data['downloadUrl']),
-        fileName: _string(data['fileName']),
-      );
+    final snapshots = await Future.wait(
+      chunks.map(
+        (chunk) =>
+            _mediaAssets.where(FieldPath.documentId, whereIn: chunk).get(),
+      ),
+    );
+
+    final map = <String, _MediaItem>{};
+    for (final snapshot in snapshots) {
+      for (final doc in snapshot.docs) {
+        final data = doc.data();
+        map[doc.id] = _MediaItem(
+          downloadUrl: _string(data['downloadUrl']),
+          fileName: _string(data['fileName']),
+        );
+      }
     }
 
     return map;

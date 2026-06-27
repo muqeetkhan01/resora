@@ -5,6 +5,7 @@ import '../../../core/constants/app_icons.dart';
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/expanded_category_selector.dart';
+import '../../../widgets/premium_lock_overlay.dart';
 import '../controllers/journal_controller.dart';
 
 class JournalView extends StatefulWidget {
@@ -40,6 +41,15 @@ class _JournalViewState extends State<JournalView> {
       backgroundColor: const Color(0xFFFAFBF9),
       body: SafeArea(
         child: Obx(() {
+          if (controller.isLoading.value) {
+            return const Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: AppColors.terracotta,
+              ),
+            );
+          }
+
           final prompts = controller.prompts;
           if (prompts.isEmpty) {
             return Center(
@@ -131,9 +141,8 @@ class _JournalViewState extends State<JournalView> {
                       itemBuilder: (context, index) => _JournalSlide(
                         prompt: prompts[index],
                         onWriteOwn: () => controller.openEditor(prompt: ''),
-                        onStartWriting: () => controller.openEditor(
-                          prompt: prompts[index].prompt,
-                        ),
+                        onStartWriting: () =>
+                            controller.openPrompt(prompts[index]),
                         onOpenHistory: controller.openHistory,
                         onOpenFilters: () => setState(
                           () => _categoriesExpanded = !_categoriesExpanded,
@@ -188,6 +197,7 @@ class _JournalSlide extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(24, 104, 42, 12),
           child: Stack(
             children: [
+              PremiumLockOverlay(show: prompt.isPremium),
               Align(
                 alignment: Alignment.topLeft,
                 child: ConstrainedBox(

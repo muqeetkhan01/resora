@@ -40,6 +40,15 @@ class _NoiseViewState extends State<NoiseView> {
       backgroundColor: const Color(0xFFFAFBF9),
       body: SafeArea(
         child: Obx(() {
+          if (controller.isLoading.value) {
+            return const Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: AppColors.terracotta,
+              ),
+            );
+          }
+
           final tracks = controller.tracks;
           if (tracks.isEmpty) {
             return Center(

@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 import '../../../core/services/content_items_service.dart';
+import '../../../core/services/subscription_service.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 import '../../ritual_wrap/models/ritual_wrap_args.dart';
@@ -15,6 +16,7 @@ class JournalController extends GetxController {
   final selectedCategory = 'all'.obs;
   final currentPage = 0.obs;
   final draftController = TextEditingController();
+  final isLoading = true.obs;
   final _remotePrompts = <JournalPrompt>[].obs;
 
   List<JournalPrompt> get _sourcePrompts => _remotePrompts;
@@ -26,11 +28,14 @@ class JournalController extends GetxController {
   }
 
   Future<void> _loadPrompts() async {
+    isLoading.value = true;
     try {
       final prompts = await _contentItemsService.loadJournalPrompts();
       _remotePrompts.assignAll(prompts);
     } catch (_) {
       _remotePrompts.clear();
+    } finally {
+      isLoading.value = false;
     }
 
     if (!categories.contains(selectedCategory.value)) {
@@ -81,6 +86,16 @@ class JournalController extends GetxController {
         nextArguments: entry ?? prompt,
       ).toMap(),
     );
+  }
+
+  void openPrompt(JournalPrompt prompt) {
+    final hasPremium = Get.isRegistered<SubscriptionService>() &&
+        Get.find<SubscriptionService>().isPremium.value;
+    if (prompt.isPremium && !hasPremium) {
+      Get.toNamed(AppRoutes.premium);
+      return;
+    }
+    openEditor(prompt: prompt.prompt);
   }
 
   void openHistory() {

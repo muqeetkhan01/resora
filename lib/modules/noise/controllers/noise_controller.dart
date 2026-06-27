@@ -13,6 +13,7 @@ class NoiseController extends GetxController {
   final ContentItemsService _contentItemsService;
 
   final selectedCategory = 'All'.obs;
+  final isLoading = true.obs;
   final _remoteTracks = <AudioTrack>[].obs;
 
   List<AudioTrack> get _sourceTracks => _remoteTracks;
@@ -25,11 +26,14 @@ class NoiseController extends GetxController {
   }
 
   Future<void> _loadTracks() async {
+    isLoading.value = true;
     try {
       final tracks = await _contentItemsService.loadAudioTracks();
       _remoteTracks.assignAll(tracks);
     } catch (_) {
       _remoteTracks.clear();
+    } finally {
+      isLoading.value = false;
     }
 
     if (!categories.contains(selectedCategory.value)) {

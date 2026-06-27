@@ -222,10 +222,12 @@ class JournalPrompt {
   const JournalPrompt({
     required this.category,
     required this.prompt,
+    this.isPremium = false,
   });
 
   final String category;
   final String prompt;
+  final bool isPremium;
 }
 
 class AudioTrack {

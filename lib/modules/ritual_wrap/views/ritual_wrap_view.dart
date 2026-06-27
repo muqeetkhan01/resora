@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:just_audio/just_audio.dart';
 
+import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 import '../models/ritual_wrap_args.dart';
 
@@ -15,22 +17,25 @@ class RitualWrapView extends StatefulWidget {
 
 class _RitualWrapViewState extends State<RitualWrapView> {
   static const Duration _fadeInDelay = Duration(milliseconds: 150);
-  static const Duration _fadeOutAt = Duration(milliseconds: 2300);
   static const Duration _doneAt = Duration(milliseconds: 2500);
 
   late final RitualWrapArgs _args;
   late final _WrapCopy _copy;
 
   Timer? _fadeInTimer;
-  Timer? _fadeOutTimer;
   Timer? _doneTimer;
   bool _visible = false;
+  late final Future<void> _preloadFuture;
+  Map<String, dynamic>? _preparedNextArguments;
+  AudioPlayer? _preloadedPlayer;
+  bool _didTransferPlayer = false;
 
   @override
   void initState() {
     super.initState();
     _args = RitualWrapArgs.from(Get.arguments);
     _copy = _copyFor(feature: _args.feature, isEntry: _args.isEntry);
+    _preloadFuture = _preloadNextPlayerMedia();
 
     _fadeInTimer = Timer(_fadeInDelay, () {
       if (!mounted) {
@@ -38,22 +43,18 @@ class _RitualWrapViewState extends State<RitualWrapView> {
       }
       setState(() => _visible = true);
     });
-    _fadeOutTimer = Timer(_fadeOutAt, () {
-      if (!mounted) {
-        return;
-      }
-      setState(() => _visible = false);
-    });
     _doneTimer = Timer(_doneAt, () {
-      _continue(_args);
+      unawaited(_finishEntry());
     });
   }
 
   @override
   void dispose() {
     _fadeInTimer?.cancel();
-    _fadeOutTimer?.cancel();
     _doneTimer?.cancel();
+    if (!_didTransferPlayer) {
+      unawaited(_preloadedPlayer?.dispose());
+    }
     super.dispose();
   }
 
@@ -106,13 +107,85 @@ class _RitualWrapViewState extends State<RitualWrapView> {
     );
   }
 
+  Future<void> _finishEntry() async {
+    await _preloadFuture;
+    if (!mounted) return;
+
+    setState(() => _visible = false);
+    await Future<void>.delayed(const Duration(milliseconds: 180));
+    if (mounted) _continue(_args);
+  }
+
+  Future<void> _preloadNextPlayerMedia() async {
+    if (_args.nextRoute != AppRoutes.audioPlayer ||
+        _args.nextArguments is! Map) {
+      return;
+    }
+
+    final arguments = Map<String, dynamic>.from(_args.nextArguments as Map);
+    _preparedNextArguments = arguments;
+    final track = arguments['track'];
+    if (track is! AudioTrack) return;
+
+    final imagePath = (arguments['imagePath'] as String? ?? '').trim();
+    final imageFuture = imagePath.startsWith('http')
+        ? _precacheNetworkImage(imagePath)
+        : Future<void>.value();
+    final player = AudioPlayer();
+
+    Future<void> audioFuture() async {
+      try {
+        final source = track.assetPath.trim();
+        final duration =
+            source.startsWith('http://') || source.startsWith('https://')
+                ? await player.setUrl(source)
+                : await player.setAsset(source);
+        if (!mounted) {
+          await player.dispose();
+          return;
+        }
+        _preloadedPlayer = player;
+        arguments['preloadedPlayer'] = player;
+        arguments['preloadedDuration'] = duration;
+      } catch (_) {
+        await player.dispose();
+        arguments['preloadError'] =
+            'This audio track is not available right now.';
+      }
+    }
+
+    await Future.wait([audioFuture(), imageFuture]);
+  }
+
+  Future<void> _precacheNetworkImage(String url) {
+    final completer = Completer<void>();
+    final stream = NetworkImage(url).resolve(ImageConfiguration.empty);
+    late final ImageStreamListener listener;
+    listener = ImageStreamListener(
+      (_, __) {
+        stream.removeListener(listener);
+        if (!completer.isCompleted) completer.complete();
+      },
+      onError: (_, __) {
+        stream.removeListener(listener);
+        if (!completer.isCompleted) completer.complete();
+      },
+    );
+    stream.addListener(listener);
+    return completer.future;
+  }
+
   void _continue(RitualWrapArgs args) {
     if (!mounted) {
       return;
     }
 
     if (args.nextRoute != null) {
-      Get.offNamed(args.nextRoute!, arguments: args.nextArguments);
+      _didTransferPlayer = _preloadedPlayer != null;
+      Get.offNamed(
+        args.nextRoute!,
+        arguments: _preparedNextArguments ?? args.nextArguments,
+      );
       return;
     }
 

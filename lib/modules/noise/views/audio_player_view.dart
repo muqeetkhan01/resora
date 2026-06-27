@@ -44,7 +44,7 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
       vsync: this,
       duration: const Duration(seconds: 12),
     )..repeat();
-    _player = AudioPlayer();
+    _player = _args.preloadedPlayer ?? AudioPlayer();
     _durationSubscription = _player.durationStream.listen((value) {
       if (!mounted || value == null) {
         return;
@@ -83,7 +83,16 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
         unawaited(_player.seek(Duration.zero));
       }
     });
-    unawaited(_loadTrack());
+    if (_args.preloadError != null) {
+      _isLoading = false;
+      _loadError = _args.preloadError;
+    } else if (_args.preloadedPlayer != null) {
+      _duration = _args.preloadedDuration ?? _player.duration ?? Duration.zero;
+      _isLoading = false;
+      unawaited(_player.play());
+    } else {
+      unawaited(_loadTrack());
+    }
   }
 
   @override
@@ -408,12 +417,18 @@ class _AudioPlayerArgs {
     required this.minimal,
     required this.imagePath,
     this.ritualFeature,
+    this.preloadedPlayer,
+    this.preloadedDuration,
+    this.preloadError,
   });
 
   final AudioTrack track;
   final bool minimal;
   final String imagePath;
   final String? ritualFeature;
+  final AudioPlayer? preloadedPlayer;
+  final Duration? preloadedDuration;
+  final String? preloadError;
 
   factory _AudioPlayerArgs.from(dynamic arguments) {
     if (arguments is Map) {
@@ -423,6 +438,9 @@ class _AudioPlayerArgs {
         minimal: arguments['minimal'] == true,
         imagePath: imagePath.isEmpty ? AppAssets.curtainLight : imagePath,
         ritualFeature: arguments['ritualFeature'] as String?,
+        preloadedPlayer: arguments['preloadedPlayer'] as AudioPlayer?,
+        preloadedDuration: arguments['preloadedDuration'] as Duration?,
+        preloadError: arguments['preloadError'] as String?,
       );
     }
 
@@ -492,6 +510,18 @@ class _MuseumMinimalPlayer extends StatelessWidget {
                 imagePath,
                 fit: BoxFit.cover,
                 alignment: Alignment.topCenter,
+                loadingBuilder: (context, child, progress) => progress == null
+                    ? child
+                    : Image.asset(
+                        AppAssets.archway,
+                        fit: BoxFit.cover,
+                        alignment: Alignment.topCenter,
+                      ),
+                errorBuilder: (context, error, stackTrace) => Image.asset(
+                  AppAssets.archway,
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
+                ),
               )
             : Image.asset(
                 imagePath,
