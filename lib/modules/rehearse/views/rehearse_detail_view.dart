@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/constants/app_assets.dart';
-import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
+import '../../../widgets/app_close_button.dart';
 
 class RehearseDetailView extends StatelessWidget {
   const RehearseDetailView({super.key});
@@ -61,12 +61,7 @@ class RehearseDetailView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  IconButton(
-                    onPressed: Get.back,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    icon: const Icon(AppIcons.back, color: AppColors.white),
-                  ),
+                  AppCloseButton(onPressed: Get.back),
                   const Spacer(),
                   ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 320),

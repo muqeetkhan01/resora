@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../core/constants/app_assets.dart';
 import '../../../core/navigation/app_navigation.dart';
 import '../../../core/services/content_items_service.dart';
+import '../../../core/services/subscription_service.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 import '../../ritual_wrap/models/ritual_wrap_args.dart';
@@ -53,6 +54,9 @@ class RehearseController extends GetxController {
   }
 
   List<RehearsalScenario> get scenarios => _scenarios;
+  bool get hasPremiumAccess =>
+      Get.isRegistered<SubscriptionService>() &&
+      Get.find<SubscriptionService>().isPremium.value;
 
   List<RehearsalScenario> get filteredScenarios {
     if (selectedCategory.value == 'all') {
@@ -94,6 +98,7 @@ class RehearseController extends GetxController {
       'imagePath': imagePath,
       'minimal': true,
       'ritualFeature': RitualWrapFeature.visualization,
+      'previewOnly': !hasPremiumAccess,
     };
 
     Get.toNamed(
@@ -107,6 +112,10 @@ class RehearseController extends GetxController {
   }
 
   void saveToJournal(RehearsalScenario scenario) {
+    if (!hasPremiumAccess) {
+      Get.toNamed(AppRoutes.subscription);
+      return;
+    }
     Get.toNamed(AppRoutes.journalEditor);
   }
 

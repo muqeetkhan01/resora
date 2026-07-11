@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../core/controllers/app_session_controller.dart';
 import '../../../routes/app_routes.dart';
+import '../../../widgets/app_close_button.dart';
 import '../controllers/profile_controller.dart';
 import 'widgets/settings_flow_widgets.dart';
 
@@ -21,14 +22,7 @@ class ProfileView extends GetView<ProfileController> {
             () => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                InkWell(
-                  onTap: Get.back,
-                  child: const Icon(
-                    Icons.close,
-                    size: 18,
-                    color: SettingsFlowColors.terracotta,
-                  ),
-                ),
+                AppCloseButton(onPressed: Get.back),
                 const SizedBox(height: 78),
                 // Text('settings',
                 //     style: SettingsFlowText.display(context, size: 36)),
@@ -40,7 +34,7 @@ class ProfileView extends GetView<ProfileController> {
                     style: SettingsFlowText.body(context, size: 11)),
                 const SizedBox(height: 8),
                 SettingsUnderlineButton(
-                  label: 'edit profile',
+                  label: 'Edit Profile',
                   color: SettingsFlowColors.terracotta,
                   onTap: controller.openEditProfile,
                 ),
@@ -48,36 +42,36 @@ class ProfileView extends GetView<ProfileController> {
             ),
           ),
         ),
-        const SectionLabel('your space', isColorGreen: true),
+        const SectionLabel('Your Space', isColorGreen: true),
         const SettingsRule(horizontal: 0),
         SettingsRow(
-          label: 'membership',
+          label: 'Membership',
           subtitle: 'View your plan and manage your access.',
           onTap: controller.openSubscription,
         ),
         const SettingsRule(horizontal: 0),
-        const SectionLabel('support & privacy', isColorGreen: true),
+        const SectionLabel('Support & Privacy', isColorGreen: true),
         const SettingsRule(horizontal: 0),
         SettingsRow(
-          label: 'help & support',
+          label: 'Help & Support',
           subtitle: 'Get help, send feedback, or report an issue.',
           onTap: controller.openHelpSupport,
         ),
         const SettingsRule(horizontal: 0),
         SettingsRow(
-          label: 'privacy policy',
+          label: 'Privacy Policy',
           subtitle: 'Learn how Resora handles your information.',
           onTap: controller.openPrivacyPolicy,
         ),
         const SettingsRule(horizontal: 0),
         SettingsRow(
-          label: 'terms of use',
+          label: 'Terms of Use',
           subtitle: 'Review Resora\'s terms and safety information.',
           onTap: controller.openTermsOfUse,
         ),
         const SettingsRule(horizontal: 0),
         SettingsRow(
-          label: 'delete account',
+          label: 'Delete Account',
           subtitle: 'Request deletion of your account and saved data.',
           onTap: controller.openDeleteAccount,
         ),
@@ -85,7 +79,7 @@ class ProfileView extends GetView<ProfileController> {
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 20, 24, 8),
           child: SettingsUnderlineButton(
-            label: 'log out',
+            label: 'Log Out',
             color: SettingsFlowColors.terracotta,
             onTap: () => _showLogoutSheet(context),
           ),
@@ -103,7 +97,7 @@ class ProfileView extends GetView<ProfileController> {
                   ),
                 ),
                 const SizedBox(height: 2),
-                Text('version 2.1.0',
+                Text('Version 2.1.0',
                     style: SettingsFlowText.caps(context, size: 10)),
               ],
             ),
@@ -118,7 +112,7 @@ class ProfileView extends GetView<ProfileController> {
       context,
       title: 'Log out?',
       message: 'You can always log back in. Your data will be waiting for you.',
-      confirmLabel: 'log out',
+      confirmLabel: 'Log Out',
     );
     if (confirmed) {
       await controller.signOut();

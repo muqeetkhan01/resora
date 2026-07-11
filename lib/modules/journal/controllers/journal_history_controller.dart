@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:get/get.dart';
 
 import '../../../core/controllers/app_session_controller.dart';
+import '../../../core/services/subscription_service.dart';
 import '../../../core/services/user_generated_content_service.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
@@ -63,6 +64,13 @@ class JournalHistoryController extends GetxController {
   }
 
   Future<void> openEntry(JournalEntry entry) async {
+    final hasPremium = Get.isRegistered<SubscriptionService>() &&
+        Get.find<SubscriptionService>().isPremium.value;
+    if (!hasPremium) {
+      Get.toNamed(AppRoutes.subscription);
+      return;
+    }
+
     final profile = Get.isRegistered<ProfileController>()
         ? Get.find<ProfileController>()
         : Get.put(ProfileController());

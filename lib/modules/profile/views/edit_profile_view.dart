@@ -20,7 +20,7 @@ class EditProfileView extends GetView<EditProfileController> {
               const SizedBox(height: 58),
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
-                child: Text('edit profile',
+                child: Text('Edit Profile',
                     style: SettingsFlowText.display(context, size: 32)),
               ),
               Padding(
@@ -28,7 +28,7 @@ class EditProfileView extends GetView<EditProfileController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('display name',
+                    Text('Display Name',
                         style: SettingsFlowText.caps(context,
                             size: 9, color: SettingsFlowColors.forestGreen)),
                     const SizedBox(height: 8),
@@ -37,7 +37,7 @@ class EditProfileView extends GetView<EditProfileController> {
                       textCapitalization: TextCapitalization.words,
                     ),
                     const SizedBox(height: 28),
-                    Text('email',
+                    Text('Email',
                         style: SettingsFlowText.caps(context,
                             size: 9, color: SettingsFlowColors.forestGreen)),
                     const SizedBox(height: 8),
@@ -64,14 +64,14 @@ class EditProfileView extends GetView<EditProfileController> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     SettingsUnderlineButton(
-                      label: 'delete account',
+                      label: 'Delete Account',
                       color: SettingsFlowColors.terracotta,
                       onTap: () => _confirmDelete(context),
                     ),
                     SettingsUnderlineButton(
                       label: controller.isSaving.value
-                          ? 'saving...'
-                          : 'save changes',
+                          ? 'Saving...'
+                          : 'Save Changes',
                       color: SettingsFlowColors.terracotta,
                       onTap: controller.isSaving.value
                           ? () {}
@@ -93,7 +93,7 @@ class EditProfileView extends GetView<EditProfileController> {
       title: 'Delete your account?',
       message:
           'This is permanent. All your journal entries, resets, and progress will be removed and cannot be recovered.',
-      confirmLabel: 'delete account',
+      confirmLabel: 'Delete Account',
       destructive: true,
     );
   }

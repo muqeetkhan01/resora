@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../core/constants/app_icons.dart';
-import '../theme/app_colors.dart';
+import 'app_close_button.dart';
 
 class CenteredBackHeader extends StatelessWidget {
   const CenteredBackHeader({
@@ -23,16 +22,7 @@ class CenteredBackHeader extends StatelessWidget {
     return Row(
       children: [
         _HeaderIconSlot(
-          child: IconButton(
-            onPressed: onBack ?? Get.back,
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints.tightFor(width: 30, height: 30),
-            iconSize: 15,
-            icon: const Icon(
-              AppIcons.back,
-              color: AppColors.terracotta,
-            ),
-          ),
+          child: AppCloseButton(onPressed: onBack ?? Get.back),
         ),
         Expanded(
           child: Text(
@@ -57,8 +47,8 @@ class _HeaderIconSlot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 30,
-      height: 30,
+      width: 32,
+      height: 32,
       child: child ?? const SizedBox.shrink(),
     );
   }

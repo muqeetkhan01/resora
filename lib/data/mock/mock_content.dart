@@ -68,7 +68,8 @@ abstract final class MockContent {
     ),
     QuickActionItem(
       title: 'Rehearse the Moment',
-      subtitle: 'Practice calm before the moment comes.',
+      subtitle:
+          'A guided visualization to help you feel more prepared and grounded.',
       icon: AppIcons.rehearse,
       accentColor: AppColors.surface,
       route: AppRoutes.rehearse,
@@ -126,32 +127,32 @@ abstract final class MockContent {
     SupportCardItem(
       category: 'Transitions',
       title: 'My child melts down every time we leave the playground.',
-      footer: 'families relate',
+      footer: 'Families relate',
     ),
     SupportCardItem(
       category: 'Sleep',
       title: 'My child refuses bedtime every night.',
-      footer: 'families relate',
+      footer: 'Families relate',
     ),
     SupportCardItem(
       category: 'Aggression',
       title: 'My child hits their sibling when upset.',
-      footer: 'families relate',
+      footer: 'Families relate',
     ),
     SupportCardItem(
       category: 'Routines',
       title: 'My child refuses to brush their teeth.',
-      footer: 'families relate',
+      footer: 'Families relate',
     ),
     SupportCardItem(
       category: 'Separation',
       title: 'My child hides when it is time to go.',
-      footer: 'families relate',
+      footer: 'Families relate',
     ),
     SupportCardItem(
       category: 'School',
       title: 'My child shuts down when I ask about the day.',
-      footer: 'families relate',
+      footer: 'Families relate',
     ),
   ];
 
@@ -602,17 +603,17 @@ abstract final class MockContent {
       route: AppRoutes.subscription,
     ),
     ProfileOption(
-      label: 'Privacy policy',
+      label: 'Privacy Policy',
       icon: AppIcons.privacy,
       route: AppRoutes.privacyPolicy,
     ),
     ProfileOption(
-      label: 'Help & support',
+      label: 'Help & Support',
       icon: AppIcons.help,
       route: AppRoutes.helpSupport,
     ),
     ProfileOption(
-      label: 'Log out',
+      label: 'Log Out',
       icon: AppIcons.logout,
       route: AppRoutes.welcome,
     ),

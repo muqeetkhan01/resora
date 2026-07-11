@@ -147,6 +147,9 @@ class ProfileController extends GetxController {
 
   String? priceForPlan(String planId) => _subscriptions.priceForPlan(planId);
 
+  bool isPlanAvailable(String planId) =>
+      _subscriptions.packageForPlan(planId) != null;
+
   Future<void> refreshSubscriptions() => _subscriptions.refresh();
 
   Future<bool> purchasePlan(String planId) async {

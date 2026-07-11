@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../core/constants/app_icons.dart';
 import '../../../theme/app_colors.dart';
+import '../../../widgets/app_close_button.dart';
 import '../../../widgets/expanded_category_selector.dart';
 import '../controllers/rehearse_controller.dart';
 
@@ -74,20 +75,10 @@ class _RehearseViewState extends State<RehearseView> {
                 padding: const EdgeInsets.fromLTRB(0, 24, 24, 0),
                 child: Row(
                   children: [
-                    IconButton(
-                      onPressed: Get.back,
-                      padding: EdgeInsets.zero,
-                      constraints:
-                          const BoxConstraints.tightFor(width: 28, height: 28),
-                      icon: const Icon(
-                        Icons.arrow_back_ios_rounded,
-                        size: 16,
-                        color: AppColors.terracotta,
-                      ),
-                    ),
+                    AppCloseButton(onPressed: Get.back),
                     const Spacer(),
                     Text(
-                      'rehearse the moment',
+                      'Rehearse the Moment',
                       style: textTheme.bodyMedium?.copyWith(
                         fontSize: 14,
                         color: AppColors.primary,
@@ -140,6 +131,7 @@ class _RehearseViewState extends State<RehearseView> {
                         final scenario = scenarios[index];
                         return _ScenarioSlide(
                           scenario: scenario,
+                          previewOnly: !controller.hasPremiumAccess,
                           onBeginSession: () =>
                               controller.openScenario(scenario),
                           onOpenFilters: () => setState(
@@ -173,11 +165,13 @@ class _RehearseViewState extends State<RehearseView> {
 class _ScenarioSlide extends StatelessWidget {
   const _ScenarioSlide({
     required this.scenario,
+    required this.previewOnly,
     required this.onBeginSession,
     required this.onOpenFilters,
   });
 
   final dynamic scenario;
+  final bool previewOnly;
   final VoidCallback onBeginSession;
   final VoidCallback onOpenFilters;
 
@@ -242,15 +236,28 @@ class _ScenarioSlide extends StatelessWidget {
                   const SizedBox(width: 24),
                   TextButton(
                     onPressed: onBeginSession,
-                    child: Text(
-                      'BEGIN SESSION',
-                      style: textTheme.bodySmall?.copyWith(
-                        color: AppColors.terracotta,
-                        letterSpacing: 2,
-                        decoration: TextDecoration.underline,
-                        decorationColor: AppColors.terracotta,
-                        decorationThickness: 1,
-                      ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (previewOnly) ...[
+                          const Icon(
+                            Icons.lock_outline_rounded,
+                            size: 12,
+                            color: AppColors.terracotta,
+                          ),
+                          const SizedBox(width: 7),
+                        ],
+                        Text(
+                          previewOnly ? 'TAP TO PREVIEW' : 'BEGIN SESSION',
+                          style: textTheme.bodySmall?.copyWith(
+                            color: AppColors.terracotta,
+                            letterSpacing: 2,
+                            decoration: TextDecoration.underline,
+                            decorationColor: AppColors.terracotta,
+                            decorationThickness: 1,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   const Spacer(),

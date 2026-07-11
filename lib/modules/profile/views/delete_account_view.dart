@@ -15,7 +15,7 @@ class DeleteAccountView extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
           child: Text(
-            'delete account',
+            'Delete Account',
             style: SettingsFlowText.display(context, size: 32),
           ),
         ),
@@ -28,11 +28,11 @@ class DeleteAccountView extends StatelessWidget {
                 'You can request deletion of your Resora account and saved data.',
               ),
               const _DeleteSection(
-                'before deleting',
+                'Before Deleting',
                 'Deleting your account may remove saved content, journal entries, Talk to Resora history, preferences, and membership-related app data.',
               ),
               const _DeleteSection(
-                'important note',
+                'Important Note',
                 'Some information may be retained if required for legal, security, fraud prevention, accounting, or compliance reasons.',
               ),
               const SizedBox(height: 18),
@@ -40,12 +40,12 @@ class DeleteAccountView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   SettingsUnderlineButton(
-                    label: 'cancel',
+                    label: 'Cancel',
                     color: SettingsFlowColors.muted,
                     onTap: Get.back,
                   ),
                   SettingsUnderlineButton(
-                    label: 'request account deletion',
+                    label: 'Request Account Deletion',
                     color: SettingsFlowColors.destructiveRed,
                     onTap: () => _showRequestInfo(context),
                   ),
@@ -67,10 +67,10 @@ class DeleteAccountView extends StatelessWidget {
   Future<void> _showRequestInfo(BuildContext context) async {
     await showSettingsConfirm(
       context,
-      title: 'request account deletion',
+      title: 'Request Account Deletion',
       message:
           'Email hello@resoraco.com from the email connected to your Resora account. The Resora team will help delete your account and saved data.',
-      confirmLabel: 'got it',
+      confirmLabel: 'Got It',
       destructive: true,
     );
   }

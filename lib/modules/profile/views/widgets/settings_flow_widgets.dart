@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../theme/app_colors.dart';
+import '../../../../widgets/app_close_button.dart';
 
 class SettingsFlowText {
   static TextStyle display(BuildContext context, {double size = 50}) {
@@ -111,19 +112,7 @@ class SettingsBackChevron extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.only(right: AppSpacing.sm, top: 2, bottom: 2),
-        child: Text(
-          '‹',
-          style: SettingsFlowText.display(context, size: 34).copyWith(
-            color: SettingsFlowColors.terracotta,
-            height: 1,
-          ),
-        ),
-      ),
-    );
+    return AppCloseButton(onPressed: onTap);
   }
 }
 
@@ -426,7 +415,7 @@ Future<bool> showSettingsConfirm(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SettingsUnderlineButton(
-                label: 'cancel',
+                label: 'Cancel',
                 color: SettingsFlowColors.muted,
                 onTap: () => Navigator.pop(ctx, false),
               ),

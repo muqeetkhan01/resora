@@ -84,7 +84,7 @@ class _JournalLockViewState extends State<JournalLockView> {
                   child: SettingsTopBack(title: ''),
                 ),
                 const SizedBox(height: 66),
-                Text('journal lock',
+                Text('Journal Lock',
                     style: SettingsFlowText.display(context, size: 32)),
                 const SizedBox(height: 20),
                 if (_step == 'manage')
@@ -116,7 +116,7 @@ class _JournalLockViewState extends State<JournalLockView> {
           ),
           const SizedBox(height: 32),
           SettingsPrimaryButton(
-            label: 'change pin',
+            label: 'Change PIN',
             width: 248,
             background: SettingsFlowColors.forestGreen,
             onTap: () {
@@ -130,7 +130,7 @@ class _JournalLockViewState extends State<JournalLockView> {
           ),
           const SizedBox(height: 22),
           SettingsUnderlineButton(
-            label: 'remove lock',
+            label: 'Remove Lock',
             color: SettingsFlowColors.terracotta,
             onTap: () {
               controller.clearJournalPin();

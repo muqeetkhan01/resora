@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 
 import '../../../core/constants/app_assets.dart';
 import '../../../core/services/content_items_service.dart';
+import '../../../core/services/subscription_service.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 import '../../ritual_wrap/models/ritual_wrap_args.dart';
@@ -18,6 +19,9 @@ class NoiseController extends GetxController {
 
   List<AudioTrack> get _sourceTracks => _remoteTracks;
   int get totalTrackCount => _sourceTracks.length;
+  bool get hasPremiumAccess =>
+      Get.isRegistered<SubscriptionService>() &&
+      Get.find<SubscriptionService>().isPremium.value;
 
   @override
   void onInit() {
@@ -77,6 +81,7 @@ class NoiseController extends GetxController {
               ? _fallbackImageFor(track)
               : track.imagePath,
           'ritualFeature': RitualWrapFeature.asmr,
+          'previewOnly': !hasPremiumAccess,
         },
       ).toMap(),
     );

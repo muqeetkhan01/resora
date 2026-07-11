@@ -15,9 +15,9 @@ class AppBottomNav extends StatelessWidget {
   final ValueChanged<int> onTap;
 
   static const _items = [
-    (AppIcons.homeOutline, AppIcons.homeFilled, 'home'),
-    (AppIcons.chatOutline, AppIcons.chatFilled, 'talk'),
-    (AppIcons.spacesOutline, AppIcons.spacesFilled, 'space'),
+    (AppIcons.homeOutline, AppIcons.homeFilled, 'Home'),
+    (AppIcons.chatOutline, AppIcons.chatFilled, 'Talk'),
+    (AppIcons.spacesOutline, AppIcons.spacesFilled, 'Spaces'),
   ];
 
   @override

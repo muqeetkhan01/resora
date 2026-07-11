@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../core/constants/app_icons.dart';
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
+import '../../../widgets/app_close_button.dart';
 import '../../../widgets/expanded_category_selector.dart';
 import '../controllers/resets_controller.dart';
 
@@ -77,20 +78,10 @@ class _ResetsViewState extends State<ResetsView> {
                 padding: const EdgeInsets.fromLTRB(0, 24, 24, 0),
                 child: Row(
                   children: [
-                    IconButton(
-                      onPressed: Get.back,
-                      padding: EdgeInsets.zero,
-                      constraints:
-                          const BoxConstraints.tightFor(width: 28, height: 28),
-                      icon: const Icon(
-                        Icons.arrow_back_ios_rounded,
-                        size: 16,
-                        color: AppColors.terracotta,
-                      ),
-                    ),
+                    AppCloseButton(onPressed: Get.back),
                     const Spacer(),
                     Text(
-                      'gentle reset',
+                      'Gentle Reset',
                       style: textTheme.bodyMedium?.copyWith(
                         fontSize: 14,
                         color: AppColors.primary,
@@ -143,6 +134,7 @@ class _ResetsViewState extends State<ResetsView> {
                         final option = options[index];
                         return _ResetSlide(
                           option: option,
+                          previewOnly: !controller.hasPremiumAccess,
                           onBeginSession: () => controller.openReset(option),
                           onOpenFilters: () => setState(
                             () => _categoriesExpanded = !_categoriesExpanded,
@@ -175,11 +167,13 @@ class _ResetsViewState extends State<ResetsView> {
 class _ResetSlide extends StatelessWidget {
   const _ResetSlide({
     required this.option,
+    required this.previewOnly,
     required this.onBeginSession,
     required this.onOpenFilters,
   });
 
   final ResetOption option;
+  final bool previewOnly;
   final VoidCallback onBeginSession;
   final VoidCallback onOpenFilters;
 
@@ -247,15 +241,28 @@ class _ResetSlide extends StatelessWidget {
                   const SizedBox(width: 24),
                   TextButton(
                     onPressed: onBeginSession,
-                    child: Text(
-                      'BEGIN SESSION',
-                      style: textTheme.bodySmall?.copyWith(
-                        color: AppColors.terracotta,
-                        letterSpacing: 2,
-                        decoration: TextDecoration.underline,
-                        decorationColor: AppColors.terracotta,
-                        decorationThickness: 1,
-                      ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (previewOnly) ...[
+                          const Icon(
+                            Icons.lock_outline_rounded,
+                            size: 12,
+                            color: AppColors.terracotta,
+                          ),
+                          const SizedBox(width: 7),
+                        ],
+                        Text(
+                          previewOnly ? 'TAP TO PREVIEW' : 'BEGIN SESSION',
+                          style: textTheme.bodySmall?.copyWith(
+                            color: AppColors.terracotta,
+                            letterSpacing: 2,
+                            decoration: TextDecoration.underline,
+                            decorationColor: AppColors.terracotta,
+                            decorationThickness: 1,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   const Spacer(),

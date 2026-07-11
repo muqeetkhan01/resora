@@ -7,6 +7,7 @@ import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
+import '../../../widgets/app_close_button.dart';
 
 class ResetSessionView extends StatelessWidget {
   const ResetSessionView({super.key});
@@ -59,10 +60,7 @@ class ResetSessionView extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      IconButton(
-                        onPressed: Get.back,
-                        icon: const Icon(AppIcons.back, color: AppColors.white),
-                      ),
+                      AppCloseButton(onPressed: Get.back),
                       const SizedBox(width: AppSpacing.xs),
                       Expanded(
                         child: ClipRRect(

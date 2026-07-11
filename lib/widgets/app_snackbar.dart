@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../theme/app_colors.dart';
+import 'app_close_button.dart';
 
 void showAppSnackbar(
   String title,
@@ -76,17 +77,8 @@ void showAppSnackbar(
                             ),
                           ),
                         ),
-                        IconButton(
+                        AppCloseButton(
                           onPressed: () => Get.back<void>(),
-                          visualDensity: VisualDensity.compact,
-                          splashRadius: 18,
-                          padding: const EdgeInsets.only(left: 12),
-                          constraints: const BoxConstraints(),
-                          icon: Icon(
-                            Icons.close,
-                            size: 17,
-                            color: resolvedTextColor.withOpacity(0.72),
-                          ),
                         ),
                       ],
                     ),

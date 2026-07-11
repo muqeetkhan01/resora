@@ -18,6 +18,7 @@ class RitualWrapView extends StatefulWidget {
 class _RitualWrapViewState extends State<RitualWrapView> {
   static const Duration _fadeInDelay = Duration(milliseconds: 150);
   static const Duration _doneAt = Duration(milliseconds: 2500);
+  static const Duration _mediaPreloadTimeout = Duration(seconds: 5);
 
   late final RitualWrapArgs _args;
   late final _WrapCopy _copy;
@@ -137,9 +138,10 @@ class _RitualWrapViewState extends State<RitualWrapView> {
       try {
         final source = track.assetPath.trim();
         final duration =
-            source.startsWith('http://') || source.startsWith('https://')
-                ? await player.setUrl(source)
-                : await player.setAsset(source);
+            await (source.startsWith('http://') || source.startsWith('https://')
+                    ? player.setUrl(source)
+                    : player.setAsset(source))
+                .timeout(_mediaPreloadTimeout);
         if (!mounted) {
           await player.dispose();
           return;
@@ -147,6 +149,8 @@ class _RitualWrapViewState extends State<RitualWrapView> {
         _preloadedPlayer = player;
         arguments['preloadedPlayer'] = player;
         arguments['preloadedDuration'] = duration;
+      } on TimeoutException {
+        await player.dispose();
       } catch (_) {
         await player.dispose();
         arguments['preloadError'] =
@@ -160,18 +164,22 @@ class _RitualWrapViewState extends State<RitualWrapView> {
   Future<void> _precacheNetworkImage(String url) {
     final completer = Completer<void>();
     final stream = NetworkImage(url).resolve(ImageConfiguration.empty);
+    Timer? timeout;
     late final ImageStreamListener listener;
+    void complete() {
+      timeout?.cancel();
+      stream.removeListener(listener);
+      if (!completer.isCompleted) completer.complete();
+    }
+
     listener = ImageStreamListener(
-      (_, __) {
-        stream.removeListener(listener);
-        if (!completer.isCompleted) completer.complete();
-      },
-      onError: (_, __) {
-        stream.removeListener(listener);
-        if (!completer.isCompleted) completer.complete();
-      },
+      (_, __) => complete(),
+      onError: (_, __) => complete(),
     );
     stream.addListener(listener);
+    if (!completer.isCompleted) {
+      timeout = Timer(_mediaPreloadTimeout, complete);
+    }
     return completer.future;
   }
 

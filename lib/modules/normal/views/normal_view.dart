@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
+import '../../../widgets/app_close_button.dart';
 import '../../../widgets/expanded_category_selector.dart';
 import '../controllers/normal_controller.dart';
 
@@ -122,22 +123,10 @@ class _NormalViewState extends State<NormalView> {
                     padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
                     child: Row(
                       children: [
-                        IconButton(
-                          onPressed: Get.back,
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints.tightFor(
-                            width: 28,
-                            height: 28,
-                          ),
-                          icon: const Icon(
-                            Icons.arrow_back_ios_rounded,
-                            size: 16,
-                            color: Color(0xFFA3A3A3),
-                          ),
-                        ),
+                        AppCloseButton(onPressed: Get.back),
                         const SizedBox(width: 8),
                         Text(
-                          'is this normal',
+                          'Is This Normal',
                           style: textTheme.bodyMedium?.copyWith(
                             fontSize: 14,
                             color: const Color(0xFFA3A3A3),
@@ -178,13 +167,13 @@ class _NormalViewState extends State<NormalView> {
                     child: Row(
                       children: [
                         _InlineTab(
-                          label: 'most felt',
+                          label: 'Most Felt',
                           active: controller.sortMode.value == 'felt',
                           onTap: () => controller.setSortMode('felt'),
                         ),
                         const SizedBox(width: 24),
                         _InlineTab(
-                          label: 'latest',
+                          label: 'Latest',
                           active: controller.sortMode.value == 'latest',
                           onTap: () => controller.setSortMode('latest'),
                         ),
@@ -348,7 +337,7 @@ class _NormalViewState extends State<NormalView> {
       id: 'reply_${DateTime.now().millisecondsSinceEpoch}',
       handle: '@you',
       text: text,
-      time: 'now',
+      time: 'Now',
       likes: 0,
       liked: false,
       isNew: true,
@@ -458,28 +447,21 @@ class _NormalViewState extends State<NormalView> {
             padding: const EdgeInsets.fromLTRB(24, 24, 24, 14),
             child: Row(
               children: [
-                InkWell(
-                  onTap: _closeThread,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.arrow_back_ios_rounded,
-                        size: 15,
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AppCloseButton(onPressed: _closeThread),
+                    const SizedBox(width: 8),
+                    Text(
+                      'IS THIS NORMAL',
+                      style: textTheme.bodyMedium?.copyWith(
+                        fontSize: 11,
                         color: _normalForest,
+                        letterSpacing: 1.2,
+                        fontWeight: FontWeight.w400,
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'IS THIS NORMAL',
-                        style: textTheme.bodyMedium?.copyWith(
-                          fontSize: 11,
-                          color: _normalForest,
-                          letterSpacing: 1.2,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
                 const Spacer(),
                 Text(
@@ -853,14 +835,7 @@ class _NormalViewState extends State<NormalView> {
                         ),
                       ),
                       const Spacer(),
-                      InkWell(
-                        onTap: _closeComposer,
-                        child: const Icon(
-                          Icons.close,
-                          size: 18,
-                          color: _normalMuted,
-                        ),
-                      ),
+                      AppCloseButton(onPressed: _closeComposer),
                     ],
                   ),
                   const SizedBox(height: 18),

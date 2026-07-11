@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../theme/app_colors.dart';
+import '../../../widgets/app_close_button.dart';
 import '../../../widgets/expanded_category_selector.dart';
 import '../controllers/terms_controller.dart';
 
@@ -73,20 +74,10 @@ class _TermsViewState extends State<TermsView> {
                 padding: const EdgeInsets.fromLTRB(0, 24, 24, 0),
                 child: Row(
                   children: [
-                    IconButton(
-                      onPressed: Get.back,
-                      padding: EdgeInsets.zero,
-                      constraints:
-                          const BoxConstraints.tightFor(width: 28, height: 28),
-                      icon: const Icon(
-                        Icons.arrow_back_ios_rounded,
-                        size: 16,
-                        color: AppColors.terracotta,
-                      ),
-                    ),
+                    AppCloseButton(onPressed: Get.back),
                     const Spacer(),
                     Text(
-                      'key terms',
+                      'Key Terms',
                       style: textTheme.bodyMedium?.copyWith(
                         fontSize: 14,
                         color: AppColors.primary,

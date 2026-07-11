@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/app_background.dart';
 import '../../../widgets/app_card.dart';
 import '../../../widgets/app_chip.dart';
+import '../../../widgets/app_close_button.dart';
 import '../controllers/community_controller.dart';
 
 class CommunityView extends GetView<CommunityController> {
@@ -22,11 +22,8 @@ class CommunityView extends GetView<CommunityController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            IconButton(
-              onPressed: Get.back,
-              icon: const Icon(AppIcons.close, color: AppColors.primary),
-            ),
-            Text('community', style: textTheme.displayMedium),
+            AppCloseButton(onPressed: Get.back),
+            Text('Community', style: textTheme.displayMedium),
             const SizedBox(height: AppSpacing.xs),
             Text(
               'A softer preview of peer support and shared perspective.',

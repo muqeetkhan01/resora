@@ -6,6 +6,7 @@ import '../../../core/constants/app_spacing.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/app_background.dart';
 import '../../../widgets/app_button.dart';
+import '../../../widgets/app_close_button.dart';
 import '../controllers/premium_controller.dart';
 
 class PremiumView extends GetView<PremiumController> {
@@ -19,6 +20,7 @@ class PremiumView extends GetView<PremiumController> {
       'Full access to Gentle Reset audios',
       'Full access to Rehearse the Moment audios',
       'Full access to Quiet the Noise audios',
+      'Full access to Journal Prompts',
       'Early access to new features',
       'Cancel anytime',
     ];
@@ -30,11 +32,8 @@ class PremiumView extends GetView<PremiumController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            IconButton(
-              onPressed: Get.back,
-              icon: const Icon(AppIcons.back, color: AppColors.primary),
-            ),
-            Text('membership', style: textTheme.displayMedium),
+            AppCloseButton(onPressed: Get.back),
+            Text('Membership', style: textTheme.displayMedium),
             const SizedBox(height: AppSpacing.sm),
             Text(
               'Get more from your time in Resora.\nMore space. More support. More ways to return to yourself.',
@@ -174,7 +173,7 @@ class PremiumView extends GetView<PremiumController> {
                                                   BorderRadius.circular(999),
                                             ),
                                             child: Text(
-                                              'best value',
+                                              'Best Value',
                                               style:
                                                   textTheme.bodySmall?.copyWith(
                                                 color: AppColors.primary,

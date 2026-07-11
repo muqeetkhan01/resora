@@ -20,6 +20,9 @@ class JournalController extends GetxController {
   final _remotePrompts = <JournalPrompt>[].obs;
 
   List<JournalPrompt> get _sourcePrompts => _remotePrompts;
+  bool get hasPremiumAccess =>
+      Get.isRegistered<SubscriptionService>() &&
+      Get.find<SubscriptionService>().isPremium.value;
 
   @override
   void onInit() {
@@ -78,6 +81,11 @@ class JournalController extends GetxController {
   }
 
   void openEditor({JournalEntry? entry, String? prompt}) {
+    if (!hasPremiumAccess) {
+      Get.toNamed(AppRoutes.subscription);
+      return;
+    }
+
     Get.toNamed(
       AppRoutes.ritualWrap,
       arguments: RitualWrapArgs.entry(
@@ -89,12 +97,6 @@ class JournalController extends GetxController {
   }
 
   void openPrompt(JournalPrompt prompt) {
-    final hasPremium = Get.isRegistered<SubscriptionService>() &&
-        Get.find<SubscriptionService>().isPremium.value;
-    if (prompt.isPremium && !hasPremium) {
-      Get.toNamed(AppRoutes.premium);
-      return;
-    }
     openEditor(prompt: prompt.prompt);
   }
 

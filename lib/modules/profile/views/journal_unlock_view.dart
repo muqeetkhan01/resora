@@ -73,7 +73,7 @@ class _JournalUnlockViewState extends State<JournalUnlockView> {
           ),
           child: Column(
             children: [
-              const CenteredBackHeader(title: 'unlock journal'),
+              const CenteredBackHeader(title: 'Unlock Journal'),
               const SizedBox(height: AppSpacing.xl),
               Text(
                 'Enter your 4-digit PIN',

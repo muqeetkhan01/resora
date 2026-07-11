@@ -221,8 +221,8 @@ class _HomeSlide extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Container(width: 1, height: 30, color: AppColors.white),
-                  const SizedBox(width: AppSpacing.sm),
+                  // Container(width: 1, height: 30, color: AppColors.white),
+                  // const SizedBox(width: AppSpacing.sm),
                   Text(
                     slot.label,
                     style: textTheme.labelMedium?.copyWith(
@@ -438,7 +438,7 @@ const _specs = <_HomeSlideSpec>[
   _HomeSlideSpec(
     route: AppRoutes.chat,
     titleHint: 'talk',
-    defaultTitle: 'talk to resora',
+    defaultTitle: 'Talk to Resora',
     defaultSubtitle: 'A calm place to begin when your thoughts feel full.',
     defaultImage: AppAssets.homeTalkOcean,
     label: 'TALK TO RESORA',
@@ -461,7 +461,7 @@ const _specs = <_HomeSlideSpec>[
   _HomeSlideSpec(
     route: AppRoutes.resets,
     titleHint: 'reset',
-    defaultTitle: 'gentle resets',
+    defaultTitle: 'Gentle Resets',
     defaultSubtitle: 'Start with one small pause.',
     defaultImage: AppAssets.spaceGarden,
     label: 'GUIDED RESETS',
@@ -484,7 +484,7 @@ const _specs = <_HomeSlideSpec>[
   _HomeSlideSpec(
     route: AppRoutes.journal,
     titleHint: 'journal',
-    defaultTitle: 'journal',
+    defaultTitle: 'Journal',
     defaultSubtitle: 'Write, reflect, and let your thoughts settle.',
     defaultImage: AppAssets.homeJournalBed,
     label: 'JOURNAL',
@@ -507,7 +507,7 @@ const _specs = <_HomeSlideSpec>[
   _HomeSlideSpec(
     route: AppRoutes.rehearse,
     titleHint: 'rehearse',
-    defaultTitle: 'rehearse the moment',
+    defaultTitle: 'Rehearse the Moment',
     defaultSubtitle:
         'A guided visualization to help you feel more prepared and grounded.',
     defaultImage: AppAssets.spaceMountain,

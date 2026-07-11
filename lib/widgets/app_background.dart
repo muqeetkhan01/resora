@@ -107,7 +107,7 @@ class ResoraLogo extends StatelessWidget {
           Text('resora', style: textTheme.displayLarge),
           const SizedBox(height: AppSpacing.xs),
           Text(
-            'for real life moments',
+            'For real life moments',
             style: textTheme.bodyMedium,
             textAlign: TextAlign.center,
           ),

@@ -7,6 +7,7 @@ import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/app_button.dart';
 import '../../../widgets/app_chip.dart';
+import '../../../widgets/app_close_button.dart';
 import '../controllers/qa_controller.dart';
 
 class QaView extends GetView<QaController> {
@@ -24,11 +25,8 @@ class QaView extends GetView<QaController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              IconButton(
-                onPressed: Get.back,
-                icon: const Icon(AppIcons.close, color: AppColors.primary),
-              ),
-              Text('q&a', style: textTheme.displayMedium),
+              AppCloseButton(onPressed: Get.back),
+              Text('Q&A', style: textTheme.displayMedium),
               const SizedBox(height: AppSpacing.xs),
               Text(
                 'Expert-written answers for parenting, emotions, work stress, and regulation.',

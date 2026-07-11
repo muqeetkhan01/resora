@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/controllers/app_session_controller.dart';
 import '../../../core/services/user_generated_content_service.dart';
@@ -11,6 +10,7 @@ import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/app_snackbar.dart';
+import '../../../widgets/app_close_button.dart';
 import '../../ritual_wrap/models/ritual_wrap_args.dart';
 
 class JournalEditorView extends StatefulWidget {
@@ -89,16 +89,12 @@ class _JournalEditorViewState extends State<JournalEditorView> {
                 children: [
                   Row(
                     children: [
-                      IconButton(
-                        onPressed: Get.back,
-                        icon:
-                            const Icon(AppIcons.back, color: AppColors.primary),
-                      ),
+                      AppCloseButton(onPressed: Get.back),
                       const Spacer(),
                       TextButton(
                         onPressed: _isSaving ? null : _onDonePressed,
                         child: Text(
-                          _isSaving ? 'saving...' : 'done',
+                          _isSaving ? 'Saving...' : 'Done',
                           style: textTheme.bodyMedium?.copyWith(
                             color: AppColors.primary,
                           ),
@@ -136,7 +132,7 @@ class _JournalEditorViewState extends State<JournalEditorView> {
                       ),
                       textAlignVertical: TextAlignVertical.top,
                       decoration: const InputDecoration(
-                        hintText: 'start here',
+                        hintText: 'Start here',
                         border: InputBorder.none,
                         enabledBorder: InputBorder.none,
                         focusedBorder: InputBorder.none,

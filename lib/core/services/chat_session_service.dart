@@ -2,6 +2,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../data/models/app_models.dart';
 
+class FreeChatAllowance {
+  const FreeChatAllowance({
+    required this.allowed,
+    required this.remaining,
+    required this.resetAt,
+  });
+
+  final bool allowed;
+  final int remaining;
+  final DateTime resetAt;
+}
+
 class ChatSessionService {
   ChatSessionService({FirebaseFirestore? firestore})
       : _firestore = firestore ?? FirebaseFirestore.instance;
@@ -9,6 +21,8 @@ class ChatSessionService {
   final FirebaseFirestore _firestore;
 
   static const Duration sessionTimeout = Duration(minutes: 30);
+  static const Duration freeChatWindow = Duration(hours: 24);
+  static const int freeChatMessageLimit = 3;
 
   DocumentReference<Map<String, dynamic>> _userDoc(String uid) =>
       _firestore.collection('users').doc(uid);
@@ -164,6 +178,84 @@ class ChatSessionService {
         'createdAt': FieldValue.serverTimestamp(),
         'createdAtMs': nowMs,
       },
+    );
+  }
+
+  Future<FreeChatAllowance> loadFreeChatAllowance(
+    String uid, {
+    DateTime? now,
+  }) async {
+    final current = now ?? DateTime.now();
+    final snapshot = await _userDoc(uid).get();
+    return _allowanceFromData(snapshot.data(), current);
+  }
+
+  Future<FreeChatAllowance> reserveFreeChatMessage(
+    String uid, {
+    DateTime? now,
+  }) {
+    final current = now ?? DateTime.now();
+    final userRef = _userDoc(uid);
+    return _firestore.runTransaction((transaction) async {
+      final snapshot = await transaction.get(userRef);
+      final currentAllowance = _allowanceFromData(snapshot.data(), current);
+      if (!currentAllowance.allowed) return currentAllowance;
+
+      final existingStart = _toDateTime(
+        snapshot.data()?['freeChatWindowStartedAtMs'],
+      );
+      final windowExpired = existingStart == null ||
+          current.difference(existingStart) >= freeChatWindow;
+      final start = windowExpired ? current : existingStart;
+      final previousCount =
+          windowExpired ? 0 : _toInt(snapshot.data()?['freeChatMessageCount']);
+      final nextCount = previousCount + 1;
+
+      transaction.set(
+        userRef,
+        <String, dynamic>{
+          'freeChatWindowStartedAt': Timestamp.fromDate(start),
+          'freeChatWindowStartedAtMs': start.millisecondsSinceEpoch,
+          'freeChatMessageCount': nextCount,
+          'updatedAt': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
+      );
+
+      return FreeChatAllowance(
+        allowed: true,
+        remaining: (freeChatMessageLimit - nextCount).clamp(
+          0,
+          freeChatMessageLimit,
+        ),
+        resetAt: start.add(freeChatWindow),
+      );
+    });
+  }
+
+  FreeChatAllowance _allowanceFromData(
+    Map<String, dynamic>? data,
+    DateTime now,
+  ) {
+    final start = _toDateTime(data?['freeChatWindowStartedAtMs']);
+    final expired = start == null || now.difference(start) >= freeChatWindow;
+    if (expired) {
+      return FreeChatAllowance(
+        allowed: true,
+        remaining: freeChatMessageLimit,
+        resetAt: now.add(freeChatWindow),
+      );
+    }
+
+    final count = _toInt(data?['freeChatMessageCount']);
+    final remaining = (freeChatMessageLimit - count).clamp(
+      0,
+      freeChatMessageLimit,
+    );
+    return FreeChatAllowance(
+      allowed: remaining > 0,
+      remaining: remaining,
+      resetAt: start.add(freeChatWindow),
     );
   }
 
@@ -335,6 +427,12 @@ class ChatSessionService {
       return DateTime.fromMillisecondsSinceEpoch(value.toInt());
     }
     return null;
+  }
+
+  static int _toInt(dynamic value) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse('$value') ?? 0;
   }
 
   static String _formatTime(DateTime date) {

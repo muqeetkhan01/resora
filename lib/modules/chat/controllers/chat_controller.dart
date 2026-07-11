@@ -8,7 +8,9 @@ import 'package:get/get.dart';
 import '../../../core/controllers/app_session_controller.dart';
 import '../../../core/services/chat_session_service.dart';
 import '../../../core/services/resora_ai_service.dart';
+import '../../../core/services/subscription_service.dart';
 import '../../../data/models/app_models.dart';
+import '../../../routes/app_routes.dart';
 
 class ChatController extends GetxController {
   ChatController({
@@ -28,12 +30,18 @@ class ChatController extends GetxController {
   final isTyping = false.obs;
   final draftText = ''.obs;
   final isSendCooldownActive = false.obs;
+  final isDailyLimitReached = false.obs;
+  final dailyLimitResetAt = Rxn<DateTime>();
 
   int _pendingReplies = 0;
   String? _activeSessionId;
   Timer? _sendCooldownTimer;
   Timer? _sessionInactivityTimer;
+  Timer? _dailyLimitResetTimer;
+  Worker? _premiumWorker;
   bool _isClosingSession = false;
+  int _guestFreeSendCount = 0;
+  DateTime? _guestWindowStartedAt;
 
   static const int maxCharacters = 500;
   static const int warningCharacters = 450;
@@ -62,7 +70,11 @@ class ChatController extends GetxController {
       draftText.value.trim().isNotEmpty &&
       !isSendCooldownActive.value &&
       !isTyping.value &&
+      (hasPremiumAccess || !isDailyLimitReached.value) &&
       draftText.value.characters.length <= maxCharacters;
+  bool get hasPremiumAccess =>
+      Get.isRegistered<SubscriptionService>() &&
+      Get.find<SubscriptionService>().isPremium.value;
   int get characterCount => draftText.value.characters.length;
   bool get shouldShowCharacterWarning => characterCount >= warningCharacters;
 
@@ -77,6 +89,13 @@ class ChatController extends GetxController {
     super.onInit();
     inputController.addListener(_handleDraftChanged);
     inputFocusNode.addListener(_handleInputFocusChanged);
+    if (Get.isRegistered<SubscriptionService>()) {
+      _premiumWorker = ever<bool>(
+        Get.find<SubscriptionService>().isPremium,
+        (_) => _refreshDailyAllowance(),
+      );
+    }
+    _refreshDailyAllowance();
     _bootstrapSessionHistory();
   }
 
@@ -85,8 +104,23 @@ class ChatController extends GetxController {
     dismissKeyboard();
     if (text.isEmpty || isSendCooldownActive.value || isTyping.value) return;
     if (text.characters.length > maxCharacters) return;
+    if (!hasPremiumAccess && isDailyLimitReached.value) return;
 
     _startSendCooldown();
+    FreeChatAllowance? allowance;
+    if (!hasPremiumAccess) {
+      try {
+        allowance = await _reserveDailyAllowance();
+      } catch (_) {
+        return;
+      }
+      if (!allowance.allowed) {
+        _applyAllowance(allowance);
+        _appendDailyLimitMessage();
+        _scrollToBottom();
+        return;
+      }
+    }
 
     messages.add(ChatMessageModel(text: text, isUser: true, time: 'Now'));
     inputController.clear();
@@ -156,8 +190,88 @@ class ChatController extends GetxController {
     } finally {
       _pendingReplies = (_pendingReplies - 1).clamp(0, 999);
       isTyping.value = _pendingReplies > 0;
+      if (allowance?.remaining == 0) {
+        _applyAllowance(allowance!);
+        _appendDailyLimitMessage();
+      }
       _scrollToBottom();
     }
+  }
+
+  void openMembership() {
+    Get.toNamed(AppRoutes.subscription);
+  }
+
+  Future<FreeChatAllowance> _reserveDailyAllowance() async {
+    final uid = _session.firebaseUser?.uid;
+    if (uid != null) {
+      return _chatSessionService.reserveFreeChatMessage(uid);
+    }
+
+    final now = DateTime.now();
+    final start = _guestWindowStartedAt;
+    if (start == null ||
+        now.difference(start) >= ChatSessionService.freeChatWindow) {
+      _guestWindowStartedAt = now;
+      _guestFreeSendCount = 0;
+    }
+    if (_guestFreeSendCount >= ChatSessionService.freeChatMessageLimit) {
+      return FreeChatAllowance(
+        allowed: false,
+        remaining: 0,
+        resetAt: _guestWindowStartedAt!.add(
+          ChatSessionService.freeChatWindow,
+        ),
+      );
+    }
+
+    _guestFreeSendCount += 1;
+    return FreeChatAllowance(
+      allowed: true,
+      remaining: ChatSessionService.freeChatMessageLimit - _guestFreeSendCount,
+      resetAt: _guestWindowStartedAt!.add(
+        ChatSessionService.freeChatWindow,
+      ),
+    );
+  }
+
+  Future<void> _refreshDailyAllowance() async {
+    if (hasPremiumAccess) {
+      isDailyLimitReached.value = false;
+      dailyLimitResetAt.value = null;
+      _dailyLimitResetTimer?.cancel();
+      return;
+    }
+
+    final uid = _session.firebaseUser?.uid;
+    if (uid == null) return;
+    try {
+      final allowance = await _chatSessionService.loadFreeChatAllowance(uid);
+      if (!isClosed) _applyAllowance(allowance);
+    } catch (_) {
+      // Keep the current local state if allowance refresh fails.
+    }
+  }
+
+  void _applyAllowance(FreeChatAllowance allowance) {
+    isDailyLimitReached.value = allowance.remaining == 0;
+    dailyLimitResetAt.value = allowance.resetAt;
+    _dailyLimitResetTimer?.cancel();
+    final delay = allowance.resetAt.difference(DateTime.now());
+    if (delay > Duration.zero) {
+      _dailyLimitResetTimer = Timer(delay, _refreshDailyAllowance);
+    }
+  }
+
+  void _appendDailyLimitMessage() {
+    const text =
+        "You showed up today. That counts. I'll have more for you tomorrow.";
+    if (messages.any((message) => !message.isUser && message.text == text)) {
+      return;
+    }
+    messages.add(
+      const ChatMessageModel(text: text, isUser: false, time: 'Now'),
+    );
   }
 
   void _handleDraftChanged() {
@@ -208,6 +322,8 @@ class ChatController extends GetxController {
 
   void _restartSessionInactivityTimer() {
     _sessionInactivityTimer?.cancel();
+    _dailyLimitResetTimer?.cancel();
+    _premiumWorker?.dispose();
     _sessionInactivityTimer =
         Timer(ChatSessionService.sessionTimeout, _handleSessionTimeout);
   }

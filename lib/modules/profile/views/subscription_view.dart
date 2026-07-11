@@ -21,6 +21,7 @@ class _SubscriptionViewState extends State<SubscriptionView> {
     'Full access to Gentle Reset audios',
     'Full access to Rehearse the Moment audios',
     'Full access to Quiet the Noise audios',
+    'Full access to Journal Prompts',
     'Early access to new features',
     'Cancel anytime',
   ];
@@ -71,7 +72,7 @@ class _SubscriptionViewState extends State<SubscriptionView> {
             const SizedBox(height: 58),
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-              child: Text('membership',
+              child: Text('Membership',
                   style: SettingsFlowText.display(context, size: 32)),
             ),
             Padding(
@@ -84,7 +85,7 @@ class _SubscriptionViewState extends State<SubscriptionView> {
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 0, 24, 10),
               child: Text(
-                'included with premium:',
+                'Included with Premium:',
                 style: SettingsFlowText.caps(
                   context,
                   size: 10,
@@ -135,15 +136,15 @@ class _SubscriptionViewState extends State<SubscriptionView> {
                   if (controller.canShowRestore)
                     SettingsUnderlineButton(
                       label: controller.isSubscriptionBusy
-                          ? 'restoring...'
-                          : 'restore purchase',
+                          ? 'Restoring...'
+                          : 'Restore Purchase',
                       color: SettingsFlowColors.terracotta,
                       onTap: controller.restorePurchases,
                     )
                   else
                     const SizedBox.shrink(),
                   SettingsUnderlineButton(
-                    label: 'explore membership',
+                    label: 'Explore Membership',
                     color: SettingsFlowColors.terracotta,
                     onTap: () =>
                         setState(() => _stage = _MembershipStage.plans),
@@ -163,14 +164,14 @@ class _SubscriptionViewState extends State<SubscriptionView> {
           title: '',
           trailing: Obx(
             () => Text(
-              controller.isPremium.value ? 'premium' : 'free',
+              controller.isPremium.value ? 'Premium' : 'Free',
               style: SettingsFlowText.body(context, size: 12),
             ),
           ),
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 4),
-          child: Text('membership',
+          child: Text('Membership',
               style: SettingsFlowText.display(context, size: 32)),
         ),
         Padding(
@@ -183,16 +184,14 @@ class _SubscriptionViewState extends State<SubscriptionView> {
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Obx(() => Column(
                   children: _plans.map((plan) {
-                    final selected = plan.id == _selectedPlan;
                     final livePrice = controller.priceForPlan(plan.id);
-                    final price = livePrice == null
-                        ? plan.price
-                        : plan.note == null
-                            ? livePrice
-                            : '$livePrice ${plan.id == 'monthly' ? '/ month' : plan.id == 'yearly' ? '/ year' : ''}'
-                                .trim();
+                    final available = controller.isPlanAvailable(plan.id);
+                    final selected = available && plan.id == _selectedPlan;
+                    final price = livePrice ?? 'Unavailable';
                     return GestureDetector(
-                      onTap: () => setState(() => _selectedPlan = plan.id),
+                      onTap: available
+                          ? () => setState(() => _selectedPlan = plan.id)
+                          : null,
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 10),
                         padding: const EdgeInsets.symmetric(
@@ -201,7 +200,8 @@ class _SubscriptionViewState extends State<SubscriptionView> {
                         ),
                         decoration: BoxDecoration(
                           color: selected
-                              ? SettingsFlowColors.forestGreen.withOpacity(0.05)
+                              ? SettingsFlowColors.forestGreen
+                                  .withValues(alpha: 0.05)
                               : Colors.transparent,
                           border: Border.all(
                             color: selected
@@ -216,12 +216,22 @@ class _SubscriptionViewState extends State<SubscriptionView> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(plan.label,
-                                      style: SettingsFlowText.title(context,
-                                          size: 14)),
+                                  Text(
+                                    plan.label,
+                                    style: SettingsFlowText.title(
+                                      context,
+                                      size: 14,
+                                    ).copyWith(
+                                      color: available
+                                          ? null
+                                          : SettingsFlowColors.muted,
+                                    ),
+                                  ),
                                   const SizedBox(height: 3),
                                   Text(
-                                    '$price\n${plan.note}',
+                                    available
+                                        ? '$price\n${plan.note}'
+                                        : '$price\nNot returned by the App Store.',
                                     style: SettingsFlowText.body(context,
                                         size: 12),
                                   ),
@@ -269,19 +279,27 @@ class _SubscriptionViewState extends State<SubscriptionView> {
                 if (controller.canShowRestore)
                   SettingsUnderlineButton(
                     label: controller.isSubscriptionBusy
-                        ? 'restoring...'
-                        : 'restore purchase',
+                        ? 'Restoring...'
+                        : 'Restore Purchase',
                     color: SettingsFlowColors.terracotta,
                     onTap: controller.restorePurchases,
                   )
                 else
                   const SizedBox.shrink(),
                 SettingsUnderlineButton(
-                  label:
-                      controller.isSubscriptionBusy ? 'working...' : 'continue',
+                  label: controller.isSubscriptionBusy
+                      ? 'Checking...'
+                      : controller.isPlanAvailable(_selectedPlan)
+                          ? 'Continue'
+                          : 'Retry Plans',
                   color: SettingsFlowColors.warmDark,
                   onTap: () async {
                     if (controller.isSubscriptionBusy) {
+                      return;
+                    }
+
+                    if (!controller.isPlanAvailable(_selectedPlan)) {
+                      await controller.refreshSubscriptions();
                       return;
                     }
 
@@ -309,7 +327,7 @@ class _SubscriptionViewState extends State<SubscriptionView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'welcome to\nresora premium',
+              'Welcome to\nResora Premium',
               textAlign: TextAlign.center,
               style: SettingsFlowText.display(context, size: 34),
             ),
@@ -327,7 +345,7 @@ class _SubscriptionViewState extends State<SubscriptionView> {
             ),
             const SizedBox(height: 40),
             SettingsUnderlineButton(
-              label: 'continue',
+              label: 'Continue',
               color: SettingsFlowColors.warmDark,
               onTap: () => Navigator.of(context).pop(),
             ),

@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 
 import '../../../core/constants/app_assets.dart';
 import '../../../core/services/content_items_service.dart';
+import '../../../core/services/subscription_service.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 import '../../ritual_wrap/models/ritual_wrap_args.dart';
@@ -52,6 +53,9 @@ class ResetsController extends GetxController {
   }
 
   List<ResetOption> get options => _options;
+  bool get hasPremiumAccess =>
+      Get.isRegistered<SubscriptionService>() &&
+      Get.find<SubscriptionService>().isPremium.value;
 
   List<ResetOption> get filteredOptions {
     if (selectedCategory.value == 'all') {
@@ -92,6 +96,7 @@ class ResetsController extends GetxController {
       'imagePath': imagePath,
       'minimal': true,
       'ritualFeature': RitualWrapFeature.meditation,
+      'previewOnly': !hasPremiumAccess,
     };
 
     Get.toNamed(

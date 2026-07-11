@@ -15,19 +15,19 @@ class _HelpSupportViewState extends State<HelpSupportView> {
   static const _items = [
     _SupportItem(
       'contact',
-      'contact us',
+      'Contact Us',
       'Reach the Resora team directly.',
       'Email us at hello@resoraco.com.\nWe\'ll get back to you within one business day.',
     ),
     _SupportItem(
       'feedback',
-      'send feedback',
+      'Send Feedback',
       'Share notes, requests, or ideas with us.',
       'Your feedback helps shape Resora.\nSend us your thoughts, requests, or ideas.\nhello@resoraco.com',
     ),
     _SupportItem(
       'issue',
-      'report an issue',
+      'Report an Issue',
       'Tell us if something isn\'t working.',
       'Tell us what happened and what you were doing when the issue came up.\nThis helps our team look into it.\nhello@resoraco.com',
     ),
@@ -43,7 +43,7 @@ class _HelpSupportViewState extends State<HelpSupportView> {
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
           child: Text(
-            'help & support',
+            'Help & Support',
             style: SettingsFlowText.display(context, size: 32),
           ),
         ),

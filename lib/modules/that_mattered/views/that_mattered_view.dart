@@ -26,7 +26,7 @@ class ThatMatteredView extends StatelessWidget {
                 children: [
                   const Spacer(flex: 5),
                   Text(
-                    'that mattered',
+                    'That Mattered',
                     style: textTheme.displayMedium?.copyWith(
                       color: AppColors.white.withOpacity(0.88),
                       fontSize: 34,
@@ -36,7 +36,7 @@ class ThatMatteredView extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSpacing.md),
                   Text(
-                    'you gave yourself a moment',
+                    'You Gave Yourself a Moment',
                     style: textTheme.bodyLarge?.copyWith(
                       color: AppColors.white.withOpacity(0.46),
                     ),
@@ -46,7 +46,7 @@ class ThatMatteredView extends StatelessWidget {
                   SizedBox(
                     width: 320,
                     child: _GlassOutlineButton(
-                      label: 'save this moment',
+                      label: 'Save This Moment',
                       onTap: () => showAppSnackbar(
                         'Saved',
                         'This moment is saved locally in the prototype.',
@@ -60,7 +60,7 @@ class ThatMatteredView extends StatelessWidget {
                   SizedBox(
                       width: 320,
                       child: _GlassOutlineButton(
-                        label: 'continue',
+                        label: 'Continue',
                         emphasize: true,
                         onTap: () => Get.offAllNamed(AppRoutes.dashboard),
                       )),

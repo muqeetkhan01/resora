@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
+import '../../../widgets/app_close_button.dart';
 import '../controllers/journal_history_controller.dart';
 
 class JournalHistoryView extends GetView<JournalHistoryController> {
@@ -106,20 +107,11 @@ class _HistoryHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        IconButton(
-          onPressed: onBack,
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints.tightFor(width: 28, height: 28),
-          icon: const Icon(
-            Icons.arrow_back_ios_rounded,
-            size: 15,
-            color: AppColors.terracotta,
-          ),
-        ),
+        AppCloseButton(onPressed: onBack),
         const SizedBox(width: AppSpacing.sm),
         Expanded(
           child: Text(
-            'journal history',
+            'Journal History',
             style: Theme.of(context).textTheme.displayMedium?.copyWith(
                   fontSize: 26,
                   color: AppColors.primary,

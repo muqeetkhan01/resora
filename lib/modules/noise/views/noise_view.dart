@@ -4,6 +4,7 @@ import 'package:resora/core/constants/app_icons.dart';
 
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
+import '../../../widgets/app_close_button.dart';
 import '../../../widgets/expanded_category_selector.dart';
 import '../controllers/noise_controller.dart';
 
@@ -74,20 +75,10 @@ class _NoiseViewState extends State<NoiseView> {
                 padding: const EdgeInsets.fromLTRB(0, 24, 24, 0),
                 child: Row(
                   children: [
-                    IconButton(
-                      onPressed: Get.back,
-                      padding: EdgeInsets.zero,
-                      constraints:
-                          const BoxConstraints.tightFor(width: 28, height: 28),
-                      icon: const Icon(
-                        Icons.arrow_back_ios_rounded,
-                        size: 16,
-                        color: AppColors.terracotta,
-                      ),
-                    ),
+                    AppCloseButton(onPressed: Get.back),
                     const Spacer(),
                     Text(
-                      'quiet the noise',
+                      'Quiet the Noise',
                       style: textTheme.bodyMedium?.copyWith(
                         fontSize: 14,
                         color: AppColors.primary,
@@ -102,7 +93,7 @@ class _NoiseViewState extends State<NoiseView> {
                 categories: categories,
                 selectedCategory: selectedCategory,
                 expanded: _categoriesExpanded,
-                labelBuilder: (category) => category.toLowerCase(),
+                labelBuilder: (category) => category.capitalizeFirst ?? category,
                 onExpandedChanged: (expanded) =>
                     setState(() => _categoriesExpanded = expanded),
                 onSelect: (category) {
@@ -126,6 +117,7 @@ class _NoiseViewState extends State<NoiseView> {
                       onPageChanged: (value) => setState(() => _active = value),
                       itemBuilder: (context, index) => _NoiseSlide(
                         track: tracks[index],
+                        previewOnly: !controller.hasPremiumAccess,
                         onPlay: () => controller.openTrack(tracks[index]),
                         onOpenFilters: () => setState(
                           () => _categoriesExpanded = !_categoriesExpanded,
@@ -158,11 +150,13 @@ class _NoiseViewState extends State<NoiseView> {
 class _NoiseSlide extends StatelessWidget {
   const _NoiseSlide({
     required this.track,
+    required this.previewOnly,
     required this.onPlay,
     required this.onOpenFilters,
   });
 
   final AudioTrack track;
+  final bool previewOnly;
   final VoidCallback onPlay;
   final VoidCallback onOpenFilters;
 
@@ -239,15 +233,28 @@ class _NoiseSlide extends StatelessWidget {
                   const SizedBox(width: 24),
                   TextButton(
                     onPressed: onPlay,
-                    child: Text(
-                      'PLAY',
-                      style: textTheme.bodySmall?.copyWith(
-                        color: AppColors.terracotta,
-                        letterSpacing: 2,
-                        decoration: TextDecoration.underline,
-                        decorationColor: AppColors.terracotta,
-                        decorationThickness: 1,
-                      ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (previewOnly) ...[
+                          const Icon(
+                            Icons.lock_outline_rounded,
+                            size: 12,
+                            color: AppColors.terracotta,
+                          ),
+                          const SizedBox(width: 7),
+                        ],
+                        Text(
+                          previewOnly ? 'TAP TO PREVIEW' : 'PLAY',
+                          style: textTheme.bodySmall?.copyWith(
+                            color: AppColors.terracotta,
+                            letterSpacing: 2,
+                            decoration: TextDecoration.underline,
+                            decorationColor: AppColors.terracotta,
+                            decorationThickness: 1,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   const Spacer(),

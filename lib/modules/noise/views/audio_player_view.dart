@@ -7,11 +7,11 @@ import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../../../core/constants/app_assets.dart';
-import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
+import '../../../widgets/app_close_button.dart';
 import '../../ritual_wrap/models/ritual_wrap_args.dart';
 
 class AudioPlayerView extends StatefulWidget {
@@ -23,6 +23,9 @@ class AudioPlayerView extends StatefulWidget {
 
 class _AudioPlayerViewState extends State<AudioPlayerView>
     with SingleTickerProviderStateMixin {
+  static const _previewDuration = Duration(seconds: 10);
+  static const _previewFadeStart = Duration(milliseconds: 8500);
+  static const _previewVolume = 0.85;
   late final AnimationController _controller;
   late final AudioPlayer _player;
   late final _AudioPlayerArgs _args;
@@ -34,6 +37,7 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
   Duration _position = Duration.zero;
   bool _isPlaying = false;
   bool _isLoading = true;
+  bool _previewEnded = false;
   String? _loadError;
 
   @override
@@ -59,9 +63,26 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
         return;
       }
 
-      setState(() {
-        _position = value;
-      });
+      if (_args.previewOnly && !_previewEnded) {
+        if (value >= _previewDuration) {
+          setState(() {
+            _position = _previewDuration;
+            _previewEnded = true;
+            _isPlaying = false;
+          });
+          unawaited(_player.pause());
+          unawaited(_player.setVolume(_previewVolume));
+          return;
+        }
+        if (value >= _previewFadeStart) {
+          final remaining =
+              (_previewDuration - value).inMilliseconds.clamp(0, 1500);
+          final volume = _previewVolume * (remaining / 1500);
+          unawaited(_player.setVolume(volume));
+        }
+      }
+
+      setState(() => _position = value);
     });
     _playerStateSubscription = _player.playerStateStream.listen((state) {
       if (!mounted) {
@@ -89,7 +110,7 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
     } else if (_args.preloadedPlayer != null) {
       _duration = _args.preloadedDuration ?? _player.duration ?? Duration.zero;
       _isLoading = false;
-      unawaited(_player.play());
+      unawaited(_startPlayback());
     } else {
       unawaited(_loadTrack());
     }
@@ -121,6 +142,7 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
         _isLoading = false;
         _loadError = null;
       });
+      await _player.setVolume(_previewVolume);
       await _player.play();
     } catch (_) {
       if (!mounted) {
@@ -134,8 +156,13 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
     }
   }
 
+  Future<void> _startPlayback() async {
+    await _player.setVolume(_previewVolume);
+    await _player.play();
+  }
+
   Future<void> _togglePlayback() async {
-    if (_loadError != null) {
+    if (_loadError != null || _previewEnded) {
       return;
     }
 
@@ -152,7 +179,7 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
   }
 
   Future<void> _seekRelative(int seconds) async {
-    if (_loadError != null) {
+    if (_loadError != null || _args.previewOnly) {
       return;
     }
 
@@ -161,7 +188,7 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
   }
 
   Future<void> _seekToFraction(double fraction) async {
-    if (_loadError != null || _duration <= Duration.zero) {
+    if (_loadError != null || _args.previewOnly || _duration <= Duration.zero) {
       return;
     }
 
@@ -182,6 +209,10 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
   }
 
   double get _progress {
+    if (_args.previewOnly) {
+      return (_position.inMilliseconds / _previewDuration.inMilliseconds)
+          .clamp(0.0, 1.0);
+    }
     if (_duration <= Duration.zero) {
       return 0;
     }
@@ -202,6 +233,11 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
     }
 
     Get.back();
+  }
+
+  void _openMembership() {
+    unawaited(_player.pause());
+    Get.toNamed(AppRoutes.subscription);
   }
 
   @override
@@ -231,12 +267,18 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
             remainingLabel: _remainingDurationLabel(track.duration),
             isPlaying: _isPlaying,
             isLoading: _isLoading,
+            previewOnly: _args.previewOnly,
+            previewEnded: _previewEnded,
+            previewRemainingSeconds:
+                (((_previewDuration - _position).inMilliseconds + 999) ~/ 1000)
+                    .clamp(0, _previewDuration.inSeconds),
             errorText: _loadError,
             onBack: _closePlayer,
             onPlayPause: _togglePlayback,
             onSeekBackward: () => _seekRelative(-15),
             onSeekForward: () => _seekRelative(15),
             onSeek: _seekToFraction,
+            onUnlock: _openMembership,
           ),
         ),
       );
@@ -277,13 +319,7 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
                       children: [
                         Row(
                           children: [
-                            IconButton(
-                              onPressed: _closePlayer,
-                              icon: const Icon(
-                                AppIcons.close,
-                                color: AppColors.terracotta,
-                              ),
-                            ),
+                            AppCloseButton(onPressed: _closePlayer),
                             const Spacer(),
                             Container(
                               width: 40,
@@ -402,6 +438,10 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
   }
 
   String _remainingDurationLabel(String fallbackDuration) {
+    if (_args.previewOnly) {
+      if (_position >= _previewFadeStart && !_previewEnded) return 'Fading...';
+      return '0:10 Preview';
+    }
     if (_duration <= Duration.zero) {
       return '-$fallbackDuration';
     }
@@ -420,6 +460,7 @@ class _AudioPlayerArgs {
     this.preloadedPlayer,
     this.preloadedDuration,
     this.preloadError,
+    this.previewOnly = false,
   });
 
   final AudioTrack track;
@@ -429,6 +470,7 @@ class _AudioPlayerArgs {
   final AudioPlayer? preloadedPlayer;
   final Duration? preloadedDuration;
   final String? preloadError;
+  final bool previewOnly;
 
   factory _AudioPlayerArgs.from(dynamic arguments) {
     if (arguments is Map) {
@@ -441,6 +483,7 @@ class _AudioPlayerArgs {
         preloadedPlayer: arguments['preloadedPlayer'] as AudioPlayer?,
         preloadedDuration: arguments['preloadedDuration'] as Duration?,
         preloadError: arguments['preloadError'] as String?,
+        previewOnly: arguments['previewOnly'] == true,
       );
     }
 
@@ -474,12 +517,16 @@ class _MuseumMinimalPlayer extends StatelessWidget {
     required this.remainingLabel,
     required this.isPlaying,
     required this.isLoading,
+    required this.previewOnly,
+    required this.previewEnded,
+    required this.previewRemainingSeconds,
     required this.errorText,
     required this.onBack,
     required this.onPlayPause,
     required this.onSeekBackward,
     required this.onSeekForward,
     required this.onSeek,
+    required this.onUnlock,
   });
 
   final String imagePath;
@@ -490,12 +537,16 @@ class _MuseumMinimalPlayer extends StatelessWidget {
   final String remainingLabel;
   final bool isPlaying;
   final bool isLoading;
+  final bool previewOnly;
+  final bool previewEnded;
+  final int previewRemainingSeconds;
   final String? errorText;
   final VoidCallback onBack;
   final VoidCallback onPlayPause;
   final VoidCallback onSeekBackward;
   final VoidCallback onSeekForward;
   final ValueChanged<double> onSeek;
+  final VoidCallback onUnlock;
 
   @override
   Widget build(BuildContext context) {
@@ -529,6 +580,8 @@ class _MuseumMinimalPlayer extends StatelessWidget {
                 alignment: Alignment.topCenter,
               ),
         const _MuseumBottomVignette(),
+        if (previewEnded)
+          ColoredBox(color: Colors.black.withValues(alpha: 0.58)),
         SafeArea(
           child: Align(
             alignment: Alignment.topLeft,
@@ -550,120 +603,192 @@ class _MuseumMinimalPlayer extends StatelessWidget {
             ),
           ),
         ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(32, 0, 32, 52),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    category.toUpperCase(),
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.white.withOpacity(0.55),
-                          fontSize: 9,
-                          fontWeight: FontWeight.w400,
-                          letterSpacing: 1.98,
-                          height: 1.2,
-                        ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    title,
-                    style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                          color: AppColors.white.withOpacity(0.95),
-                          fontSize: 34,
-                          fontWeight: FontWeight.w300,
-                          letterSpacing: 1.7,
-                          height: 1.15,
-                        ),
-                  ),
-                  const SizedBox(height: 28),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        positionLabel,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.white.withOpacity(0.5),
-                              fontSize: 9,
-                              fontWeight: FontWeight.w400,
-                              letterSpacing: 0.54,
-                            ),
-                      ),
-                      Text(
-                        remainingLabel,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.white.withOpacity(0.5),
-                              fontSize: 9,
-                              fontWeight: FontWeight.w400,
-                              letterSpacing: 0.54,
-                            ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 2),
-                  _ResoraProgressSlider(
-                    progress: slider,
-                    onSeek: onSeek,
-                  ),
-                  if (errorText != null) ...[
-                    const SizedBox(height: AppSpacing.sm),
+        if (previewOnly && !previewEnded)
+          SafeArea(
+            child: Align(
+              alignment: Alignment.topRight,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 24, top: 34),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.lock_outline_rounded,
+                      color: AppColors.terracotta,
+                      size: 12,
+                    ),
+                    const SizedBox(width: 6),
                     Text(
-                      errorText!,
+                      'PREVIEW · 0:${previewRemainingSeconds.toString().padLeft(2, '0')}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: AppColors.terracotta,
+                            fontSize: 10,
+                            letterSpacing: 1.4,
                           ),
-                      textAlign: TextAlign.center,
                     ),
                   ],
-                  const SizedBox(height: 28),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _SeekIconButton(
-                        icon: CupertinoIcons.gobackward,
-                        onTap: onSeekBackward,
-                      ),
-                      const SizedBox(width: 56),
-                      if (isLoading)
-                        SizedBox(
-                          width: 22,
-                          height: 22,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 1,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              AppColors.white.withOpacity(0.7),
-                            ),
+                ),
+              ),
+            ),
+          ),
+        if (!previewEnded)
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(32, 0, 32, 52),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      category.toUpperCase(),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.white.withOpacity(0.55),
+                            fontSize: 9,
+                            fontWeight: FontWeight.w400,
+                            letterSpacing: 1.98,
+                            height: 1.2,
                           ),
-                        )
-                      else
-                        _PlayerPaintButton(
-                          onTap: onPlayPause,
-                          size: const Size(28, 28),
-                          painter: isPlaying
-                              ? _PausePainter(
-                                  color: AppColors.white.withOpacity(0.92),
-                                )
-                              : _PlayPainter(
-                                  color: AppColors.white.withOpacity(0.92),
-                                ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      title,
+                      style:
+                          Theme.of(context).textTheme.displayMedium?.copyWith(
+                                color: AppColors.white.withOpacity(0.95),
+                                fontSize: 34,
+                                fontWeight: FontWeight.w300,
+                                letterSpacing: 1.7,
+                                height: 1.15,
+                              ),
+                    ),
+                    const SizedBox(height: 28),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          positionLabel,
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: AppColors.white.withOpacity(0.5),
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w400,
+                                    letterSpacing: 0.54,
+                                  ),
                         ),
-                      const SizedBox(width: 56),
-                      _SeekIconButton(
-                        icon: CupertinoIcons.goforward,
-                        onTap: onSeekForward,
+                        Text(
+                          remainingLabel,
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: AppColors.white.withOpacity(0.5),
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w400,
+                                    letterSpacing: 0.54,
+                                  ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    _ResoraProgressSlider(
+                      progress: slider,
+                      onSeek: onSeek,
+                    ),
+                    if (errorText != null) ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      Text(
+                        errorText!,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.terracotta,
+                            ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
+                    const SizedBox(height: 28),
+                    if (!previewOnly)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _SeekIconButton(
+                            icon: CupertinoIcons.gobackward,
+                            onTap: onSeekBackward,
+                          ),
+                          const SizedBox(width: 56),
+                          if (isLoading)
+                            SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 1,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  AppColors.white.withOpacity(0.7),
+                                ),
+                              ),
+                            )
+                          else
+                            _PlayerPaintButton(
+                              onTap: onPlayPause,
+                              size: const Size(28, 28),
+                              painter: isPlaying
+                                  ? _PausePainter(
+                                      color: AppColors.white.withOpacity(0.92),
+                                    )
+                                  : _PlayPainter(
+                                      color: AppColors.white.withOpacity(0.92),
+                                    ),
+                            ),
+                          const SizedBox(width: 56),
+                          _SeekIconButton(
+                            icon: CupertinoIcons.goforward,
+                            onTap: onSeekForward,
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        if (previewEnded)
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 44),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.lock_outline_rounded,
+                    color: AppColors.white,
+                    size: 25,
+                  ),
+                  const SizedBox(height: 18),
+                  Text(
+                    'That was a moment of $title.\nUnlock the full session with Resora Premium.',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: const Color(0xFFD8D2C8),
+                          height: 1.6,
+                          fontSize: 13,
+                        ),
+                  ),
+                  const SizedBox(height: 28),
+                  TextButton(
+                    onPressed: onUnlock,
+                    child: Text(
+                      'UNLOCK TO CONTINUE',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.terracotta,
+                            letterSpacing: 1.7,
+                            decoration: TextDecoration.underline,
+                            decorationColor: AppColors.terracotta,
+                          ),
+                    ),
                   ),
                 ],
               ),
             ),
           ),
-        ),
       ],
     );
   }

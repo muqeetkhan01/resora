@@ -31,11 +31,11 @@ class EmailAuthView extends GetView<EmailAuthController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CenteredBackHeader(
-                      title: controller.isSignIn.value ? 'sign in' : 'sign up',
+                      title: controller.isSignIn.value ? 'Sign In' : 'Sign Up',
                     ),
                     const SizedBox(height: AppSpacing.xxl),
                     Text(
-                      'email',
+                      'Email',
                       style: textTheme.bodyMedium
                           ?.copyWith(color: AppColors.primary),
                     ),
@@ -48,7 +48,7 @@ class EmailAuthView extends GetView<EmailAuthController> {
                     ),
                     const SizedBox(height: AppSpacing.lg),
                     Text(
-                      'password',
+                      'Password',
                       style: textTheme.bodyMedium
                           ?.copyWith(color: AppColors.primary),
                     ),
@@ -73,7 +73,7 @@ class EmailAuthView extends GetView<EmailAuthController> {
                     if (!controller.isSignIn.value) ...[
                       const SizedBox(height: AppSpacing.lg),
                       Text(
-                        'confirm password',
+                        'Confirm Password',
                         style: textTheme.bodyMedium
                             ?.copyWith(color: AppColors.primary),
                       ),
@@ -97,7 +97,7 @@ class EmailAuthView extends GetView<EmailAuthController> {
                     ],
                     const SizedBox(height: AppSpacing.xxxl),
                     AppButton(
-                      label: controller.isSignIn.value ? 'sign in' : 'continue',
+                      label: controller.isSignIn.value ? 'Sign In' : 'Continue',
                       style: AppButtonStyle.secondary,
                       onPressed: controller.isSubmitting.value
                           ? null
@@ -110,7 +110,7 @@ class EmailAuthView extends GetView<EmailAuthController> {
                             ? null
                             : controller.forgotPassword,
                         child: Text(
-                          'forgot password?',
+                          'Forgot Password?',
                           style: textTheme.bodyMedium?.copyWith(
                             color: AppColors.primary,
                           ),

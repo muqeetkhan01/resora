@@ -61,6 +61,9 @@ class SubscriptionService extends GetxService {
 
     isLoading.value = true;
     try {
+      if (kDebugMode) {
+        await Purchases.setLogLevel(LogLevel.debug);
+      }
       final configuration = PurchasesConfiguration(apiKey)
         ..appUserID = _auth.currentUser?.uid;
       await Purchases.configure(configuration);
@@ -69,7 +72,8 @@ class SubscriptionService extends GetxService {
       _customerInfoListener = _handleCustomerInfo;
       Purchases.addCustomerInfoUpdateListener(_customerInfoListener!);
 
-      _authSubscription = _auth.authStateChanges().listen(_handleAuthChanged);
+      _authSubscription =
+          _auth.authStateChanges().skip(1).listen(_handleAuthChanged);
       await refresh();
     } catch (error) {
       debugPrint('RevenueCat configure failed: $error');
@@ -118,6 +122,25 @@ class SubscriptionService extends GetxService {
         '${SubscriptionConstants.productIdsByPlan.values.join(', ')}: $error',
       );
       packages.clear();
+      if (kDebugMode) {
+        await _logStoreProductDiagnostics();
+      }
+    }
+  }
+
+  Future<void> _logStoreProductDiagnostics() async {
+    final requestedIds = SubscriptionConstants.productIdsByPlan.values.toList();
+    try {
+      final products = await Purchases.getProducts(requestedIds);
+      final returnedIds = products.map((product) => product.identifier).toSet();
+      final missingIds = requestedIds.where((id) => !returnedIds.contains(id));
+      debugPrint(
+        'Direct StoreKit lookup returned: '
+        '${returnedIds.isEmpty ? '(none)' : returnedIds.join(', ')}. '
+        'Missing: ${missingIds.join(', ')}.',
+      );
+    } catch (error) {
+      debugPrint('Direct StoreKit product lookup failed: $error');
     }
   }
 

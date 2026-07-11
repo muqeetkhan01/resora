@@ -749,7 +749,7 @@ class _IntentionScreen extends StatelessWidget {
             key: const ValueKey('onb-intention-field'),
             initialValue: controller.intention.value,
             onChanged: controller.setIntention,
-            hintText: 'less braced, more here',
+            hintText: 'Less braced, more here',
             autoFocus: true,
           ),
           const SizedBox(height: 14),
@@ -959,18 +959,18 @@ class _GlimpseBreathState extends State<_GlimpseBreath> {
     return Column(
       children: [
         const SizedBox(height: 72),
-        Text(
-          widget.firstName != null && widget.firstName!.trim().isNotEmpty
-              ? 'A glimpse, for ${widget.firstName}'
-              : 'A glimpse',
-          style: textTheme.labelMedium?.copyWith(
-            color: _OnboardingTokens.off.withOpacity(0.7),
-            letterSpacing: 3.0,
-            fontSize: 10,
-            fontWeight: FontWeight.w400,
-          ),
-          textAlign: TextAlign.center,
-        ),
+        // Text(
+        //   widget.firstName != null && widget.firstName!.trim().isNotEmpty
+        //       ? 'A glimpse, for ${widget.firstName}'
+        //       : 'A glimpse',
+        //   style: textTheme.labelMedium?.copyWith(
+        //     color: _OnboardingTokens.off.withOpacity(0.7),
+        //     letterSpacing: 3.0,
+        //     fontSize: 10,
+        //     fontWeight: FontWeight.w400,
+        //   ),
+        //   textAlign: TextAlign.center,
+        // ),
         const SizedBox(height: 56),
         Column(
           children: [
@@ -1002,7 +1002,7 @@ class _GlimpseBreathState extends State<_GlimpseBreath> {
             ),
           ],
         ),
-        const SizedBox(height: 64),
+        const SizedBox(height: 120),
         AnimatedOpacity(
           opacity: _revealed ? 1 : 0,
           duration: const Duration(milliseconds: 900),
@@ -1024,39 +1024,53 @@ class _GlimpseBreathState extends State<_GlimpseBreath> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 22),
-                Text(
-                  'This is where that begins.',
-                  style: textTheme.displaySmall?.copyWith(
-                    color: _OnboardingTokens.off.withOpacity(0.78),
-                    fontSize: 28,
-                    fontStyle: FontStyle.normal,
-                    height: 1.35,
-                    fontWeight: FontWeight.w300,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
+                // Text(
+                //   'This is where that begins.',
+                //   style: textTheme.displaySmall?.copyWith(
+                //     color: _OnboardingTokens.off.withOpacity(0.78),
+                //     fontSize: 28,
+                //     fontStyle: FontStyle.normal,
+                //     height: 1.35,
+                //     fontWeight: FontWeight.w300,
+                //   ),
+                //   textAlign: TextAlign.center,
+                // ),
               ],
             ),
           ),
         ),
         const Spacer(),
-        TextButton(
-          onPressed: widget.onEnterApp,
-          style: TextButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            foregroundColor: _OnboardingTokens.off,
-          ),
-          child: Text(
-            'That landed',
-            style: textTheme.bodySmall?.copyWith(
-              color: _OnboardingTokens.off,
-              fontSize: 14,
-              letterSpacing: 3.0,
-              fontWeight: FontWeight.w500,
+        SizedBox(
+          width: 136,
+          height: 56,
+          child: OutlinedButton(
+            onPressed: widget.onEnterApp,
+            style: OutlinedButton.styleFrom(
+              foregroundColor: _OnboardingTokens.off,
+              side: const BorderSide(
+                color: _OnboardingTokens.off,
+                width: 0.5,
+              ),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.zero,
+              ),
+              padding: EdgeInsets.zero,
+              alignment: Alignment.center,
+            ),
+            child: Text(
+              'Continue',
+              textAlign: TextAlign.center,
+              style: textTheme.labelLarge?.copyWith(
+                color: _OnboardingTokens.off,
+                fontSize: 13,
+                letterSpacing: 0.05,
+                fontWeight: FontWeight.w400,
+              ),
             ),
           ),
         ),
-        const SizedBox(height: AppSpacing.xs),
+
+        const SizedBox(height: AppSpacing.xs + 30),
       ],
     );
   }

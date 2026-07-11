@@ -8,6 +8,7 @@ import '../../../theme/app_colors.dart';
 import '../../../widgets/app_background.dart';
 import '../../../widgets/app_card.dart';
 import '../../../widgets/app_chip.dart';
+import '../../../widgets/app_close_button.dart';
 import '../../../widgets/premium_lock_overlay.dart';
 import '../controllers/affirmations_controller.dart';
 
@@ -25,10 +26,7 @@ class AffirmationsView extends GetView<AffirmationsController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            IconButton(
-              onPressed: Get.back,
-              icon: const Icon(AppIcons.back),
-            ),
+            AppCloseButton(onPressed: Get.back),
             Text('Affirmations', style: textTheme.displayMedium),
             const SizedBox(height: AppSpacing.xs),
             Text('Words to steady the inner room.',

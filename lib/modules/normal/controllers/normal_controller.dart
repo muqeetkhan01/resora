@@ -154,19 +154,21 @@ class NormalController extends GetxController {
   String categoryLabel(String value) {
     switch (value.trim().toLowerCase()) {
       case 'all':
-        return 'all';
+        return 'All';
       case 'overwhelm':
-        return 'release';
+        return 'Release';
       case 'regulation':
-        return 'ground';
+        return 'Ground';
       case 'identity':
-        return 'clarity';
+        return 'Clarity';
       case 'sleep':
-        return 'restore';
+        return 'Restore';
       case 'connection':
-        return 'connect';
+        return 'Connect';
       default:
-        return value;
+        return value.isEmpty
+            ? value
+            : '${value[0].toUpperCase()}${value.substring(1)}';
     }
   }
 

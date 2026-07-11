@@ -3,10 +3,10 @@ import 'package:get/get.dart';
 
 import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/app_models.dart';
-import '../../../theme/app_colors.dart';
 import '../../../widgets/app_background.dart';
 import '../../../widgets/app_button.dart';
 import '../../../widgets/app_card.dart';
+import '../../../widgets/app_close_button.dart';
 import '../controllers/mindfulness_controller.dart';
 
 class MindfulnessDetailView extends GetView<MindfulnessController> {
@@ -24,13 +24,7 @@ class MindfulnessDetailView extends GetView<MindfulnessController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            IconButton(
-              onPressed: Get.back,
-              icon: const Icon(
-                Icons.arrow_back_ios_new_rounded,
-                color: AppColors.primary,
-              ),
-            ),
+            AppCloseButton(onPressed: Get.back),
             AppCard(
               gradient: LinearGradient(
                 colors: [

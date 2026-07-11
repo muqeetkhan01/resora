@@ -24,7 +24,7 @@ class NormalAskView extends GetView<NormalController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const CenteredBackHeader(title: 'ask anonymously'),
+              const CenteredBackHeader(title: 'Ask Anonymously'),
               const SizedBox(height: AppSpacing.xl),
               Text(
                 'What have you been wondering about yourself lately?',
@@ -69,8 +69,8 @@ class NormalAskView extends GetView<NormalController> {
                         : null,
                     child: Text(
                       controller.isSubmittingQuestion.value
-                          ? 'submitting...'
-                          : 'submit anonymously',
+                          ? 'Submitting...'
+                          : 'Submit Anonymously',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: controller.canSubmitQuestion &&
                                     !controller.isSubmittingQuestion.value

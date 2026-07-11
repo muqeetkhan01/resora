@@ -4,8 +4,8 @@ import 'package:get/get.dart';
 import '../../../core/constants/app_icons.dart';
 import '../../../data/models/app_models.dart';
 import '../../../theme/app_colors.dart';
+import '../../../widgets/app_close_button.dart';
 import '../../../widgets/expanded_category_selector.dart';
-import '../../../widgets/premium_lock_overlay.dart';
 import '../controllers/journal_controller.dart';
 
 class JournalView extends StatefulWidget {
@@ -76,20 +76,10 @@ class _JournalViewState extends State<JournalView> {
                 padding: const EdgeInsets.fromLTRB(0, 24, 24, 0),
                 child: Row(
                   children: [
-                    IconButton(
-                      onPressed: Get.back,
-                      padding: EdgeInsets.zero,
-                      constraints:
-                          const BoxConstraints.tightFor(width: 28, height: 28),
-                      icon: const Icon(
-                        Icons.arrow_back_ios_rounded,
-                        size: 16,
-                        color: AppColors.terracotta,
-                      ),
-                    ),
+                    AppCloseButton(onPressed: Get.back),
                     const Spacer(),
                     Text(
-                      'journal',
+                      'Journal',
                       style: textTheme.bodyMedium?.copyWith(
                         fontSize: 14,
                         color: AppColors.primary,
@@ -140,6 +130,7 @@ class _JournalViewState extends State<JournalView> {
                       },
                       itemBuilder: (context, index) => _JournalSlide(
                         prompt: prompts[index],
+                        locked: !controller.hasPremiumAccess,
                         onWriteOwn: () => controller.openEditor(prompt: ''),
                         onStartWriting: () =>
                             controller.openPrompt(prompts[index]),
@@ -174,6 +165,7 @@ class _JournalViewState extends State<JournalView> {
 class _JournalSlide extends StatelessWidget {
   const _JournalSlide({
     required this.prompt,
+    required this.locked,
     required this.onWriteOwn,
     required this.onStartWriting,
     required this.onOpenHistory,
@@ -181,6 +173,7 @@ class _JournalSlide extends StatelessWidget {
   });
 
   final JournalPrompt prompt;
+  final bool locked;
   final VoidCallback onWriteOwn;
   final VoidCallback onStartWriting;
   final VoidCallback onOpenHistory;
@@ -197,7 +190,6 @@ class _JournalSlide extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(24, 104, 42, 12),
           child: Stack(
             children: [
-              PremiumLockOverlay(show: prompt.isPremium),
               Align(
                 alignment: Alignment.topLeft,
                 child: ConstrainedBox(
@@ -255,6 +247,7 @@ class _JournalSlide extends StatelessWidget {
                 right: 0,
                 top: actionTop,
                 child: _JournalActionRow(
+                  locked: locked,
                   onWriteOwn: onWriteOwn,
                   onStartWriting: onStartWriting,
                   onOpenHistory: onOpenHistory,
@@ -271,6 +264,7 @@ class _JournalSlide extends StatelessWidget {
 
 class _JournalActionRow extends StatelessWidget {
   const _JournalActionRow({
+    required this.locked,
     required this.onWriteOwn,
     required this.onStartWriting,
     required this.onOpenHistory,
@@ -278,6 +272,7 @@ class _JournalActionRow extends StatelessWidget {
   });
 
   final VoidCallback onWriteOwn;
+  final bool locked;
   final VoidCallback onStartWriting;
   final VoidCallback onOpenHistory;
   final VoidCallback onOpenFilters;
@@ -286,68 +281,94 @@ class _JournalActionRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return Row(
-      children: [
-        TextButton(
-          onPressed: onWriteOwn,
-          style: TextButton.styleFrom(
-            padding: EdgeInsets.zero,
-            minimumSize: Size.zero,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-          child: Text(
-            'WRITE YOUR OWN',
-            style: textTheme.bodySmall?.copyWith(
-              color: AppColors.terracotta,
-              letterSpacing: 1.6,
-              decoration: TextDecoration.underline,
-              decorationColor: AppColors.terracotta,
+    return SizedBox(
+      width: double.infinity,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: Alignment.centerLeft,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextButton(
+              onPressed: onWriteOwn,
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.zero,
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: Text(
+                'WRITE YOUR OWN',
+                style: textTheme.bodySmall?.copyWith(
+                  color: AppColors.terracotta,
+                  letterSpacing: 1.6,
+                  decoration: TextDecoration.underline,
+                  decorationColor: AppColors.terracotta,
+                ),
+              ),
             ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        TextButton(
-          onPressed: onStartWriting,
-          style: TextButton.styleFrom(
-            padding: EdgeInsets.zero,
-            minimumSize: Size.zero,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-          child: Text(
-            'START WRITING',
-            style: textTheme.bodySmall?.copyWith(
-              color: AppColors.terracotta,
-              letterSpacing: 1.8,
-              decoration: TextDecoration.underline,
-              decorationColor: AppColors.terracotta,
+            const SizedBox(width: 12),
+            TextButton(
+              onPressed: onStartWriting,
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.zero,
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (locked) ...[
+                    const Icon(
+                      Icons.lock_outline_rounded,
+                      size: 12,
+                      color: AppColors.terracotta,
+                    ),
+                    const SizedBox(width: 6),
+                  ],
+                  Text(
+                    'START WRITING',
+                    style: textTheme.bodySmall?.copyWith(
+                      color: AppColors.terracotta,
+                      letterSpacing: 1.8,
+                      decoration: TextDecoration.underline,
+                      decorationColor: AppColors.terracotta,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        TextButton(
-          onPressed: onOpenHistory,
-          child: Text(
-            'HISTORY',
-            style: textTheme.bodySmall?.copyWith(
-              color: AppColors.terracotta,
-              letterSpacing: 1.8,
-              decoration: TextDecoration.underline,
-              decorationColor: AppColors.terracotta,
+            const SizedBox(width: 12),
+            TextButton(
+              onPressed: onOpenHistory,
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.zero,
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: Text(
+                'HISTORY',
+                style: textTheme.bodySmall?.copyWith(
+                  color: AppColors.terracotta,
+                  letterSpacing: 1.8,
+                  decoration: TextDecoration.underline,
+                  decorationColor: AppColors.terracotta,
+                ),
+              ),
             ),
-          ),
+            const SizedBox(width: 12),
+            IconButton(
+              onPressed: onOpenFilters,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints.tightFor(width: 40, height: 40),
+              icon: const Icon(
+                AppIcons.filter,
+                size: 18,
+                color: AppColors.terracotta,
+              ),
+            ),
+          ],
         ),
-        const Spacer(),
-        IconButton(
-          onPressed: onOpenFilters,
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints.tightFor(width: 40, height: 40),
-          icon: const Icon(
-            AppIcons.filter,
-            size: 18,
-            color: AppColors.terracotta,
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

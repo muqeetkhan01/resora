@@ -8,6 +8,7 @@ import '../../../core/controllers/app_session_controller.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
+import '../../../widgets/app_close_button.dart';
 import '../controllers/chat_controller.dart';
 import '../../ritual_wrap/models/ritual_wrap_args.dart';
 
@@ -86,10 +87,14 @@ class _ChatContent extends GetView<ChatController> {
         const SizedBox(height: AppSpacing.sm),
         Expanded(
           child: Obx(() {
-            final showWatermark =
-                controller.messages.isEmpty && !controller.isTyping.value;
+            final showDailyLimit = controller.isDailyLimitReached.value &&
+                !controller.hasPremiumAccess;
+            final showWatermark = controller.messages.isEmpty &&
+                !controller.isTyping.value &&
+                !showDailyLimit;
             final totalCount = controller.messages.length +
-                (controller.isTyping.value ? 1 : 0);
+                (controller.isTyping.value ? 1 : 0) +
+                (showDailyLimit ? 1 : 0);
 
             if (showWatermark) {
               return _EmptyStatePrompt(
@@ -110,7 +115,13 @@ class _ChatContent extends GetView<ChatController> {
               itemCount: totalCount,
               itemBuilder: (context, index) {
                 if (index >= controller.messages.length) {
-                  return const _TypingBubble();
+                  final typingIndex = controller.messages.length;
+                  if (controller.isTyping.value && index == typingIndex) {
+                    return const _TypingBubble();
+                  }
+                  return _DailyLimitCard(
+                    onExplorePremium: controller.openMembership,
+                  );
                 }
 
                 return _MessageBubble(message: controller.messages[index]);
@@ -157,16 +168,7 @@ class _ChatHeader extends StatelessWidget {
       padding: const EdgeInsets.only(top: AppSpacing.lg),
       child: Align(
         alignment: Alignment.centerLeft,
-        child: IconButton(
-          onPressed: onBack,
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints.tightFor(width: 28, height: 28),
-          icon: const Icon(
-            Icons.arrow_back_ios_rounded,
-            size: 15,
-            color: AppColors.terracotta,
-          ),
-        ),
+        child: AppCloseButton(onPressed: onBack),
       ),
     );
   }
@@ -304,9 +306,8 @@ class _ChatInputBar extends GetView<ChatController> {
                   child: Icon(
                     AppIcons.forward,
                     size: 16,
-                    color: canSend
-                        ? AppColors.terracotta
-                        : AppColors.terracotta.withValues(alpha: 0.4),
+                    color:
+                        canSend ? AppColors.terracotta : AppColors.placeholder,
                   ),
                 ),
               ),
@@ -333,6 +334,58 @@ class _ChatInputBar extends GetView<ChatController> {
   }
 }
 
+class _DailyLimitCard extends StatelessWidget {
+  const _DailyLimitCard({required this.onExplorePremium});
+
+  final VoidCallback onExplorePremium;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Container(
+      margin: const EdgeInsets.only(top: 2, bottom: 14),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.terracotta.withValues(alpha: 0.08),
+        border: Border.all(
+          color: AppColors.terracotta.withValues(alpha: 0.28),
+          width: 0.5,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Premium members get unlimited conversations, every day',
+            style: textTheme.bodyMedium?.copyWith(
+              color: AppColors.warmDark,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 12),
+          TextButton(
+            onPressed: onExplorePremium,
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Text(
+              'EXPLORE PREMIUM',
+              style: textTheme.bodySmall?.copyWith(
+                color: AppColors.terracotta,
+                letterSpacing: 1.3,
+                decoration: TextDecoration.underline,
+                decorationColor: AppColors.terracotta,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _MessageBubble extends StatelessWidget {
   const _MessageBubble({required this.message});
 
@@ -344,7 +397,7 @@ class _MessageBubble extends StatelessWidget {
     final isUser = message.isUser;
     final currentUserName =
         Get.find<AppSessionController>().displayName == 'there'
-            ? 'you'
+            ? 'You'
             : Get.find<AppSessionController>().displayName;
     final speaker = isUser ? currentUserName : 'resora';
 

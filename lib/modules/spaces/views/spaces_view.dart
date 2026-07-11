@@ -20,27 +20,16 @@ class _SpacesViewState extends State<SpacesView> {
   late final PageController _pageController;
   int _active = 0;
 
-  static const double _cardWidth = 280;
-  static const double _cardGap = 16;
-
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(viewportFraction: 0.712);
+    _pageController = PageController();
   }
 
   @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
-  }
-
-  void _scrollTo(int index) {
-    _pageController.animateToPage(
-      index,
-      duration: const Duration(milliseconds: 320),
-      curve: Curves.easeInOut,
-    );
   }
 
   @override
@@ -70,7 +59,7 @@ class _SpacesViewState extends State<SpacesView> {
                   children: [
                     Expanded(
                       child: Text(
-                        'spaces',
+                        'Spaces',
                         style: textTheme.displayLarge?.copyWith(
                           fontSize: 40,
                           color: AppColors.primary,
@@ -100,58 +89,40 @@ class _SpacesViewState extends State<SpacesView> {
               //     color: const Color(0x1F145C4F),
               //   ),
               // ),
-              const SizedBox(height: 48),
-              SizedBox(
-                height: 548,
-                child: PageView.builder(
-                  controller: _pageController,
-                  padEnds: false,
-                  itemCount: slots.length,
-                  onPageChanged: (value) => setState(() => _active = value),
-                  itemBuilder: (context, index) {
-                    final slot = slots[index];
-                    return Padding(
-                      padding: EdgeInsets.only(
-                        left: index == 0 ? AppSpacing.xl : _cardGap / 2,
-                        right: _cardGap / 2,
-                      ),
-                      child: _SpaceCard(
-                        slot: slot,
-                        width: _cardWidth,
-                        onTap: () {
-                          if (_active != index) {
-                            _scrollTo(index);
-                            return;
-                          }
-                          slot.onTap?.call();
-                        },
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(slots.length, (i) {
-                  final selected = i == _active;
-                  return GestureDetector(
-                    onTap: () => _scrollTo(i),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 260),
-                      margin: const EdgeInsets.symmetric(horizontal: 3),
-                      width: selected ? 20 : 5,
-                      height: 5,
-                      decoration: BoxDecoration(
-                        color: selected
-                            ? AppColors.terracotta
-                            : const Color(0x1F145C4F),
+              const SizedBox(height: 24),
+              Expanded(
+                child: Stack(
+                  children: [
+                    PageView.builder(
+                      controller: _pageController,
+                      scrollDirection: Axis.vertical,
+                      itemCount: slots.length,
+                      onPageChanged: (value) => setState(() => _active = value),
+                      itemBuilder: (context, index) {
+                        final slot = slots[index];
+                        return Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 0, 42, 24),
+                          child: _SpaceCard(
+                            slot: slot,
+                            onTap: () => slot.onTap?.call(),
+                          ),
+                        );
+                      },
+                    ),
+                    Positioned(
+                      right: 16,
+                      top: 0,
+                      bottom: 0,
+                      child: IgnorePointer(
+                        child: _VerticalProgress(
+                          total: slots.length,
+                          active: _active,
+                        ),
                       ),
                     ),
-                  );
-                }),
+                  ],
+                ),
               ),
-              const SizedBox(height: 32),
             ],
           );
         }),
@@ -163,12 +134,10 @@ class _SpacesViewState extends State<SpacesView> {
 class _SpaceCard extends StatelessWidget {
   const _SpaceCard({
     required this.slot,
-    required this.width,
     required this.onTap,
   });
 
   final _ResolvedSpaceSlot slot;
-  final double width;
   final VoidCallback onTap;
 
   @override
@@ -178,7 +147,7 @@ class _SpaceCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: width,
+        width: double.infinity,
         decoration: BoxDecoration(
           color: const Color(0xFFFAFBF9),
           border: Border.all(color: const Color(0x1F145C4F), width: 0.5),
@@ -228,6 +197,43 @@ class _SpaceCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _VerticalProgress extends StatelessWidget {
+  const _VerticalProgress({
+    required this.total,
+    required this.active,
+  });
+
+  final int total;
+  final int active;
+
+  @override
+  Widget build(BuildContext context) {
+    const maxBars = 6;
+    final bars = total <= 1 ? 2 : total.clamp(2, maxBars);
+    final mapped = total <= 1
+        ? 0
+        : ((active / (total - 1)) * (bars - 1)).round().clamp(0, bars - 1);
+
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: List.generate(bars, (index) {
+          return Padding(
+            padding: EdgeInsets.only(bottom: index == bars - 1 ? 0 : 8),
+            child: Container(
+              width: 2,
+              height: 24,
+              color: index == mapped
+                  ? AppColors.terracotta
+                  : const Color(0xFFE6E6E6),
+            ),
+          );
+        }),
       ),
     );
   }
@@ -375,8 +381,7 @@ _ResolvedSpaceSlot _resolveSlot({
 
   return _ResolvedSpaceSlot(
     title: item.title.trim().isEmpty ? spec.defaultTitle : item.title,
-    subtitle:
-        item.subtitle.trim().isEmpty ? spec.defaultSubtitle : item.subtitle,
+    subtitle: spec.defaultSubtitle,
     imagePath: item.imagePath ?? spec.defaultImage,
     onTap: () => controller.openSpace(item),
   );

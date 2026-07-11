@@ -88,7 +88,13 @@ class ExpandedCategorySelector extends StatelessWidget {
     );
   }
 
-  String _label(String category) => labelBuilder?.call(category) ?? category;
+  String _label(String category) {
+    final label = labelBuilder?.call(category) ?? category;
+    if (label.isEmpty) {
+      return label;
+    }
+    return '${label[0].toUpperCase()}${label.substring(1)}';
+  }
 }
 
 class _CategoryOption extends StatelessWidget {

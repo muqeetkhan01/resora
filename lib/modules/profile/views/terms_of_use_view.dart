@@ -14,7 +14,7 @@ class TermsOfUseView extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
           child: Text(
-            'terms of use',
+            'Terms of Use',
             style: SettingsFlowText.display(context, size: 32),
           ),
         ),
@@ -26,27 +26,27 @@ class TermsOfUseView extends StatelessWidget {
               _TermsParagraph(
                   'By using Resora, you agree to these Terms of Use.'),
               _TermsSection(
-                'what resora provides',
+                'What Resora Provides',
                 'Resora offers wellness tools for reflection, journaling, guided resets, visualization, calming audio, key terms, and supportive conversation through Talk to Resora.',
               ),
               _TermsSection(
-                'safety disclaimer',
+                'Safety Disclaimer',
                 'Resora is not medical care, therapy, mental health treatment, diagnosis, crisis counseling, emergency support, legal advice, or a substitute for professional services.',
               ),
               _TermsSection(
-                'ai responses',
+                'AI Responses',
                 'Talk to Resora may use artificial intelligence to generate responses. AI responses may not always be complete, accurate, or suitable for your specific situation.',
               ),
               _TermsSection(
-                'user responsibility',
+                'User Responsibility',
                 'Use Resora responsibly. Do not use the app for emergencies, unlawful activity, harmful content, or decisions that require professional medical, legal, financial, or safety guidance.',
               ),
               _TermsSection(
-                'subscriptions',
+                'Subscriptions',
                 'Purchases, cancellations, refunds, and billing are handled through Apple or the applicable app store provider. Subscriptions renew automatically unless canceled in your Apple account settings.',
               ),
               _TermsSection(
-                'contact',
+                'Contact',
                 'Questions about these Terms can be sent to hello@resoraco.com.',
               ),
             ],
