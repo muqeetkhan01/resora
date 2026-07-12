@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/constants/app_assets.dart';
-import '../../../theme/app_colors.dart';
 import '../controllers/splash_controller.dart';
 
 class SplashView extends GetView<SplashController> {
@@ -33,9 +32,11 @@ class _SplashSequence extends StatefulWidget {
 }
 
 class _SplashSequenceState extends State<_SplashSequence> {
-  static const _crossfadeMs = 450;
-  static const _imageDuration = Duration(milliseconds: 2000);
-  static const _textFadeInMs = 900;
+  static const _crossfadeMs = 250;
+  static const _imageDuration = Duration(milliseconds: 700);
+  static const _finishSettleMs = 150;
+  static const _screenFadeOutMs = 500;
+  static const _textFadeInMs = 500;
 
   static const _images = <String>[
     AppAssets.splashLivingRoom,
@@ -64,12 +65,14 @@ class _SplashSequenceState extends State<_SplashSequence> {
     _scheduleSwitch(1, _imageDuration);
     _scheduleSwitch(2, _imageDuration * 2);
     _finishTimer = Timer(
-      _imageDuration * 3 + const Duration(milliseconds: _crossfadeMs + 200),
+      _imageDuration * 3 +
+          const Duration(milliseconds: _crossfadeMs + _finishSettleMs),
       () {
         if (!mounted) return;
         setState(() => _screenFadeOut = true);
         _navigateTimer?.cancel();
-        _navigateTimer = Timer(const Duration(milliseconds: 650), () {
+        _navigateTimer =
+            Timer(const Duration(milliseconds: _screenFadeOutMs), () {
           if (!mounted) return;
           widget.onFinished();
         });
@@ -116,7 +119,7 @@ class _SplashSequenceState extends State<_SplashSequence> {
   Widget build(BuildContext context) {
     return AnimatedOpacity(
       opacity: _screenFadeOut ? 0 : 1,
-      duration: const Duration(milliseconds: 650),
+      duration: const Duration(milliseconds: _screenFadeOutMs),
       curve: Curves.easeOut,
       child: Stack(
         fit: StackFit.expand,
@@ -136,9 +139,9 @@ class _SplashSequenceState extends State<_SplashSequence> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(0.44),
-                    Colors.black.withOpacity(0.08),
-                    Colors.black.withOpacity(0.56),
+                    Colors.black.withValues(alpha: 0.44),
+                    Colors.black.withValues(alpha: 0.08),
+                    Colors.black.withValues(alpha: 0.56),
                   ],
                   stops: const [0, 0.45, 1],
                 ),
@@ -152,8 +155,8 @@ class _SplashSequenceState extends State<_SplashSequence> {
               decoration: BoxDecoration(
                 gradient: RadialGradient(
                   colors: [
-                    Colors.black.withOpacity(0.38),
-                    Colors.black.withOpacity(0.0),
+                    Colors.black.withValues(alpha: 0.38),
+                    Colors.black.withValues(alpha: 0),
                   ],
                 ),
               ),

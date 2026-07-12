@@ -14,10 +14,4 @@ Row should be of 1 line - Fix it to 1 line all devices
 
 
 
-
-
-
-
-
-
 4. All back close button should be done like this

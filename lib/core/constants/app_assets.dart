@@ -17,6 +17,9 @@ abstract final class AppAssets {
   static const splashLivingRoom = 'assets/images/splash_living_room.jpeg';
   static const splashWaterfall = 'assets/images/splash_waterfall.jpeg';
   static const splashPickleball = 'assets/images/splash_pickleball.jpeg';
+  static const onboardingOpenBg = 'assets/images/onboarding_open_bg.jpeg';
+  static const authWelcomeBg = 'assets/images/auth_welcome_bg.jpeg';
+  static const onboardingBreathBg = 'assets/images/onboarding_breath_bg.jpeg';
 
   static const ambientSoftRain = 'assets/audio/ambient_soft_rain.mp3';
   static const ambientBrownNoise = 'assets/audio/ambient_brown_noise.mp3';

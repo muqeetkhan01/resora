@@ -7,7 +7,7 @@ class OnboardingController extends GetxController {
   final _session = Get.find<AppSessionController>();
 
   final step = 0.obs; // 0..6 (cover + 6 post-cover screens)
-  final selectedState = RxnString();
+  final selectedStates = <String>[].obs;
   final selectedReasons = <String>[].obs;
   final intention = ''.obs;
   final name = ''.obs;
@@ -16,37 +16,45 @@ class OnboardingController extends GetxController {
   static const totalStepsAfterCover = 6;
 
   static const states = <({String key, String label})>[
-    (key: 'heavy', label: 'Heavy, a little underwater'),
-    (key: 'wired', label: 'Wired, need to come down'),
-    (key: 'stuck', label: 'Stuck, spinning in my head'),
-    (key: 'tender', label: 'Tender, something is up'),
-    (key: 'distant', label: 'Distant from someone I love'),
-    (key: 'ok', label: 'Fine, just checking in'),
+    (key: 'break', label: 'I need a break from everything.'),
+    (key: 'out_of_sync', label: 'I’m feeling really out of sync with myself.'),
+    (key: 'pause', label: 'Just here to breathe and take a pause.'),
+    (
+      key: 'next_step',
+      label: 'I’m doing okay, just focusing on the next step.',
+    ),
+    (
+      key: 'myself_again',
+      label: 'I’m finally starting to feel like myself again.',
+    ),
+    (key: 'ready', label: 'I feel good and ready for what’s next.'),
+    (key: 'other', label: 'Other'),
   ];
 
   static const reasons = <String>[
-    'A hard conversation',
-    'Too much in my head',
-    'A hard day coming up',
-    'Feeling disconnected',
-    'Wanting a gentler morning',
-    'Building a daily practice',
-    'Rehearsing something I need to say',
+    'Honestly, it’s just been a really hard day.',
+    'My mind is running a million miles a minute.',
+    'I’m feeling a bit overwhelmed by life lately.',
+    'I have a lot on my plate and need a second to think.',
+    'I’m trying to prevent a burnout before it happens.',
+    'I just need a few minutes of total silence.',
+    'Showing up for myself today.',
+    'Other',
   ];
 
   static const paywallIncludes = <({String title, String body})>[
     (
-      title: '24/7 expert support',
+      title: 'On-demand guidance',
       body:
-          'Instant AI guidance designed by our licensed behavioral specialists.',
+          'AI powered guidance, built by a behavioral specialist for your heavy days.',
     ),
     (
       title: 'Guided meditations',
-      body: 'Effortless sessions for mental clarity.',
+      body: 'Calm audio spaces to help you slow down and find clarity.',
     ),
     (
-      title: 'Journal prompts',
-      body: 'Writing tools to help you process and grow.',
+      title: 'Interactive journaling',
+      body: 'Mindful prompts to get things out of your head and onto paper.',
     ),
   ];
 
@@ -56,21 +64,21 @@ class OnboardingController extends GetxController {
       key: 'year',
       label: 'Yearly',
       price: '\$49.99 / year',
-      meta: 'Our best value. Save 30%.',
-      note: 'Best value'
+      meta: 'Save 58% compared to monthly.',
+      note: 'Most popular'
     ),
     (
       key: 'month',
       label: 'Monthly',
       price: '\$9.99 / month',
-      meta: 'Flexible access, cancel anytime.',
+      meta: 'Flexible access, cancel whenever you need to.',
       note: null
     ),
     (
       key: 'lifetime',
       label: 'Lifetime',
       price: '\$249.99',
-      meta: 'One payment, yours forever.',
+      meta: 'A one time investment in your well-being.',
       note: 'Yours forever'
     ),
   ];
@@ -84,7 +92,7 @@ class OnboardingController extends GetxController {
   }
 
   int get clampedStep => step.value.clamp(0, 6);
-  bool get canContinueState => (selectedState.value ?? '').isNotEmpty;
+  bool get canContinueState => selectedStates.isNotEmpty;
   bool get canContinueIntention => intention.value.trim().length >= 2;
 
   void next() {
@@ -99,8 +107,14 @@ class OnboardingController extends GetxController {
     }
   }
 
-  void setStateValue(String key) {
-    selectedState.value = key;
+  void toggleStateValue(String key) {
+    final next = List<String>.from(selectedStates);
+    if (next.contains(key)) {
+      next.remove(key);
+    } else {
+      next.add(key);
+    }
+    selectedStates.assignAll(next);
   }
 
   void toggleReason(String value) {

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-import '../../../core/constants/app_spacing.dart';
-import '../../../widgets/app_background.dart';
+import '../../../core/constants/app_assets.dart';
 import '../controllers/auth_entry_controller.dart';
 import '../widgets/resora_loading_overlay.dart';
 
@@ -11,126 +11,181 @@ class WelcomeView extends GetView<AuthEntryController> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return AppBackground(
-      child: Obx(
+    return Scaffold(
+      body: Obx(
         () => Stack(
+          fit: StackFit.expand,
           children: [
-            IgnorePointer(
-              ignoring: controller.isSubmitting.value,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.only(
-                  top: AppSpacing.xxl,
-                  bottom: AppSpacing.xxl,
+            Image.asset(
+              AppAssets.authWelcomeBg,
+              fit: BoxFit.cover,
+              alignment: Alignment.center,
+            ),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.44),
+                    Colors.black.withOpacity(0.18),
+                    Colors.black.withOpacity(0.06),
+                    Colors.black.withOpacity(0.30),
+                    Colors.black.withOpacity(0.78),
+                    Colors.black.withOpacity(0.92),
+                  ],
+                  stops: const [0, 0.17, 0.42, 0.64, 0.82, 1],
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 86),
-                    Text(
-                      'resora',
-                      style: textTheme.displayLarge?.copyWith(
-                        fontSize: 78,
-                        letterSpacing: 0.22,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    Container(
-                      width: 52,
-                      height: 1,
-                      color: Theme.of(context)
-                          .colorScheme
-                          .primary
-                          .withOpacity(0.2),
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    Text(
-                      'Life gets better when you do.',
-                      textAlign: TextAlign.center,
-                      style: textTheme.bodyLarge?.copyWith(
-                        fontSize: 18,
-                        fontStyle: FontStyle.normal,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.xxl),
-                    Text(
-                      'ENTER',
-                      style: textTheme.labelMedium?.copyWith(
-                        letterSpacing: 4,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-                    Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .withOpacity(0.2),
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                height: MediaQuery.sizeOf(context).height * 0.44,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.48),
+                      Colors.black.withOpacity(0.88),
+                    ],
+                    stops: const [0, 0.38, 1],
+                  ),
+                ),
+              ),
+            ),
+            SafeArea(
+              child: IgnorePointer(
+                ignoring: controller.isSubmitting.value,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(26, 48, 26, 34),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Resora',
+                        style: GoogleFonts.jost(
+                          color: Colors.white.withOpacity(0.94),
+                          fontSize: 21,
+                          fontWeight: FontWeight.w200,
+                          height: 1,
+                          letterSpacing: 2.9,
+                          shadows: [
+                            Shadow(
+                              color: Colors.black.withOpacity(0.35),
+                              blurRadius: 18,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                         ),
                       ),
-                      child: Column(
+                      const Spacer(),
+                      Row(
                         children: [
-                          _AuthOptionTile(
-                            icon: Icons.apple,
-                            label: controller.activeProvider.value == 'apple'
-                                ? 'Connecting...'
-                                : 'Continue with Apple',
-                            onTap: controller.isSubmitting.value
-                                ? null
-                                : controller.continueWithApple,
+                          Expanded(
+                            child: _AuthImageButton(
+                              icon: Icons.apple,
+                              label: controller.activeProvider.value == 'apple'
+                                  ? 'Connecting...'
+                                  : 'Continue with Apple',
+                              onTap: controller.isSubmitting.value
+                                  ? null
+                                  : controller.continueWithApple,
+                            ),
                           ),
-                          _AuthOptionTile(
-                            leadingText: 'G',
-                            label: controller.activeProvider.value == 'google'
-                                ? 'Connecting...'
-                                : 'Continue with Google',
-                            onTap: controller.isSubmitting.value
-                                ? null
-                                : controller.continueWithGoogle,
-                          ),
-                          _AuthOptionTile(
-                            leadingText: '→',
-                            label: 'Continue with email',
-                            onTap: controller.isSubmitting.value
-                                ? null
-                                : controller.continueWithEmail,
-                            isLast: true,
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _AuthImageButton(
+                              google: true,
+                              label: controller.activeProvider.value == 'google'
+                                  ? 'Connecting...'
+                                  : 'Continue with Google',
+                              onTap: controller.isSubmitting.value
+                                  ? null
+                                  : controller.continueWithGoogle,
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    Text(
-                      'By continuing, you agree to our Terms and Privacy Policy.',
-                      textAlign: TextAlign.center,
-                      style: textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .primary
-                            .withOpacity(0.74),
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    TextButton(
-                      onPressed: controller.isSubmitting.value
-                          ? null
-                          : controller.signIn,
-                      child: Text(
-                        'Already have an account? sign in',
-                        textAlign: TextAlign.center,
-                        style: textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .withOpacity(0.78),
-                          decoration: TextDecoration.underline,
+                      const SizedBox(height: 24),
+                      Center(
+                        child: TextButton(
+                          onPressed: controller.isSubmitting.value
+                              ? null
+                              : controller.continueWithEmail,
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: const Size(0, 0),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: Text(
+                            'Continue with email',
+                            style: GoogleFonts.jost(
+                              color: Colors.white.withOpacity(0.86),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                              height: 1.2,
+                              decoration: TextDecoration.underline,
+                              decorationColor: Colors.white.withOpacity(0.86),
+                              decorationThickness: 1,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 22),
+                      Center(
+                        child: TextButton(
+                          onPressed: controller.isSubmitting.value
+                              ? null
+                              : controller.signIn,
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: const Size(0, 0),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: Text.rich(
+                            TextSpan(
+                              text: 'Already have an account? ',
+                              children: [
+                                TextSpan(
+                                  text: 'Sign In',
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.82),
+                                    decoration: TextDecoration.underline,
+                                    decorationColor:
+                                        Colors.white.withOpacity(0.82),
+                                    decorationThickness: 1,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.jost(
+                              color: Colors.white.withOpacity(0.82),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                              height: 1.25,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 22),
+                      Center(
+                        child: Text(
+                          'By continuing, you agree to our Terms and Privacy Policy.',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.jost(
+                            color: Colors.white.withOpacity(0.52),
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400,
+                            height: 1.35,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -151,74 +206,77 @@ class WelcomeView extends GetView<AuthEntryController> {
   }
 }
 
-class _AuthOptionTile extends StatelessWidget {
-  const _AuthOptionTile({
+class _AuthImageButton extends StatelessWidget {
+  const _AuthImageButton({
     required this.label,
     required this.onTap,
     this.icon,
-    this.leadingText,
-    this.isLast = false,
+    this.google = false,
   });
 
   final String label;
   final VoidCallback? onTap;
   final IconData? icon;
-  final String? leadingText;
-  final bool isLast;
+  final bool google;
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final lineColor = Theme.of(context).colorScheme.primary.withOpacity(0.16);
-
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        height: 74,
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: isLast ? Colors.transparent : lineColor,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          height: 50,
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: const Color(0xFFFAF4EF).withOpacity(0.96),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: Colors.white.withOpacity(0.45)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.22),
+                blurRadius: 50,
+                offset: const Offset(0, 18),
+              ),
+            ],
+          ),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (google)
+                  Text(
+                    'G',
+                    style: GoogleFonts.jost(
+                      color: const Color(0xFF4285F4),
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      height: 1,
+                    ),
+                  )
+                else
+                  Icon(
+                    icon,
+                    size: 21,
+                    color: const Color(0xFF151515),
+                  ),
+                const SizedBox(width: 10),
+                Text(
+                  label,
+                  style: GoogleFonts.jost(
+                    color: const Color(0xFF151515),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    height: 1,
+                    letterSpacing: -0.1,
+                  ),
+                ),
+              ],
             ),
           ),
-        ),
-        child: Row(
-          children: [
-            SizedBox(
-              width: 22,
-              child: icon != null
-                  ? Icon(
-                      icon,
-                      size: 21,
-                      color: Theme.of(context)
-                          .colorScheme
-                          .primary
-                          .withOpacity(0.66),
-                    )
-                  : Text(
-                      leadingText ?? '',
-                      style: textTheme.bodyLarge?.copyWith(
-                        fontSize: 27,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .primary
-                            .withOpacity(0.66),
-                        height: 1,
-                      ),
-                    ),
-            ),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: Text(
-                label,
-                style: textTheme.bodyLarge?.copyWith(
-                  fontSize: 18,
-                  letterSpacing: 0.25,
-                ),
-              ),
-            ),
-          ],
         ),
       ),
     );

@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
+import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../controllers/onboarding_controller.dart';
 
@@ -29,13 +31,16 @@ class OnboardingView extends GetView<OnboardingController> {
 
   Widget _buildStep(BuildContext context, int step) {
     return switch (step) {
-      0 => _CoverScreen(onNext: controller.next),
-      1 => _StateScreen(controller: controller),
+      0 => _CoverScreen(
+          onNext: controller.next,
+          onSignIn: controller.enterApp,
+        ),
+      1 => _NameScreen(controller: controller),
       2 => _ReasonsScreen(controller: controller),
-      3 => _PaywallScreen(controller: controller),
+      3 => _StateScreen(controller: controller),
       4 => _IntentionScreen(controller: controller),
-      5 => _NameScreen(controller: controller),
-      _ => _GlimpseScreen(controller: controller),
+      5 => _GlimpseScreen(controller: controller),
+      _ => _PaywallScreen(controller: controller),
     };
   }
 }
@@ -43,10 +48,11 @@ class OnboardingView extends GetView<OnboardingController> {
 class _OnboardingTokens {
   static const Color green = Color(0xFF145C4F);
   static const Color off = Color(0xFFFAFBF9);
-  static const Color dark = Color(0xFF4A342B);
+  static const Color dark = Color(0xFF151515);
   static const Color stone = Color(0xFFE3DED5);
   static const Color linen = Color(0xFFD7CFC2);
-  static const Color taupe = Color(0xFF8C7A6D);
+  static const Color taupe = Color(0xFF151515);
+  static const Color cream = Color(0xFFF5F2EC);
 }
 
 class _FlowScreen extends StatelessWidget {
@@ -55,8 +61,6 @@ class _FlowScreen extends StatelessWidget {
     this.step,
     this.total,
     this.onBack,
-    this.background = _OnboardingTokens.off,
-    this.ink = _OnboardingTokens.dark,
     this.scrollable = false,
   });
 
@@ -64,32 +68,22 @@ class _FlowScreen extends StatelessWidget {
   final int? step;
   final int? total;
   final VoidCallback? onBack;
-  final Color background;
-  final Color ink;
   final bool scrollable;
 
   @override
   Widget build(BuildContext context) {
-    final muted = ink == _OnboardingTokens.off
-        ? _OnboardingTokens.off.withOpacity(0.6)
-        : _OnboardingTokens.taupe;
-    final track = ink == _OnboardingTokens.off
-        ? _OnboardingTokens.off.withOpacity(0.22)
-        : _OnboardingTokens.stone;
-    final progressColor = ink == _OnboardingTokens.off
-        ? _OnboardingTokens.off
-        : _OnboardingTokens.green;
+    const muted = _OnboardingTokens.taupe;
+    const track = _OnboardingTokens.stone;
+    const progressColor = _OnboardingTokens.green;
 
     return DecoratedBox(
-      decoration: BoxDecoration(color: background),
+      decoration: const BoxDecoration(color: _OnboardingTokens.off),
       child: Stack(
         fit: StackFit.expand,
         children: [
-          _WatercolorBackdrop(
-            accent: ink == _OnboardingTokens.off
-                ? _OnboardingTokens.green
-                : _OnboardingTokens.dark,
-            opacity: ink == _OnboardingTokens.off ? 0.18 : 0.08,
+          const _WatercolorBackdrop(
+            accent: _OnboardingTokens.dark,
+            opacity: 0.08,
           ),
           SafeArea(
             child: Column(
@@ -166,79 +160,148 @@ class _FlowScreen extends StatelessWidget {
 class _CoverScreen extends StatelessWidget {
   const _CoverScreen({
     required this.onNext,
+    required this.onSignIn,
   });
 
   final VoidCallback onNext;
+  final VoidCallback onSignIn;
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
     return DecoratedBox(
-      decoration: const BoxDecoration(color: _OnboardingTokens.green),
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage(AppAssets.onboardingOpenBg),
+          fit: BoxFit.cover,
+          alignment: Alignment.center,
+        ),
+        color: Color(0xFF09110E),
+      ),
       child: Stack(
         fit: StackFit.expand,
         children: [
-          const _WatercolorBackdrop(
-            accent: _OnboardingTokens.green,
-            opacity: 0.22,
+          DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.white.withValues(alpha: 0.04),
+                  Colors.transparent,
+                  Colors.black.withValues(alpha: 0.06),
+                  Colors.black.withValues(alpha: 0.55),
+                  Colors.black.withValues(alpha: 0.72),
+                ],
+                stops: const [0, 0.4, 0.62, 0.94, 1],
+              ),
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              height: MediaQuery.sizeOf(context).height * 0.34,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    const Color(0xFF020807).withValues(alpha: 0.32),
+                    const Color(0xFF020807).withValues(alpha: 0.68),
+                  ],
+                  stops: const [0, 0.68, 1],
+                ),
+              ),
+            ),
           ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(32, 80, 32, 44),
+              padding: const EdgeInsets.fromLTRB(28, 44, 28, 34),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Resora',
-                    style: textTheme.displayMedium?.copyWith(
+                    style: GoogleFonts.cormorantGaramond(
                       color: _OnboardingTokens.off,
-                      fontSize: 40,
-                      fontWeight: FontWeight.w300,
-                      letterSpacing: 0.2,
+                      fontSize: 54,
+                      fontWeight: FontWeight.w400,
+                      height: 0.92,
+                      letterSpacing: 0.01,
                     ),
                   ),
-                  const Spacer(),
+                  SizedBox(height: MediaQuery.sizeOf(context).height * 0.24),
                   Text(
-                    'Life gets\nbetter\nwhen you do.',
-                    style: textTheme.displayLarge?.copyWith(
+                    'Life gets better when you do.',
+                    style: GoogleFonts.cormorantGaramond(
                       color: _OnboardingTokens.off,
-                      fontSize: 68,
-                      fontWeight: FontWeight.w300,
-                      height: 0.98,
+                      fontSize: 62,
+                      fontWeight: FontWeight.w400,
+                      height: 0.9,
+                      letterSpacing: -0.015,
                     ),
                   ),
                   const Spacer(),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: SizedBox(
-                      width: 136,
-                      height: 56,
-                      child: OutlinedButton(
-                        onPressed: onNext,
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: _OnboardingTokens.off,
-                          side: const BorderSide(
-                            color: _OnboardingTokens.off,
-                            width: 0.5,
-                          ),
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.zero,
-                          ),
-                          padding: EdgeInsets.zero,
-                          alignment: Alignment.center,
-                        ),
-                        child: Text(
-                          'Begin',
-                          textAlign: TextAlign.center,
-                          style: textTheme.labelLarge?.copyWith(
-                            color: _OnboardingTokens.off,
-                            fontSize: 13,
-                            letterSpacing: 0.05,
-                            fontWeight: FontWeight.w400,
+                  Center(
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          width: 244,
+                          height: 68,
+                          child: FilledButton(
+                            onPressed: onNext,
+                            style: FilledButton.styleFrom(
+                              backgroundColor: _OnboardingTokens.cream,
+                              foregroundColor: const Color(0xFF2C4138),
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: Text(
+                              'Continue',
+                              style: GoogleFonts.cormorantGaramond(
+                                color: const Color(0xFF2C4138),
+                                fontSize: 30,
+                                fontWeight: FontWeight.w500,
+                                height: 1,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                        const SizedBox(height: 26),
+                        TextButton(
+                          onPressed: onSignIn,
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: const Size(0, 0),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: Text.rich(
+                            const TextSpan(
+                              text: 'Already have an account? ',
+                              children: [
+                                TextSpan(
+                                  text: 'Sign In',
+                                  style: TextStyle(
+                                    color: _OnboardingTokens.off,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: _OnboardingTokens.off,
+                                    decorationThickness: 1,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            style: GoogleFonts.jost(
+                              color:
+                                  _OnboardingTokens.off.withValues(alpha: 0.86),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              height: 1.35,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -263,11 +326,11 @@ class _StateScreen extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return _FlowScreen(
-      step: 1,
+      step: 3,
       total: OnboardingController.totalStepsAfterCover,
       onBack: controller.back,
       child: Obx(() {
-        final selected = controller.selectedState.value;
+        final selectedStates = controller.selectedStates.toList();
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -284,9 +347,9 @@ class _StateScreen extends StatelessWidget {
             ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 300),
               child: Text(
-                'No wrong answer. This sets the tone of your first reset.',
+                'No right or wrong answers here. Pick as many as you need.',
                 style: textTheme.bodySmall?.copyWith(
-                  color: _OnboardingTokens.taupe,
+                  color: _OnboardingTokens.dark.withValues(alpha: 0.7),
                   fontSize: 14,
                   height: 1.55,
                 ),
@@ -295,9 +358,9 @@ class _StateScreen extends StatelessWidget {
             const SizedBox(height: 28),
             ...OnboardingController.states.asMap().entries.map((entry) {
               final item = entry.value;
-              final isSelected = selected == item.key;
+              final isSelected = selectedStates.contains(item.key);
               return InkWell(
-                onTap: () => controller.setStateValue(item.key),
+                onTap: () => controller.toggleStateValue(item.key),
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 18),
                   decoration: BoxDecoration(
@@ -329,12 +392,28 @@ class _StateScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      if (isSelected)
-                        const Icon(
-                          Icons.check_rounded,
-                          color: _OnboardingTokens.green,
-                          size: 14,
+                      Container(
+                        width: 14,
+                        height: 14,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            width: 0.5,
+                            color: isSelected
+                                ? _OnboardingTokens.green
+                                : _OnboardingTokens.linen,
+                          ),
+                          color: isSelected
+                              ? _OnboardingTokens.green
+                              : Colors.transparent,
                         ),
+                        child: isSelected
+                            ? const Icon(
+                                Icons.check_rounded,
+                                size: 8,
+                                color: _OnboardingTokens.off,
+                              )
+                            : null,
+                      ),
                     ],
                   ),
                 ),
@@ -387,9 +466,9 @@ class _ReasonsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Pick a few.',
+              'Pick as many as you need',
               style: textTheme.bodySmall?.copyWith(
-                color: _OnboardingTokens.taupe,
+                color: _OnboardingTokens.dark.withValues(alpha: 0.7),
                 fontSize: 14,
                 height: 1.55,
               ),
@@ -444,34 +523,13 @@ class _ReasonsScreen extends StatelessWidget {
               );
             }),
             const Spacer(),
-            Row(
-              children: [
-                TextButton(
-                  onPressed: controller.next,
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    foregroundColor: _OnboardingTokens.taupe,
-                  ),
-                  child: Text(
-                    'Skip',
-                    style: textTheme.bodySmall?.copyWith(
-                      color: _OnboardingTokens.taupe,
-                      fontSize: 13,
-                      decoration: TextDecoration.underline,
-                      decorationThickness: 0.5,
-                      letterSpacing: 0.4,
-                    ),
-                  ),
-                ),
-                const Spacer(),
-                _ContinueButton(
-                  label: selectedReasons.isNotEmpty
-                      ? 'Continue (${selectedReasons.length})'
-                      : 'Continue',
-                  onTap: selectedReasons.isNotEmpty ? controller.next : null,
-                  color: _OnboardingTokens.green,
-                ),
-              ],
+            Align(
+              alignment: Alignment.centerRight,
+              child: _ContinueButton(
+                label: 'Continue',
+                onTap: selectedReasons.isNotEmpty ? controller.next : null,
+                color: _OnboardingTokens.green,
+              ),
             ),
           ],
         );
@@ -492,7 +550,7 @@ class _PaywallScreen extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return _FlowScreen(
-      step: 3,
+      step: 6,
       total: OnboardingController.totalStepsAfterCover,
       onBack: controller.back,
       scrollable: true,
@@ -512,9 +570,9 @@ class _PaywallScreen extends StatelessWidget {
             ),
             const SizedBox(height: 18),
             Text(
-              'A modern space for your mental wellness. Because life gets better when you do.',
+              'Take seven days to explore our tools and find what works for you',
               style: textTheme.bodySmall?.copyWith(
-                color: _OnboardingTokens.taupe,
+                color: _OnboardingTokens.dark.withValues(alpha: 0.7),
                 fontSize: 14,
                 height: 1.6,
               ),
@@ -551,7 +609,8 @@ class _PaywallScreen extends StatelessWidget {
                           Text(
                             item.body,
                             style: textTheme.bodySmall?.copyWith(
-                              color: _OnboardingTokens.taupe,
+                              color:
+                                  _OnboardingTokens.dark.withValues(alpha: 0.7),
                               fontSize: 13,
                               height: 1.5,
                             ),
@@ -617,7 +676,8 @@ class _PaywallScreen extends StatelessWidget {
                             Text(
                               plan.meta,
                               style: textTheme.bodySmall?.copyWith(
-                                color: _OnboardingTokens.taupe,
+                                color: _OnboardingTokens.dark
+                                    .withValues(alpha: 0.7),
                                 fontSize: 12,
                                 letterSpacing: 0.1,
                               ),
@@ -652,7 +712,7 @@ class _PaywallScreen extends StatelessWidget {
                 _ => 'One payment. Full access. No renewals.',
               },
               style: textTheme.bodySmall?.copyWith(
-                color: _OnboardingTokens.taupe,
+                color: _OnboardingTokens.dark.withValues(alpha: 0.62),
                 fontSize: 11,
                 height: 1.55,
               ),
@@ -660,7 +720,7 @@ class _PaywallScreen extends StatelessWidget {
             const SizedBox(height: AppSpacing.md),
             _ProviderButton(
               provider: _Provider.apple,
-              onTap: controller.next,
+              onTap: controller.enterApp,
             ),
             // const SizedBox(height: AppSpacing.xs),
             // _ProviderButton(
@@ -682,15 +742,15 @@ class _PaywallScreen extends StatelessWidget {
                 ),
               ),
               child: TextButton(
-                onPressed: controller.next,
+                onPressed: controller.enterApp,
                 style: TextButton.styleFrom(
                   padding: EdgeInsets.zero,
-                  foregroundColor: _OnboardingTokens.taupe,
+                  foregroundColor: _OnboardingTokens.dark,
                 ),
                 child: Text(
-                  'Not now — start a limited free plan',
+                  'Not ready? Explore our free features',
                   style: textTheme.bodySmall?.copyWith(
-                    color: _OnboardingTokens.taupe,
+                    color: _OnboardingTokens.dark,
                     fontSize: 13,
                     decoration: TextDecoration.underline,
                     decorationThickness: 0.5,
@@ -737,7 +797,7 @@ class _IntentionScreen extends StatelessWidget {
           Text(
             'In three months, I want to feel...',
             style: textTheme.displaySmall?.copyWith(
-              color: _OnboardingTokens.taupe,
+              color: _OnboardingTokens.dark,
               fontSize: 30,
               fontStyle: FontStyle.normal,
               fontWeight: FontWeight.w300,
@@ -749,14 +809,14 @@ class _IntentionScreen extends StatelessWidget {
             key: const ValueKey('onb-intention-field'),
             initialValue: controller.intention.value,
             onChanged: controller.setIntention,
-            hintText: 'Less braced, more here',
+            hintText: 'lighter, like I can finally catch my breath',
             autoFocus: true,
           ),
           const SizedBox(height: 14),
           Text(
-            'A few words is plenty. No one else will read this.',
+            'No one else will read this. Just a private note for yourself.',
             style: textTheme.bodySmall?.copyWith(
-              color: _OnboardingTokens.taupe,
+              color: _OnboardingTokens.dark.withValues(alpha: 0.7),
               fontSize: 11,
               letterSpacing: 0.1,
               height: 1.5,
@@ -791,7 +851,7 @@ class _NameScreen extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return _FlowScreen(
-      step: 5,
+      step: 1,
       total: OnboardingController.totalStepsAfterCover,
       onBack: controller.back,
       child: Column(
@@ -799,7 +859,7 @@ class _NameScreen extends StatelessWidget {
         children: [
           const SizedBox(height: 36),
           Text(
-            'What is\nyour name?',
+            'What should\nwe call you?',
             style: textTheme.displayLarge?.copyWith(
               color: _OnboardingTokens.dark,
               fontSize: 50,
@@ -808,9 +868,9 @@ class _NameScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'First name, a nickname, or nothing at all.',
+            'A first name, a nickname, or whatever feels most comfortable.',
             style: textTheme.bodySmall?.copyWith(
-              color: _OnboardingTokens.taupe,
+              color: _OnboardingTokens.dark.withValues(alpha: 0.7),
               fontSize: 14,
               height: 1.55,
             ),
@@ -820,36 +880,17 @@ class _NameScreen extends StatelessWidget {
             key: const ValueKey('onb-name-field'),
             initialValue: controller.name.value,
             onChanged: controller.setName,
-            hintText: 'Your name (optional)',
+            hintText: 'Name or initials (optional)',
             autoFocus: true,
           ),
           const Spacer(),
-          Row(
-            children: [
-              TextButton(
-                onPressed: controller.next,
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  foregroundColor: _OnboardingTokens.taupe,
-                ),
-                child: Text(
-                  'Skip',
-                  style: textTheme.bodySmall?.copyWith(
-                    color: _OnboardingTokens.taupe,
-                    fontSize: 13,
-                    decoration: TextDecoration.underline,
-                    decorationThickness: 0.5,
-                    letterSpacing: 0.4,
-                  ),
-                ),
-              ),
-              const Spacer(),
-              _ContinueButton(
-                label: 'Continue',
-                onTap: controller.next,
-                color: _OnboardingTokens.green,
-              ),
-            ],
+          Align(
+            alignment: Alignment.centerRight,
+            child: _ContinueButton(
+              label: 'Continue',
+              onTap: controller.next,
+              color: _OnboardingTokens.green,
+            ),
           ),
         ],
       ),
@@ -870,16 +911,10 @@ class _GlimpseScreen extends StatelessWidget {
     final firstName =
         trimmedName.isEmpty ? null : trimmedName.split(RegExp(r'\s+')).first;
 
-    return _FlowScreen(
-      step: 6,
-      total: OnboardingController.totalStepsAfterCover,
+    return _GlimpseBreath(
+      firstName: firstName,
       onBack: controller.back,
-      background: _OnboardingTokens.green,
-      ink: _OnboardingTokens.off,
-      child: _GlimpseBreath(
-        firstName: firstName,
-        onEnterApp: controller.enterApp,
-      ),
+      onNext: controller.next,
     );
   }
 }
@@ -887,11 +922,13 @@ class _GlimpseScreen extends StatelessWidget {
 class _GlimpseBreath extends StatefulWidget {
   const _GlimpseBreath({
     required this.firstName,
-    required this.onEnterApp,
+    required this.onBack,
+    required this.onNext,
   });
 
   final String? firstName;
-  final VoidCallback onEnterApp;
+  final VoidCallback onBack;
+  final VoidCallback onNext;
 
   @override
   State<_GlimpseBreath> createState() => _GlimpseBreathState();
@@ -900,25 +937,20 @@ class _GlimpseBreath extends StatefulWidget {
 class _GlimpseBreathState extends State<_GlimpseBreath> {
   Timer? _timer;
   String _phase = 'inhale';
-  bool _revealed = false;
 
   @override
   void initState() {
     super.initState();
     _cycle();
-    Timer(const Duration(milliseconds: 700), () {
-      if (!mounted) return;
-      setState(() => _revealed = true);
-    });
   }
 
   void _cycle() {
     _setPhase('inhale');
-    _timer = Timer(const Duration(milliseconds: 4000), () {
+    _timer = Timer(const Duration(milliseconds: 3000), () {
       _setPhase('hold');
       _timer = Timer(const Duration(milliseconds: 2000), () {
         _setPhase('exhale');
-        _timer = Timer(const Duration(milliseconds: 6000), _cycle);
+        _timer = Timer(const Duration(milliseconds: 3000), _cycle);
       });
     });
   }
@@ -938,140 +970,188 @@ class _GlimpseBreathState extends State<_GlimpseBreath> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
     final scale = switch (_phase) {
-      'inhale' => 1.0,
-      'hold' => 1.0,
-      _ => 0.55,
+      'inhale' => 1.08,
+      'hold' => 1.08,
+      _ => 1.0,
     };
     final duration = switch (_phase) {
-      'inhale' => const Duration(milliseconds: 4000),
+      'inhale' => const Duration(milliseconds: 3000),
       'hold' => const Duration(milliseconds: 2000),
-      _ => const Duration(milliseconds: 6000),
+      _ => const Duration(milliseconds: 3000),
     };
     final phaseLabel = switch (_phase) {
       'inhale' => 'Breathe in',
       'hold' => 'Hold',
       _ => 'Breathe out',
     };
+    final greetingName =
+        widget.firstName != null && widget.firstName!.trim().isNotEmpty
+            ? widget.firstName!.trim()
+            : 'there';
+    const green = Color(0xFF174F43);
 
-    return Column(
-      children: [
-        const SizedBox(height: 72),
-        // Text(
-        //   widget.firstName != null && widget.firstName!.trim().isNotEmpty
-        //       ? 'A glimpse, for ${widget.firstName}'
-        //       : 'A glimpse',
-        //   style: textTheme.labelMedium?.copyWith(
-        //     color: _OnboardingTokens.off.withOpacity(0.7),
-        //     letterSpacing: 3.0,
-        //     fontSize: 10,
-        //     fontWeight: FontWeight.w400,
-        //   ),
-        //   textAlign: TextAlign.center,
-        // ),
-        const SizedBox(height: 56),
-        Column(
-          children: [
-            AnimatedScale(
-              scale: scale,
-              duration: duration,
-              curve: Curves.easeInOutCubic,
-              child: Container(
-                width: 140,
-                height: 140,
+    return Scaffold(
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(
+            AppAssets.onboardingBreathBg,
+            fit: BoxFit.cover,
+            alignment: Alignment.center,
+          ),
+          Align(
+            alignment: Alignment.topCenter,
+            child: FractionallySizedBox(
+              heightFactor: 0.52,
+              child: DecoratedBox(
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: _OnboardingTokens.off.withOpacity(0.9),
-                    width: 0.5,
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      const Color(0xFFEEF2F0).withValues(alpha: 0.32),
+                      const Color(0xFFEEF2F0).withValues(alpha: 0.20),
+                      const Color(0xFFEEF2F0).withValues(alpha: 0.08),
+                      const Color(0xFFEEF2F0).withValues(alpha: 0),
+                    ],
+                    stops: const [0, 0.44, 0.72, 1],
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 22),
-            Text(
-              phaseLabel,
-              style: textTheme.labelMedium?.copyWith(
-                color: _OnboardingTokens.off.withOpacity(0.7),
-                letterSpacing: 3.0,
-                fontSize: 11,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 120),
-        AnimatedOpacity(
-          opacity: _revealed ? 1 : 0,
-          duration: const Duration(milliseconds: 900),
-          curve: Curves.easeOutCubic,
-          child: AnimatedSlide(
-            offset: _revealed ? Offset.zero : const Offset(0, 0.05),
-            duration: const Duration(milliseconds: 900),
-            curve: Curves.easeOutCubic,
-            child: Column(
-              children: [
-                Text(
-                  'Life gets better when you do${widget.firstName != null && widget.firstName!.trim().isNotEmpty ? ', ${widget.firstName}' : ''}.',
-                  style: textTheme.displaySmall?.copyWith(
-                    color: _OnboardingTokens.off,
-                    fontSize: 42,
-                    height: 1.2,
-                    fontWeight: FontWeight.w300,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 22),
-                // Text(
-                //   'This is where that begins.',
-                //   style: textTheme.displaySmall?.copyWith(
-                //     color: _OnboardingTokens.off.withOpacity(0.78),
-                //     fontSize: 28,
-                //     fontStyle: FontStyle.normal,
-                //     height: 1.35,
-                //     fontWeight: FontWeight.w300,
-                //   ),
-                //   textAlign: TextAlign.center,
-                // ),
-              ],
+          ),
+          SafeArea(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return Stack(
+                  children: [
+                    Positioned(
+                      top: 18,
+                      left: 20,
+                      child: TextButton(
+                        onPressed: widget.onBack,
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          minimumSize: const Size(0, 0),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          foregroundColor: green.withValues(alpha: 0.92),
+                        ),
+                        child: Text(
+                          'Back',
+                          style: GoogleFonts.jost(
+                            color: green.withValues(alpha: 0.92),
+                            fontSize: 20,
+                            fontWeight: FontWeight.w300,
+                            height: 1,
+                            letterSpacing: -0.2,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: constraints.maxHeight * 0.18,
+                      left: 20,
+                      right: 20,
+                      child: Column(
+                        children: [
+                          Text(
+                            'Hi, $greetingName.',
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.jost(
+                              color: green,
+                              fontSize: 48,
+                              fontWeight: FontWeight.w300,
+                              height: 1.08,
+                              letterSpacing: 2.6,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            'Let’s begin with one small breath.',
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.jost(
+                              color: green.withValues(alpha: 0.92),
+                              fontSize: 23,
+                              fontWeight: FontWeight.w300,
+                              height: 1.25,
+                              letterSpacing: -0.3,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Positioned(
+                      top: constraints.maxHeight * 0.42,
+                      left: 0,
+                      right: 0,
+                      child: AnimatedScale(
+                        scale: scale,
+                        duration: duration,
+                        curve: Curves.easeInOutCubic,
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 420),
+                          switchInCurve: Curves.easeOut,
+                          switchOutCurve: Curves.easeIn,
+                          child: Text(
+                            phaseLabel,
+                            key: ValueKey(phaseLabel),
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.jost(
+                              color: green,
+                              fontSize: 64,
+                              fontWeight: FontWeight.w300,
+                              height: 1,
+                              letterSpacing: 4,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: constraints.maxHeight * 0.67,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: SizedBox(
+                          width: 240,
+                          height: 58,
+                          child: OutlinedButton(
+                            onPressed: widget.onNext,
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: green,
+                              side: BorderSide(
+                                color: green.withValues(alpha: 0.82),
+                                width: 1.35,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              padding: EdgeInsets.zero,
+                              alignment: Alignment.center,
+                            ),
+                            child: Text(
+                              'Begin',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.jost(
+                                color: green,
+                                fontSize: 22,
+                                fontWeight: FontWeight.w300,
+                                height: 1,
+                                letterSpacing: -0.2,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
-        ),
-        const Spacer(),
-        SizedBox(
-          width: 136,
-          height: 56,
-          child: OutlinedButton(
-            onPressed: widget.onEnterApp,
-            style: OutlinedButton.styleFrom(
-              foregroundColor: _OnboardingTokens.off,
-              side: const BorderSide(
-                color: _OnboardingTokens.off,
-                width: 0.5,
-              ),
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.zero,
-              ),
-              padding: EdgeInsets.zero,
-              alignment: Alignment.center,
-            ),
-            child: Text(
-              'Continue',
-              textAlign: TextAlign.center,
-              style: textTheme.labelLarge?.copyWith(
-                color: _OnboardingTokens.off,
-                fontSize: 13,
-                letterSpacing: 0.05,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-        ),
-
-        const SizedBox(height: AppSpacing.xs + 30),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -1104,7 +1184,7 @@ class _UnderlinedField extends StatelessWidget {
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: textTheme.bodyLarge?.copyWith(
-          color: _OnboardingTokens.taupe.withOpacity(0.75),
+          color: _OnboardingTokens.taupe.withValues(alpha: 0.75),
           fontSize: 16,
         ),
         enabledBorder: const UnderlineInputBorder(
@@ -1136,7 +1216,7 @@ class _ContinueButton extends StatelessWidget {
       style: TextButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 10),
         foregroundColor: color,
-        disabledForegroundColor: color.withOpacity(0.3),
+        disabledForegroundColor: color.withValues(alpha: 0.3),
       ),
       child: Text(
         label,
@@ -1144,7 +1224,7 @@ class _ContinueButton extends StatelessWidget {
               fontSize: 13,
               letterSpacing: 0.05,
               fontWeight: FontWeight.w500,
-              color: onTap == null ? color.withOpacity(0.3) : color,
+              color: onTap == null ? color.withValues(alpha: 0.3) : color,
             ),
       ),
     );
@@ -1236,9 +1316,9 @@ class _WatercolorBackdrop extends StatelessWidget {
                   center: const Alignment(0.32, -0.22),
                   radius: 1.02,
                   colors: [
-                    Colors.white.withOpacity(0.8),
-                    accent.withOpacity(0.28),
-                    accent.withOpacity(0.48),
+                    Colors.white.withValues(alpha: 0.8),
+                    accent.withValues(alpha: 0.28),
+                    accent.withValues(alpha: 0.48),
                   ],
                   stops: const [0.0, 0.58, 1.0],
                 ),
@@ -1250,7 +1330,7 @@ class _WatercolorBackdrop extends StatelessWidget {
                 width: 320,
                 height: 320,
                 decoration: BoxDecoration(
-                  color: accent.withOpacity(0.22),
+                  color: accent.withValues(alpha: 0.22),
                   shape: BoxShape.circle,
                 ),
               ),
