@@ -69,11 +69,12 @@ class _JournalViewState extends State<JournalView> {
 
           final selectedCategory = controller.selectedCategory.value;
           final categories = controller.categories;
+          final hasPremiumAccess = controller.hasPremiumAccess;
 
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(0, 24, 24, 0),
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
                 child: Row(
                   children: [
                     AppCloseButton(onPressed: Get.back),
@@ -130,7 +131,7 @@ class _JournalViewState extends State<JournalView> {
                       },
                       itemBuilder: (context, index) => _JournalSlide(
                         prompt: prompts[index],
-                        locked: !controller.hasPremiumAccess,
+                        locked: !hasPremiumAccess,
                         onWriteOwn: () => controller.openEditor(prompt: ''),
                         onStartWriting: () =>
                             controller.openPrompt(prompts[index]),

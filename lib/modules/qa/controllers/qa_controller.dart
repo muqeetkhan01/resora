@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../core/navigation/app_navigation.dart';
 import '../../../core/services/content_items_service.dart';
+import '../../../core/services/subscription_service.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 
@@ -58,6 +59,10 @@ class QaController extends GetxController {
       return matchesCategory && matchesQuery;
     }).toList();
   }
+
+  bool get hasPremiumAccess =>
+      Get.isRegistered<SubscriptionService>() &&
+      Get.find<SubscriptionService>().isPremium.value;
 
   void selectCategory(String category) {
     selectedCategory.value = category;

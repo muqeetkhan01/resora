@@ -252,9 +252,20 @@ class SubscriptionService extends GetxService {
     customerInfo.value = info;
 
     final activeEntitlements = info.entitlements.active.keys.toList();
-    final premium =
-        activeEntitlements.contains(SubscriptionConstants.entitlementPremium);
     final purchasedIds = info.allPurchasedProductIdentifiers;
+    final activeProductIds = info.activeSubscriptions.toSet();
+    final knownProductIds =
+        SubscriptionConstants.productIdsByPlan.values.toSet();
+    final hasPremiumEntitlement = activeEntitlements
+        .map((id) => id.trim().toLowerCase())
+        .contains(SubscriptionConstants.entitlementPremium.toLowerCase());
+    final hasActiveKnownSubscription =
+        activeProductIds.intersection(knownProductIds).isNotEmpty;
+    final hasPurchasedLifetime =
+        purchasedIds.contains(SubscriptionConstants.lifetimeProductId);
+    final premium = hasPremiumEntitlement ||
+        hasActiveKnownSubscription ||
+        hasPurchasedLifetime;
     final history = premium || purchasedIds.isNotEmpty;
     final plan = _resolvePlan(
       purchasedIds,

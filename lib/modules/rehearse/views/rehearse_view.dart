@@ -68,11 +68,12 @@ class _RehearseViewState extends State<RehearseView> {
 
           final categories = controller.categories;
           final selectedCategory = controller.selectedCategory.value;
+          final hasPremiumAccess = controller.hasPremiumAccess;
 
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(0, 24, 24, 0),
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
                 child: Row(
                   children: [
                     AppCloseButton(onPressed: Get.back),
@@ -131,7 +132,7 @@ class _RehearseViewState extends State<RehearseView> {
                         final scenario = scenarios[index];
                         return _ScenarioSlide(
                           scenario: scenario,
-                          previewOnly: !controller.hasPremiumAccess,
+                          previewOnly: !hasPremiumAccess,
                           onBeginSession: () =>
                               controller.openScenario(scenario),
                           onOpenFilters: () => setState(

@@ -69,10 +69,11 @@ class _NoiseViewState extends State<NoiseView> {
 
           final categories = controller.categories;
           final selectedCategory = controller.selectedCategory.value;
+          final hasPremiumAccess = controller.hasPremiumAccess;
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(0, 24, 24, 0),
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
                 child: Row(
                   children: [
                     AppCloseButton(onPressed: Get.back),
@@ -93,7 +94,8 @@ class _NoiseViewState extends State<NoiseView> {
                 categories: categories,
                 selectedCategory: selectedCategory,
                 expanded: _categoriesExpanded,
-                labelBuilder: (category) => category.capitalizeFirst ?? category,
+                labelBuilder: (category) =>
+                    category.capitalizeFirst ?? category,
                 onExpandedChanged: (expanded) =>
                     setState(() => _categoriesExpanded = expanded),
                 onSelect: (category) {
@@ -117,7 +119,7 @@ class _NoiseViewState extends State<NoiseView> {
                       onPageChanged: (value) => setState(() => _active = value),
                       itemBuilder: (context, index) => _NoiseSlide(
                         track: tracks[index],
-                        previewOnly: !controller.hasPremiumAccess,
+                        previewOnly: !hasPremiumAccess,
                         onPlay: () => controller.openTrack(tracks[index]),
                         onOpenFilters: () => setState(
                           () => _categoriesExpanded = !_categoriesExpanded,

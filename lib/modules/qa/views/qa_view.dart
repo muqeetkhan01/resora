@@ -50,7 +50,8 @@ class QaView extends GetView<QaController> {
                       .map(
                         (category) => AppTagChip(
                           label: category,
-                          selected: controller.selectedCategory.value == category,
+                          selected:
+                              controller.selectedCategory.value == category,
                           onTap: () => controller.selectCategory(category),
                         ),
                       )
@@ -72,7 +73,8 @@ class QaView extends GetView<QaController> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Need a custom answer?', style: textTheme.titleLarge),
+                          Text('Need a custom answer?',
+                              style: textTheme.titleLarge),
                           const SizedBox(height: AppSpacing.xs),
                           Text(
                             'Try Help Me Now for in the moment guidance.',
@@ -98,6 +100,7 @@ class QaView extends GetView<QaController> {
                   );
                 }
 
+                final hasPremiumAccess = controller.hasPremiumAccess;
                 return Column(
                   children: List.generate(controller.filtered.length, (index) {
                     final item = controller.filtered[index];
@@ -108,6 +111,7 @@ class QaView extends GetView<QaController> {
                       child: _QaCard(
                         item: item,
                         expanded: expanded,
+                        hasPremiumAccess: hasPremiumAccess,
                         onTap: () => controller.toggleExpanded(index),
                       ),
                     );
@@ -126,16 +130,19 @@ class _QaCard extends GetView<QaController> {
   const _QaCard({
     required this.item,
     required this.expanded,
+    required this.hasPremiumAccess,
     required this.onTap,
   });
 
   final QaItem item;
   final bool expanded;
+  final bool hasPremiumAccess;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final locked = item.isPremium && !hasPremiumAccess;
 
     return GestureDetector(
       onTap: onTap,
@@ -153,7 +160,8 @@ class _QaCard extends GetView<QaController> {
           children: [
             Row(
               children: [
-                Expanded(child: Text(item.question, style: textTheme.titleLarge)),
+                Expanded(
+                    child: Text(item.question, style: textTheme.titleLarge)),
                 Icon(
                   expanded ? Icons.remove_rounded : Icons.add_rounded,
                   color: AppColors.primary,
@@ -167,11 +175,11 @@ class _QaCard extends GetView<QaController> {
               Text(
                 item.answer,
                 style: textTheme.bodyMedium?.copyWith(
-                  color: item.isPremium ? AppColors.muted : AppColors.warmDark,
+                  color: locked ? AppColors.muted : AppColors.warmDark,
                 ),
               ),
               const SizedBox(height: AppSpacing.md),
-              if (item.isPremium)
+              if (locked)
                 AppButton(
                   label: 'Unlock expert answers',
                   onPressed: controller.openPremium,

@@ -71,7 +71,7 @@ class _TermsViewState extends State<TermsView> {
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(0, 24, 24, 0),
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
                 child: Row(
                   children: [
                     AppCloseButton(onPressed: Get.back),

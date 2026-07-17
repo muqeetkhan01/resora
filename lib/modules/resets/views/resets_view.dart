@@ -71,11 +71,12 @@ class _ResetsViewState extends State<ResetsView> {
 
           final categories = controller.categories;
           final selectedCategory = controller.selectedCategory.value;
+          final hasPremiumAccess = controller.hasPremiumAccess;
 
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(0, 24, 24, 0),
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
                 child: Row(
                   children: [
                     AppCloseButton(onPressed: Get.back),
@@ -134,7 +135,7 @@ class _ResetsViewState extends State<ResetsView> {
                         final option = options[index];
                         return _ResetSlide(
                           option: option,
-                          previewOnly: !controller.hasPremiumAccess,
+                          previewOnly: !hasPremiumAccess,
                           onBeginSession: () => controller.openReset(option),
                           onOpenFilters: () => setState(
                             () => _categoriesExpanded = !_categoriesExpanded,

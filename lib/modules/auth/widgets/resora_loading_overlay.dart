@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/app_spacing.dart';
 import '../../../theme/app_colors.dart';
 
 class ResoraLoadingOverlay extends StatefulWidget {
@@ -34,13 +33,12 @@ class _ResoraLoadingOverlayState extends State<ResoraLoadingOverlay>
     final textTheme = Theme.of(context).textTheme;
 
     return ColoredBox(
-      color: AppColors.canvas.withOpacity(0.94),
+      color: AppColors.canvas.withValues(alpha: 0.94),
       child: Center(
         child: AnimatedBuilder(
           animation: _controller,
           builder: (context, child) {
             final t = Curves.easeInOut.transform(_controller.value);
-            final accentWidth = 48.0 + (t * 28.0);
             return Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -50,23 +48,12 @@ class _ResoraLoadingOverlayState extends State<ResoraLoadingOverlay>
                   child: Opacity(
                     opacity: 0.72 + (t * 0.28),
                     child: Text(
-                      'resora',
+                      'Resora',
                       style: textTheme.displayLarge?.copyWith(
                         color: AppColors.primary,
                         letterSpacing: 1.6 + (t * 1.4),
                       ),
                       textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.md),
-                Center(
-                  child: Container(
-                    width: accentWidth,
-                    height: 2,
-                    decoration: BoxDecoration(
-                      color: AppColors.terracotta.withOpacity(0.75),
-                      borderRadius: BorderRadius.circular(999),
                     ),
                   ),
                 ),

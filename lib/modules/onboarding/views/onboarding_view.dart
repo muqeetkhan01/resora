@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:resora/theme/app_colors.dart';
 
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_spacing.dart';
@@ -223,7 +224,7 @@ class _CoverScreen extends StatelessWidget {
                   Text(
                     'Resora',
                     style: GoogleFonts.cormorantGaramond(
-                      color: _OnboardingTokens.off,
+                      color: AppColors.primary,
                       fontSize: 54,
                       fontWeight: FontWeight.w400,
                       height: 0.92,
@@ -336,7 +337,7 @@ class _StateScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 36),
             Text(
-              'Where are\nyou right now?',
+              'How are\nyou feeling?',
               style: textTheme.displayLarge?.copyWith(
                 color: _OnboardingTokens.dark,
                 fontSize: 50,
@@ -859,14 +860,14 @@ class _NameScreen extends StatelessWidget {
         children: [
           const SizedBox(height: 36),
           Text(
-            'What should\nwe call you?',
+            'What is your\nname?',
             style: textTheme.displayLarge?.copyWith(
               color: _OnboardingTokens.dark,
               fontSize: 50,
               height: 1.02,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 26),
           Text(
             'A first name, a nickname, or whatever feels most comfortable.',
             style: textTheme.bodySmall?.copyWith(
@@ -875,7 +876,7 @@ class _NameScreen extends StatelessWidget {
               height: 1.55,
             ),
           ),
-          const SizedBox(height: 44),
+          const SizedBox(height: 74),
           _UnderlinedField(
             key: const ValueKey('onb-name-field'),
             initialValue: controller.name.value,
@@ -970,10 +971,10 @@ class _GlimpseBreathState extends State<_GlimpseBreath> {
 
   @override
   Widget build(BuildContext context) {
-    final scale = switch (_phase) {
-      'inhale' => 1.08,
-      'hold' => 1.08,
-      _ => 1.0,
+    final scaleTween = switch (_phase) {
+      'inhale' => Tween<double>(begin: 1.0, end: 1.08),
+      'hold' => Tween<double>(begin: 1.08, end: 1.08),
+      _ => Tween<double>(begin: 1.08, end: 1.0),
     };
     final duration = switch (_phase) {
       'inhale' => const Duration(milliseconds: 3000),
@@ -1085,10 +1086,17 @@ class _GlimpseBreathState extends State<_GlimpseBreath> {
                       top: constraints.maxHeight * 0.42,
                       left: 0,
                       right: 0,
-                      child: AnimatedScale(
-                        scale: scale,
+                      child: TweenAnimationBuilder<double>(
+                        key: ValueKey('breath-scale-$_phase'),
+                        tween: scaleTween,
                         duration: duration,
                         curve: Curves.easeInOutCubic,
+                        builder: (context, scale, child) {
+                          return Transform.scale(
+                            scale: scale,
+                            child: child,
+                          );
+                        },
                         child: AnimatedSwitcher(
                           duration: const Duration(milliseconds: 420),
                           switchInCurve: Curves.easeOut,

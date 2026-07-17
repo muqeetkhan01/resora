@@ -18,12 +18,11 @@ class SpacesView extends StatefulWidget {
 
 class _SpacesViewState extends State<SpacesView> {
   late final PageController _pageController;
-  int _active = 0;
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController();
+    _pageController = PageController(viewportFraction: 0.82);
   }
 
   @override
@@ -44,10 +43,6 @@ class _SpacesViewState extends State<SpacesView> {
           final slots = _specs
               .map((spec) => _resolveSlot(spec: spec, controller: controller))
               .toList(growable: false);
-
-          if (_active >= slots.length && slots.isNotEmpty) {
-            _active = 0;
-          }
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -91,38 +86,29 @@ class _SpacesViewState extends State<SpacesView> {
               // ),
               const SizedBox(height: 24),
               Expanded(
-                child: Stack(
-                  children: [
-                    PageView.builder(
-                      controller: _pageController,
-                      scrollDirection: Axis.vertical,
-                      itemCount: slots.length,
-                      onPageChanged: (value) => setState(() => _active = value),
-                      itemBuilder: (context, index) {
-                        final slot = slots[index];
-                        return Padding(
-                          padding: const EdgeInsets.fromLTRB(24, 0, 42, 24),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 24),
+                  child: PageView.builder(
+                    controller: _pageController,
+                    padEnds: false,
+                    itemCount: slots.length,
+                    itemBuilder: (context, index) {
+                      final slot = slots[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 16),
+                        child: Align(
+                          alignment: Alignment.topCenter,
                           child: _SpaceCard(
                             slot: slot,
                             onTap: () => slot.onTap?.call(),
                           ),
-                        );
-                      },
-                    ),
-                    Positioned(
-                      right: 16,
-                      top: 0,
-                      bottom: 0,
-                      child: IgnorePointer(
-                        child: _VerticalProgress(
-                          total: slots.length,
-                          active: _active,
                         ),
-                      ),
-                    ),
-                  ],
+                      );
+                    },
+                  ),
                 ),
               ),
+              const SizedBox(height: 150),
             ],
           );
         }),
@@ -197,43 +183,6 @@ class _SpaceCard extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _VerticalProgress extends StatelessWidget {
-  const _VerticalProgress({
-    required this.total,
-    required this.active,
-  });
-
-  final int total;
-  final int active;
-
-  @override
-  Widget build(BuildContext context) {
-    const maxBars = 6;
-    final bars = total <= 1 ? 2 : total.clamp(2, maxBars);
-    final mapped = total <= 1
-        ? 0
-        : ((active / (total - 1)) * (bars - 1)).round().clamp(0, bars - 1);
-
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: List.generate(bars, (index) {
-          return Padding(
-            padding: EdgeInsets.only(bottom: index == bars - 1 ? 0 : 8),
-            child: Container(
-              width: 2,
-              height: 24,
-              color: index == mapped
-                  ? AppColors.terracotta
-                  : const Color(0xFFE6E6E6),
-            ),
-          );
-        }),
       ),
     );
   }

@@ -8,6 +8,7 @@ import 'package:just_audio/just_audio.dart';
 
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/services/subscription_service.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
@@ -29,6 +30,7 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
   late final AnimationController _controller;
   late final AudioPlayer _player;
   late final _AudioPlayerArgs _args;
+  Worker? _premiumWorker;
   StreamSubscription<Duration?>? _durationSubscription;
   StreamSubscription<Duration>? _positionSubscription;
   StreamSubscription<PlayerState>? _playerStateSubscription;
@@ -37,6 +39,7 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
   Duration _position = Duration.zero;
   bool _isPlaying = false;
   bool _isLoading = true;
+  bool _previewOnly = false;
   bool _previewEnded = false;
   String? _loadError;
 
@@ -44,6 +47,17 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
   void initState() {
     super.initState();
     _args = _AudioPlayerArgs.from(Get.arguments);
+    _previewOnly = _args.previewOnly && !_hasPremiumAccess;
+    if (Get.isRegistered<SubscriptionService>()) {
+      _premiumWorker = ever<bool>(
+        Get.find<SubscriptionService>().isPremium,
+        (isPremium) {
+          if (isPremium) {
+            _unlockPreview();
+          }
+        },
+      );
+    }
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 12),
@@ -63,7 +77,7 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
         return;
       }
 
-      if (_args.previewOnly && !_previewEnded) {
+      if (_previewOnly && !_previewEnded) {
         if (value >= _previewDuration) {
           setState(() {
             _position = _previewDuration;
@@ -121,6 +135,7 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
     _durationSubscription?.cancel();
     _positionSubscription?.cancel();
     _playerStateSubscription?.cancel();
+    _premiumWorker?.dispose();
     _player.dispose();
     _controller.dispose();
     super.dispose();
@@ -161,6 +176,25 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
     await _player.play();
   }
 
+  bool get _hasPremiumAccess =>
+      Get.isRegistered<SubscriptionService>() &&
+      Get.find<SubscriptionService>().isPremium.value;
+
+  void _unlockPreview() {
+    if (!_previewOnly && !_previewEnded) {
+      return;
+    }
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _previewOnly = false;
+      _previewEnded = false;
+    });
+    unawaited(_player.setVolume(1));
+  }
+
   Future<void> _togglePlayback() async {
     if (_loadError != null || _previewEnded) {
       return;
@@ -179,7 +213,7 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
   }
 
   Future<void> _seekRelative(int seconds) async {
-    if (_loadError != null || _args.previewOnly) {
+    if (_loadError != null || _previewOnly) {
       return;
     }
 
@@ -188,7 +222,7 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
   }
 
   Future<void> _seekToFraction(double fraction) async {
-    if (_loadError != null || _args.previewOnly || _duration <= Duration.zero) {
+    if (_loadError != null || _previewOnly || _duration <= Duration.zero) {
       return;
     }
 
@@ -209,7 +243,7 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
   }
 
   double get _progress {
-    if (_args.previewOnly) {
+    if (_previewOnly) {
       return (_position.inMilliseconds / _previewDuration.inMilliseconds)
           .clamp(0.0, 1.0);
     }
@@ -267,7 +301,7 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
             remainingLabel: _remainingDurationLabel(track.duration),
             isPlaying: _isPlaying,
             isLoading: _isLoading,
-            previewOnly: _args.previewOnly,
+            previewOnly: _previewOnly,
             previewEnded: _previewEnded,
             previewRemainingSeconds:
                 (((_previewDuration - _position).inMilliseconds + 999) ~/ 1000)
@@ -438,7 +472,7 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
   }
 
   String _remainingDurationLabel(String fallbackDuration) {
-    if (_args.previewOnly) {
+    if (_previewOnly) {
       if (_position >= _previewFadeStart && !_previewEnded) return 'Fading...';
       return '0:10 Preview';
     }

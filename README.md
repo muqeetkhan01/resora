@@ -15,3 +15,11 @@ Row should be of 1 line - Fix it to 1 line all devices
 
 
 4. All back close button should be done like this
+
+
+
+
+
+13th July
+1. Breathe in text should animate when user lands on this screen. Issue: Static text on landing
+2. Remove yellow line and make R capital in loading screen i.e when google login
