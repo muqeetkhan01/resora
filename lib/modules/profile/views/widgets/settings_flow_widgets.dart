@@ -419,12 +419,15 @@ Future<bool> showSettingsConfirm(
                 color: SettingsFlowColors.muted,
                 onTap: () => Navigator.pop(ctx, false),
               ),
-              SettingsPrimaryButton(
-                label: confirmLabel,
-                background: destructive
-                    ? SettingsFlowColors.destructiveRed
-                    : SettingsFlowColors.forestGreen,
-                onTap: () => Navigator.pop(ctx, true),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: SettingsPrimaryButton(
+                  label: confirmLabel,
+                  background: destructive
+                      ? SettingsFlowColors.destructiveRed
+                      : SettingsFlowColors.forestGreen,
+                  onTap: () => Navigator.pop(ctx, true),
+                ),
               ),
             ],
           ),

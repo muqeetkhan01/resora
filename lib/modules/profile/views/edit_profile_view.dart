@@ -56,10 +56,10 @@ class EditProfileView extends GetView<EditProfileController> {
                   ],
                 ),
               ),
-              SizedBox(height: Get.height * 0.15),
+              const Spacer(),
               // const Spacer(),
               Padding(
-                padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

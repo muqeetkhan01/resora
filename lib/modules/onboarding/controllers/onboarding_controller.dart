@@ -61,6 +61,13 @@ class OnboardingController extends GetxController {
   static const paywallPlans =
       <({String key, String label, String price, String meta, String? note})>[
     (
+      key: 'lifetime',
+      label: 'Lifetime',
+      price: '\$249.99',
+      meta: 'A one time investment in your well-being.',
+      note: 'Yours forever'
+    ),
+    (
       key: 'year',
       label: 'Yearly',
       price: '\$49.99 / year',
@@ -73,13 +80,6 @@ class OnboardingController extends GetxController {
       price: '\$9.99 / month',
       meta: 'Flexible access, cancel whenever you need to.',
       note: null
-    ),
-    (
-      key: 'lifetime',
-      label: 'Lifetime',
-      price: '\$249.99',
-      meta: 'A one time investment in your well-being.',
-      note: 'Yours forever'
     ),
   ];
 

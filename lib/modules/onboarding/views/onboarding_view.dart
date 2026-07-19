@@ -231,12 +231,12 @@ class _CoverScreen extends StatelessWidget {
                       letterSpacing: 0.01,
                     ),
                   ),
-                  SizedBox(height: MediaQuery.sizeOf(context).height * 0.24),
+                  SizedBox(height: MediaQuery.sizeOf(context).height * 0.2),
                   Text(
                     'Life gets better when you do.',
                     style: GoogleFonts.cormorantGaramond(
                       color: _OnboardingTokens.off,
-                      fontSize: 62,
+                      fontSize: 42,
                       fontWeight: FontWeight.w400,
                       height: 0.9,
                       letterSpacing: -0.015,
@@ -247,8 +247,8 @@ class _CoverScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         SizedBox(
-                          width: 244,
-                          height: 68,
+                          width: 144,
+                          height: 50,
                           child: FilledButton(
                             onPressed: onNext,
                             style: FilledButton.styleFrom(
@@ -256,49 +256,53 @@ class _CoverScreen extends StatelessWidget {
                               foregroundColor: const Color(0xFF2C4138),
                               elevation: 0,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(14),
                               ),
                             ),
                             child: Text(
                               'Continue',
-                              style: GoogleFonts.cormorantGaramond(
-                                color: const Color(0xFF2C4138),
-                                fontSize: 30,
-                                fontWeight: FontWeight.w500,
+                              style: GoogleFonts.jost(
+                                color: const Color(0xFF151515),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
                                 height: 1,
+                                letterSpacing: -0.1,
                               ),
                             ),
                           ),
                         ),
                         const SizedBox(height: 26),
-                        TextButton(
-                          onPressed: onSignIn,
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: const Size(0, 0),
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          child: Text.rich(
-                            const TextSpan(
-                              text: 'Already have an account? ',
-                              children: [
-                                TextSpan(
-                                  text: 'Sign In',
-                                  style: TextStyle(
-                                    color: _OnboardingTokens.off,
-                                    decoration: TextDecoration.underline,
-                                    decorationColor: _OnboardingTokens.off,
-                                    decorationThickness: 1,
-                                  ),
-                                ),
-                              ],
+                        Center(
+                          child: TextButton(
+                            onPressed: onSignIn,
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              minimumSize: const Size(0, 0),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
-                            style: GoogleFonts.jost(
-                              color:
-                                  _OnboardingTokens.off.withValues(alpha: 0.86),
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                              height: 1.35,
+                            child: Text.rich(
+                              TextSpan(
+                                text: 'Already have an account? ',
+                                children: [
+                                  TextSpan(
+                                    text: 'Sign In',
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(0.82),
+                                      decoration: TextDecoration.underline,
+                                      decorationColor:
+                                          Colors.white.withOpacity(0.82),
+                                      decorationThickness: 1,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.jost(
+                                color: Colors.white.withOpacity(0.82),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                                height: 1.25,
+                              ),
                             ),
                           ),
                         ),
@@ -719,7 +723,7 @@ class _PaywallScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.md),
-            _ProviderButton(
+            _ProviderButtonCustom(
               provider: _Provider.apple,
               onTap: controller.enterApp,
             ),
@@ -1061,7 +1065,7 @@ class _GlimpseBreathState extends State<_GlimpseBreath> {
                             textAlign: TextAlign.center,
                             style: GoogleFonts.jost(
                               color: green,
-                              fontSize: 48,
+                              fontSize: 30,
                               fontWeight: FontWeight.w300,
                               height: 1.08,
                               letterSpacing: 2.6,
@@ -1122,14 +1126,14 @@ class _GlimpseBreathState extends State<_GlimpseBreath> {
                       right: 0,
                       child: Center(
                         child: SizedBox(
-                          width: 240,
-                          height: 58,
+                          width: 180,
+                          height: 50,
                           child: OutlinedButton(
                             onPressed: widget.onNext,
                             style: OutlinedButton.styleFrom(
-                              foregroundColor: green,
+                              backgroundColor: Colors.white,
                               side: BorderSide(
-                                color: green.withValues(alpha: 0.82),
+                                color: Colors.white.withValues(alpha: 0.0),
                                 width: 1.35,
                               ),
                               shape: RoundedRectangleBorder(
@@ -1143,7 +1147,7 @@ class _GlimpseBreathState extends State<_GlimpseBreath> {
                               textAlign: TextAlign.center,
                               style: GoogleFonts.jost(
                                 color: green,
-                                fontSize: 22,
+                                fontSize: 20,
                                 fontWeight: FontWeight.w300,
                                 height: 1,
                                 letterSpacing: -0.2,
@@ -1243,6 +1247,65 @@ enum _Provider {
   apple,
   google,
   email,
+}
+
+class _ProviderButtonCustom extends StatelessWidget {
+  const _ProviderButtonCustom({
+    required this.provider,
+    required this.onTap,
+  });
+
+  final _Provider provider;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final isApple = provider == _Provider.apple;
+    final label = switch (provider) {
+      _Provider.apple => 'Continue',
+      _Provider.google => 'Continue with Google',
+      _Provider.email => 'Continue with email',
+    };
+    final foreground = isApple ? _OnboardingTokens.off : _OnboardingTokens.dark;
+    final background = isApple ? _OnboardingTokens.dark : _OnboardingTokens.off;
+    final borderColor =
+        isApple ? _OnboardingTokens.dark : _OnboardingTokens.linen;
+
+    return SizedBox(
+      width: double.infinity,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(14),
+        child: OutlinedButton(
+          onPressed: onTap,
+          style: OutlinedButton.styleFrom(
+            foregroundColor: foreground,
+            backgroundColor: AppColors.primary,
+            side: BorderSide(color: borderColor, width: 0.5),
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.zero,
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 18),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // _ProviderGlyph(provider: provider, color: foreground),
+              // const SizedBox(width: AppSpacing.sm),
+              Text(
+                label,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: foreground,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      letterSpacing: 0.05,
+                    ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _ProviderButton extends StatelessWidget {

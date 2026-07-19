@@ -171,7 +171,7 @@ class _TopOverlayBar extends StatelessWidget {
     return Row(
       children: [
         Text(
-          'resora',
+          'Resora',
           style: Theme.of(context).textTheme.displaySmall?.copyWith(
                 color: AppColors.white.withOpacity(0.92),
                 fontSize: 19,
@@ -260,27 +260,33 @@ class _HomeSlide extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: AppSpacing.xl),
-              OutlinedButton(
-                onPressed: slot.onTap,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.white,
-                  side: BorderSide(color: AppColors.white.withOpacity(0.5)),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.xl,
-                    vertical: AppSpacing.sm,
-                  ),
-                  shape: const RoundedRectangleBorder(),
-                ),
-                child: Text(
-                  slot.cta,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: AppColors.white,
-                    letterSpacing: 2.2,
-                    fontSize: 10,
-                    fontStyle: FontStyle.normal,
-                  ),
-                ),
-              ),
+              InkWell(
+                  onTap: slot.onTap,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 25, vertical: 13),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+
+                      // foregroundColor: AppColors.white,
+                      border: Border.all(
+                          color: AppColors.white.withOpacity(0.55), width: 1),
+                      // padding: const EdgeInsets.symmetric(
+                      //   horizontal: AppSpacing.xl,
+                      //   vertical: AppSpacing.sm,
+                      // ),
+                      // shape: const RoundedRectangleBorder(),
+                    ),
+                    child: Text(
+                      slot.cta,
+                      style: textTheme.bodySmall?.copyWith(
+                        color: AppColors.white,
+                        letterSpacing: 2.2,
+                        fontSize: 10,
+                        fontStyle: FontStyle.normal,
+                      ),
+                    ),
+                  )),
             ],
           ),
         ),

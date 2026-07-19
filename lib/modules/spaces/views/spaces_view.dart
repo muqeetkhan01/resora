@@ -84,7 +84,7 @@ class _SpacesViewState extends State<SpacesView> {
               //     color: const Color(0x1F145C4F),
               //   ),
               // ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 80),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(left: 24),
@@ -108,7 +108,7 @@ class _SpacesViewState extends State<SpacesView> {
                   ),
                 ),
               ),
-              const SizedBox(height: 150),
+              // const SizedBox(height: 150),
             ],
           );
         }),
@@ -134,15 +134,15 @@ class _SpaceCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: double.infinity,
-        decoration: BoxDecoration(
-          color: const Color(0xFFFAFBF9),
-          border: Border.all(color: const Color(0x1F145C4F), width: 0.5),
+        decoration: const BoxDecoration(
+          color: Color(0xFFFAFBF9),
+          // border: Border.all(color: const Color(0x1F145C4F), width: 0.5),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: 380,
+              height: Get.height * 0.48,
               width: double.infinity,
               child: _SpaceImage(imagePath: slot.imagePath),
             ),

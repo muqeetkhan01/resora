@@ -98,7 +98,7 @@ class _ChatContent extends GetView<ChatController> {
 
             if (showWatermark) {
               return _EmptyStatePrompt(
-                line: controller.sessionLine.toLowerCase(),
+                line: controller.sessionLine,
               );
             }
 
@@ -197,7 +197,7 @@ class _EmptyStatePrompt extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'resora',
+              'Resora',
               style: textTheme.bodySmall?.copyWith(
                 color: Colors.black.withValues(alpha: 0.5),
                 letterSpacing: 1.5,
@@ -346,6 +346,7 @@ class _DailyLimitCard extends StatelessWidget {
       margin: const EdgeInsets.only(top: 2, bottom: 14),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
         color: AppColors.terracotta.withValues(alpha: 0.08),
         border: Border.all(
           color: AppColors.terracotta.withValues(alpha: 0.28),
@@ -356,7 +357,7 @@ class _DailyLimitCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Premium members get unlimited conversations, every day',
+            'Premium members get unlimited conversations, every day.',
             style: textTheme.bodyMedium?.copyWith(
               color: AppColors.warmDark,
               height: 1.5,
@@ -399,7 +400,7 @@ class _MessageBubble extends StatelessWidget {
         Get.find<AppSessionController>().displayName == 'there'
             ? 'You'
             : Get.find<AppSessionController>().displayName;
-    final speaker = isUser ? currentUserName : 'resora';
+    final speaker = isUser ? currentUserName : 'Resora';
 
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.md),

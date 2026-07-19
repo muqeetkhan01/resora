@@ -28,24 +28,24 @@ class _SubscriptionViewState extends State<SubscriptionView> {
 
   static const _plans = [
     _Plan(
-      'monthly',
-      'Monthly',
-      '\$9.99 / month',
-      'Flexible access, cancel anytime.',
+      'lifetime',
+      'Lifetime',
+      '\$249.99',
+      'A one time investment in your well-being.',
       null,
     ),
     _Plan(
       'yearly',
       'Yearly',
       '\$49.99 / year',
-      'Our best value. Save 30%.',
+      'Save 58% compared to monthly.',
       null,
     ),
     _Plan(
-      'lifetime',
-      'Lifetime',
-      '\$249.99',
-      'One payment, yours forever.',
+      'monthly',
+      'Monthly',
+      '\$9.99 / month',
+      'Flexible access, cancel whenever you need to.',
       null,
     ),
   ];
@@ -169,6 +169,7 @@ class _SubscriptionViewState extends State<SubscriptionView> {
             ),
           ),
         ),
+        const SizedBox(height: 58),
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 4),
           child: Text('Membership',
@@ -179,6 +180,7 @@ class _SubscriptionViewState extends State<SubscriptionView> {
           child: Text('CHOOSE THE EXPERIENCE THAT SUPPORTS YOU',
               style: SettingsFlowText.caps(context, size: 9)),
         ),
+        const SizedBox(height: 38),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),

@@ -89,7 +89,7 @@ class _NoiseViewState extends State<NoiseView> {
                   ],
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 18),
               ExpandedCategorySelector(
                 categories: categories,
                 selectedCategory: selectedCategory,
