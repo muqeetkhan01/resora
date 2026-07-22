@@ -81,7 +81,7 @@ class NoiseController extends GetxController {
               ? _fallbackImageFor(track)
               : track.imagePath,
           'ritualFeature': RitualWrapFeature.asmr,
-          'previewOnly': !hasPremiumAccess,
+          'previewOnly': track.isPremium && !hasPremiumAccess,
         },
       ).toMap(),
     );

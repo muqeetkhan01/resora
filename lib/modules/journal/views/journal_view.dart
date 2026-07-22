@@ -131,7 +131,7 @@ class _JournalViewState extends State<JournalView> {
                       },
                       itemBuilder: (context, index) => _JournalSlide(
                         prompt: prompts[index],
-                        locked: !hasPremiumAccess,
+                        locked: prompts[index].isPremium && !hasPremiumAccess,
                         onWriteOwn: () => controller.openEditor(prompt: ''),
                         onStartWriting: () =>
                             controller.openPrompt(prompts[index]),

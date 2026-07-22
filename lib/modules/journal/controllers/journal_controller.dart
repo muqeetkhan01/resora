@@ -80,8 +80,12 @@ class JournalController extends GetxController {
     currentPage.value = index;
   }
 
-  void openEditor({JournalEntry? entry, String? prompt}) {
-    if (!hasPremiumAccess) {
+  void openEditor({
+    JournalEntry? entry,
+    String? prompt,
+    bool requiresPremium = false,
+  }) {
+    if (requiresPremium && !hasPremiumAccess) {
       Get.toNamed(AppRoutes.subscription);
       return;
     }
@@ -97,7 +101,10 @@ class JournalController extends GetxController {
   }
 
   void openPrompt(JournalPrompt prompt) {
-    openEditor(prompt: prompt.prompt);
+    openEditor(
+      prompt: prompt.prompt,
+      requiresPremium: prompt.isPremium,
+    );
   }
 
   void openHistory() {

@@ -188,10 +188,10 @@ class ContentItemsService {
     }
 
     if (items.isEmpty) {
-      return List<JournalPrompt>.from(MockContent.journalPrompts);
+      return _firstTwoJournalPromptsFree(MockContent.journalPrompts);
     }
 
-    return items;
+    return _firstTwoJournalPromptsFree(items);
   }
 
   Future<List<ResetOption>> loadResetOptions() async {
@@ -232,6 +232,7 @@ class ContentItemsService {
             '2 min',
           ]),
           icon: AppIcons.resets,
+          isPremium: _toBool(data['isPremium']),
           audioPath: audioPath,
           imagePath: imagePath,
         ),
@@ -239,10 +240,10 @@ class ContentItemsService {
     }
 
     if (items.isEmpty) {
-      return List<ResetOption>.from(MockContent.resetOptions);
+      return _firstTwoResetOptionsFree(MockContent.resetOptions);
     }
 
-    return items;
+    return _firstTwoResetOptionsFree(items);
   }
 
   Future<List<MindfulnessSession>> loadMindfulnessSessions() async {
@@ -347,10 +348,10 @@ class ContentItemsService {
     }
 
     if (items.isEmpty) {
-      return List<AudioTrack>.from(MockContent.audioTracks);
+      return _firstTwoAudioTracksFree(MockContent.audioTracks);
     }
 
-    return items;
+    return _firstTwoAudioTracksFree(items);
   }
 
   Future<List<RehearsalScenario>> loadRehearsalScenarios() async {
@@ -405,10 +406,72 @@ class ContentItemsService {
     }
 
     if (items.isEmpty) {
-      return List<RehearsalScenario>.from(MockContent.rehearsalScenarios);
+      return _firstTwoRehearsalScenariosFree(
+        MockContent.rehearsalScenarios,
+      );
     }
 
-    return items;
+    return _firstTwoRehearsalScenariosFree(items);
+  }
+
+  List<JournalPrompt> _firstTwoJournalPromptsFree(List<JournalPrompt> items) {
+    return [
+      for (var index = 0; index < items.length; index += 1)
+        JournalPrompt(
+          category: items[index].category,
+          prompt: items[index].prompt,
+          isPremium: index >= 2,
+        ),
+    ];
+  }
+
+  List<ResetOption> _firstTwoResetOptionsFree(List<ResetOption> items) {
+    return [
+      for (var index = 0; index < items.length; index += 1)
+        ResetOption(
+          category: items[index].category,
+          title: items[index].title,
+          subtitle: items[index].subtitle,
+          duration: items[index].duration,
+          icon: items[index].icon,
+          isPremium: index >= 2,
+          audioPath: items[index].audioPath,
+          imagePath: items[index].imagePath,
+        ),
+    ];
+  }
+
+  List<AudioTrack> _firstTwoAudioTracksFree(List<AudioTrack> items) {
+    return [
+      for (var index = 0; index < items.length; index += 1)
+        AudioTrack(
+          title: items[index].title,
+          category: items[index].category,
+          description: items[index].description,
+          duration: items[index].duration,
+          assetPath: items[index].assetPath,
+          isPremium: index >= 2,
+          imagePath: items[index].imagePath,
+        ),
+    ];
+  }
+
+  List<RehearsalScenario> _firstTwoRehearsalScenariosFree(
+    List<RehearsalScenario> items,
+  ) {
+    return [
+      for (var index = 0; index < items.length; index += 1)
+        RehearsalScenario(
+          title: items[index].title,
+          category: items[index].category,
+          reframe: items[index].reframe,
+          script: items[index].script,
+          steps: items[index].steps,
+          isPremium: index >= 2,
+          audioPath: items[index].audioPath,
+          imagePath: items[index].imagePath,
+        ),
+    ];
   }
 
   Future<List<NormalTopicItem>> loadNormalTopics() async {

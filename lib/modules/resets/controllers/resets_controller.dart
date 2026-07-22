@@ -96,7 +96,7 @@ class ResetsController extends GetxController {
       'imagePath': imagePath,
       'minimal': true,
       'ritualFeature': RitualWrapFeature.meditation,
-      'previewOnly': !hasPremiumAccess,
+      'previewOnly': option.isPremium && !hasPremiumAccess,
     };
 
     Get.toNamed(

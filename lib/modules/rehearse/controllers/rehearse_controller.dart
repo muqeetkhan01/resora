@@ -98,7 +98,7 @@ class RehearseController extends GetxController {
       'imagePath': imagePath,
       'minimal': true,
       'ritualFeature': RitualWrapFeature.visualization,
-      'previewOnly': !hasPremiumAccess,
+      'previewOnly': scenario.isPremium && !hasPremiumAccess,
     };
 
     Get.toNamed(
@@ -112,7 +112,7 @@ class RehearseController extends GetxController {
   }
 
   void saveToJournal(RehearsalScenario scenario) {
-    if (!hasPremiumAccess) {
+    if (scenario.isPremium && !hasPremiumAccess) {
       Get.toNamed(AppRoutes.subscription);
       return;
     }

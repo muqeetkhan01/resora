@@ -132,7 +132,7 @@ class _RehearseViewState extends State<RehearseView> {
                         final scenario = scenarios[index];
                         return _ScenarioSlide(
                           scenario: scenario,
-                          previewOnly: !hasPremiumAccess,
+                          previewOnly: scenario.isPremium && !hasPremiumAccess,
                           onBeginSession: () =>
                               controller.openScenario(scenario),
                           onOpenFilters: () => setState(

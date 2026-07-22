@@ -119,7 +119,8 @@ class _NoiseViewState extends State<NoiseView> {
                       onPageChanged: (value) => setState(() => _active = value),
                       itemBuilder: (context, index) => _NoiseSlide(
                         track: tracks[index],
-                        previewOnly: !hasPremiumAccess,
+                        previewOnly:
+                            tracks[index].isPremium && !hasPremiumAccess,
                         onPlay: () => controller.openTrack(tracks[index]),
                         onOpenFilters: () => setState(
                           () => _categoriesExpanded = !_categoriesExpanded,

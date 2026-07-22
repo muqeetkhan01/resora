@@ -205,6 +205,7 @@ class ResetOption {
     required this.subtitle,
     required this.duration,
     required this.icon,
+    this.isPremium = false,
     this.audioPath = '',
     this.imagePath = '',
   });
@@ -214,6 +215,7 @@ class ResetOption {
   final String subtitle;
   final String duration;
   final IconData icon;
+  final bool isPremium;
   final String audioPath;
   final String imagePath;
 }

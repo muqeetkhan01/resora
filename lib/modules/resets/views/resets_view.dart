@@ -135,7 +135,7 @@ class _ResetsViewState extends State<ResetsView> {
                         final option = options[index];
                         return _ResetSlide(
                           option: option,
-                          previewOnly: !hasPremiumAccess,
+                          previewOnly: option.isPremium && !hasPremiumAccess,
                           onBeginSession: () => controller.openReset(option),
                           onOpenFilters: () => setState(
                             () => _categoriesExpanded = !_categoriesExpanded,
