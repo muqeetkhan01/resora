@@ -147,6 +147,8 @@ abstract final class AppPages {
     GetPage(
       name: AppRoutes.audioPlayer,
       page: AudioPlayerView.new,
+      transition: Transition.noTransition,
+      transitionDuration: Duration.zero,
     ),
     GetPage(
       name: AppRoutes.mindfulness,

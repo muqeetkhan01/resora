@@ -12,6 +12,32 @@ import '../../../core/services/subscription_service.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 
+enum _ChatRiskLevel {
+  low,
+  medium,
+  high,
+}
+
+extension _ChatRiskLevelLabel on _ChatRiskLevel {
+  String get label => switch (this) {
+        _ChatRiskLevel.low => 'low',
+        _ChatRiskLevel.medium => 'medium',
+        _ChatRiskLevel.high => 'high',
+      };
+}
+
+class _ChatSafetyAssessment {
+  const _ChatSafetyAssessment({
+    required this.riskLevel,
+    this.emergencyMode = false,
+    this.unsafeRequest = false,
+  });
+
+  final _ChatRiskLevel riskLevel;
+  final bool emergencyMode;
+  final bool unsafeRequest;
+}
+
 class ChatController extends GetxController {
   ChatController({
     ResoraAiService? aiService,
@@ -70,7 +96,6 @@ class ChatController extends GetxController {
       draftText.value.trim().isNotEmpty &&
       !isSendCooldownActive.value &&
       !isTyping.value &&
-      (hasPremiumAccess || !isDailyLimitReached.value) &&
       draftText.value.characters.length <= maxCharacters;
   bool get hasPremiumAccess =>
       Get.isRegistered<SubscriptionService>() &&
@@ -103,8 +128,31 @@ class ChatController extends GetxController {
     final text = (preset ?? inputController.text).trim();
     dismissKeyboard();
     if (text.isEmpty || isSendCooldownActive.value || isTyping.value) return;
-    if (text.characters.length > maxCharacters) return;
-    if (!hasPremiumAccess && isDailyLimitReached.value) return;
+    if (text.characters.length > maxCharacters) {
+      _appendCharacterLimitMessage();
+      _scrollToBottom();
+      return;
+    }
+
+    final safetyAssessment = _assessSafety(text);
+    if (safetyAssessment.emergencyMode || safetyAssessment.unsafeRequest) {
+      _startSendCooldown();
+      final reply = safetyAssessment.emergencyMode
+          ? _emergencyModeReply
+          : _unsafeRequestReply;
+      await _appendAndPersistLocalExchange(
+        userText: text,
+        assistantText: reply,
+        safetyAssessment: safetyAssessment,
+      );
+      return;
+    }
+
+    if (!hasPremiumAccess && isDailyLimitReached.value) {
+      _appendDailyLimitMessage();
+      _scrollToBottom();
+      return;
+    }
 
     _startSendCooldown();
     FreeChatAllowance? allowance;
@@ -122,6 +170,10 @@ class ChatController extends GetxController {
       }
     }
 
+    final planType = hasPremiumAccess ? 'premium' : 'free';
+    final dailyMessageCount = hasPremiumAccess || allowance == null
+        ? null
+        : ChatSessionService.freeChatMessageLimit - allowance.remaining;
     messages.add(ChatMessageModel(text: text, isUser: true, time: 'Now'));
     inputController.clear();
     _pendingReplies += 1;
@@ -145,13 +197,18 @@ class ChatController extends GetxController {
           sessionId: sessionId,
           isUser: true,
           text: text,
+          planType: planType,
+          dailyMessageCount: dailyMessageCount,
+          riskLevel: safetyAssessment.riskLevel.label,
+          emergencyMode: safetyAssessment.emergencyMode,
+          unsafeRequest: safetyAssessment.unsafeRequest,
         );
         await _chatSessionService.touchSession(uid, sessionId);
         _restartSessionInactivityTimer();
         contextWindow = await _chatSessionService.loadRecentMessages(
           uid: uid,
           sessionId: sessionId,
-          limit: 20,
+          limit: 10,
         );
       }
 
@@ -175,6 +232,11 @@ class ChatController extends GetxController {
           sessionId: _activeSessionId!,
           isUser: false,
           text: reply,
+          planType: planType,
+          dailyMessageCount: dailyMessageCount,
+          riskLevel: safetyAssessment.riskLevel.label,
+          emergencyMode: safetyAssessment.emergencyMode,
+          unsafeRequest: safetyAssessment.unsafeRequest,
         );
         await _chatSessionService.touchSession(uid, _activeSessionId!);
         _restartSessionInactivityTimer();
@@ -265,13 +327,72 @@ class ChatController extends GetxController {
 
   void _appendDailyLimitMessage() {
     const text =
-        "You showed up today. That counts. I'll have more for you tomorrow.";
+        'You’ve reached today’s free chat limit. Upgrade to Premium to keep talking with Resora today.';
     if (messages.any((message) => !message.isUser && message.text == text)) {
       return;
     }
     messages.add(
       const ChatMessageModel(text: text, isUser: false, time: 'Now'),
     );
+  }
+
+  void _appendCharacterLimitMessage() {
+    const text =
+        'That message is a little long. Try sending the main part first so Resora can help.';
+    if (messages.any((message) => !message.isUser && message.text == text)) {
+      return;
+    }
+    messages.add(
+      const ChatMessageModel(text: text, isUser: false, time: 'Now'),
+    );
+  }
+
+  Future<void> _appendAndPersistLocalExchange({
+    required String userText,
+    required String assistantText,
+    required _ChatSafetyAssessment safetyAssessment,
+  }) async {
+    messages.add(ChatMessageModel(text: userText, isUser: true, time: 'Now'));
+    inputController.clear();
+    messages.add(
+      ChatMessageModel(text: assistantText, isUser: false, time: 'Now'),
+    );
+    _scrollToBottom();
+
+    final uid = _session.firebaseUser?.uid;
+    if (uid == null) {
+      return;
+    }
+
+    try {
+      final sessionId = await _chatSessionService.ensureActiveSession(uid);
+      _activeSessionId = sessionId;
+      final planType = hasPremiumAccess ? 'premium' : 'free';
+      await _chatSessionService.saveMessage(
+        uid: uid,
+        sessionId: sessionId,
+        isUser: true,
+        text: userText,
+        planType: planType,
+        riskLevel: safetyAssessment.riskLevel.label,
+        emergencyMode: safetyAssessment.emergencyMode,
+        unsafeRequest: safetyAssessment.unsafeRequest,
+      );
+      await _chatSessionService.saveMessage(
+        uid: uid,
+        sessionId: sessionId,
+        isUser: false,
+        text: assistantText,
+        planType: planType,
+        riskLevel: safetyAssessment.riskLevel.label,
+        emergencyMode: safetyAssessment.emergencyMode,
+        unsafeRequest: safetyAssessment.unsafeRequest,
+      );
+      await _chatSessionService.touchSession(uid, sessionId);
+      _restartSessionInactivityTimer();
+    } catch (_) {
+      // Local safety responses should still display even if logging fails.
+    }
   }
 
   void _handleDraftChanged() {
@@ -299,7 +420,7 @@ class ChatController extends GetxController {
       final recent = await _chatSessionService.loadRecentMessages(
         uid: uid,
         sessionId: sessionId,
-        limit: 20,
+        limit: 10,
       );
       if (isClosed) {
         return;
@@ -322,8 +443,6 @@ class ChatController extends GetxController {
 
   void _restartSessionInactivityTimer() {
     _sessionInactivityTimer?.cancel();
-    _dailyLimitResetTimer?.cancel();
-    _premiumWorker?.dispose();
     _sessionInactivityTimer =
         Timer(ChatSessionService.sessionTimeout, _handleSessionTimeout);
   }
@@ -390,6 +509,229 @@ class ChatController extends GetxController {
     });
   }
 
+  _ChatSafetyAssessment _assessSafety(String text) {
+    final current = _normalizeSafetyText(text);
+    final recentUserText = messages
+        .where((message) => message.isUser)
+        .map((message) => message.text)
+        .toList()
+        .reversed
+        .take(10)
+        .join(' ');
+    final combined = _normalizeSafetyText('$recentUserText $text');
+
+    final unsafeRequest = _hasUnsafeRequestMeaning(current);
+    final highRisk = _hasHighRiskMeaning(current) ||
+        _hasHighRiskMeaning(combined) ||
+        _hasEscalatedMeaning(current, combined);
+    if (highRisk) {
+      return _ChatSafetyAssessment(
+        riskLevel: _ChatRiskLevel.high,
+        emergencyMode: true,
+        unsafeRequest: unsafeRequest,
+      );
+    }
+
+    if (unsafeRequest) {
+      return const _ChatSafetyAssessment(
+        riskLevel: _ChatRiskLevel.medium,
+        unsafeRequest: true,
+      );
+    }
+
+    if (_hasMediumRiskMeaning(current) || _hasMediumRiskMeaning(combined)) {
+      return const _ChatSafetyAssessment(riskLevel: _ChatRiskLevel.medium);
+    }
+
+    return const _ChatSafetyAssessment(riskLevel: _ChatRiskLevel.low);
+  }
+
+  String _normalizeSafetyText(String value) {
+    return value
+        .toLowerCase()
+        .replaceAll('’', "'")
+        .replaceAll('‘', "'")
+        .replaceAll(RegExp(r"[^\w\s']+"), ' ')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+  }
+
+  bool _hasHighRiskMeaning(String text) {
+    if (text.isEmpty) {
+      return false;
+    }
+
+    const highRiskPhrases = <String>[
+      'suicide',
+      'kill myself',
+      'killing myself',
+      'end my life',
+      'ending my life',
+      'want to die',
+      'wanna die',
+      'wanting to die',
+      'i want to be dead',
+      "i don't want to be alive",
+      'i dont want to be alive',
+      "i don't want to be here",
+      'i dont want to be here',
+      'everyone would be better without me',
+      'hurt myself',
+      'harm myself',
+      'self harm',
+      'selfharm',
+      'cut myself',
+      'overdose',
+      'i overdosed',
+      'took too many pills',
+      'cant breathe',
+      "can't breathe",
+      'cannot breathe',
+      'trouble breathing',
+      'choking',
+      'is choking',
+      'bleeding badly',
+      'serious injury',
+      'has a weapon',
+      'he has a weapon',
+      'she has a weapon',
+      'they have a weapon',
+      'won’t let me leave',
+      "won't let me leave",
+      'wont let me leave',
+      'blocked the door',
+      'trapped',
+      'being trapped',
+      'cannot keep myself safe',
+      "can't keep myself safe",
+      'cant keep myself safe',
+      'cannot keep my child safe',
+      "can't keep my child safe",
+      'cant keep my child safe',
+      'cannot keep them safe',
+      "can't keep them safe",
+      'cant keep them safe',
+      'scared of what i’ll do',
+      "scared of what i'll do",
+      'scared of what i will do',
+      'going to hurt him',
+      'going to hurt her',
+      'going to hurt them',
+      'going to hurt someone',
+      'going to kill him',
+      'going to kill her',
+      'going to kill them',
+      'going to kill someone',
+      'immediate danger',
+    ];
+
+    return highRiskPhrases.any(text.contains) ||
+        RegExp(r'\b(gun|knife|weapon|weapons)\b').hasMatch(text);
+  }
+
+  bool _hasMediumRiskMeaning(String text) {
+    if (text.isEmpty) {
+      return false;
+    }
+
+    const mediumRiskPhrases = <String>[
+      'keeps hitting me',
+      'keeps happening',
+      'fed up with my child',
+      'boyfriend scares me',
+      'girlfriend scares me',
+      'partner scares me',
+      'scares me sometimes',
+      'crying every night',
+      'about to snap',
+      'feel like i’m about to snap',
+      "feel like i'm about to snap",
+      'feel like im about to snap',
+      'cannot handle this',
+      "can't handle this",
+      'cant handle this',
+      'i feel unsafe',
+      'i feel afraid',
+      'i am afraid',
+      'i am scared',
+      'unsafe',
+      'abuse',
+      'abusive',
+      'violent',
+      'violence',
+    ];
+
+    return mediumRiskPhrases.any(text.contains);
+  }
+
+  bool _hasEscalatedMeaning(String current, String combined) {
+    final recentWasConcerning = _hasMediumRiskMeaning(combined);
+    if (!recentWasConcerning) {
+      return false;
+    }
+
+    const escalationSignals = <String>[
+      'door',
+      'leave',
+      'weapon',
+      'gun',
+      'knife',
+      'hit',
+      'hurt',
+      'bleeding',
+      'trapped',
+      'threat',
+      'threatened',
+      'afraid',
+      'scared of what',
+      'not safe',
+      'unsafe',
+    ];
+
+    return escalationSignals.any(current.contains);
+  }
+
+  bool _hasUnsafeRequestMeaning(String text) {
+    if (text.isEmpty) {
+      return false;
+    }
+
+    const directUnsafePhrases = <String>[
+      'help me hurt',
+      'help me kill',
+      'how do i hurt',
+      'how do i kill',
+      'how to hurt',
+      'how to kill',
+      'how to self harm',
+      'how to overdose',
+      'how to hide abuse',
+      'hide the injury',
+      'hide injuries',
+      'avoid emergency care',
+      'avoid calling 911',
+      'get away with',
+      'threaten someone',
+      'punish them',
+      'abuse them',
+      'manipulate them',
+      'commit a crime',
+    ];
+    if (directUnsafePhrases.any(text.contains)) {
+      return true;
+    }
+
+    return RegExp(
+      r'\b(help|teach|tell|show|plan|instructions)\b.*\b(hurt|kill|poison|overdose|threaten|abuse|hide)\b.*\b(myself|me|someone|him|her|them|injury|injuries|evidence|proof)\b',
+    ).hasMatch(text);
+  }
+
+  static const String _emergencyModeReply =
+      'I’m really sorry you’re in this. Please contact emergency services or a crisis line now. If you can, call or text someone you trust and tell them you need help right away. Do not stay alone with this.';
+
+  static const String _unsafeRequestReply =
+      'I can’t help with that. But I can help you take the next safer step right now.';
+
   String _friendlyError(Object error) {
     final raw = error.toString().trim();
     final message = raw.startsWith('Exception: ')
@@ -421,6 +763,8 @@ class ChatController extends GetxController {
     inputFocusNode.removeListener(_handleInputFocusChanged);
     _sendCooldownTimer?.cancel();
     _sessionInactivityTimer?.cancel();
+    _dailyLimitResetTimer?.cancel();
+    _premiumWorker?.dispose();
     unawaited(_closeSessionAndUpdateMemory(reason: 'session_end'));
     inputFocusNode.dispose();
     inputController.dispose();

@@ -139,6 +139,8 @@ class _ChatContent extends GetView<ChatController> {
         // }),
         SizedBox(height: keyboardVisible ? AppSpacing.sm : AppSpacing.lg),
         const _ChatInputBar(),
+        SizedBox(height: keyboardVisible ? AppSpacing.xs : AppSpacing.sm),
+        const _GlobalChatDisclaimer(),
         if (rootTab) ...[
           SizedBox(height: keyboardVisible ? AppSpacing.xs : AppSpacing.sm),
           // const Divider(height: 1, color: AppColors.line),
@@ -357,7 +359,7 @@ class _DailyLimitCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Premium members get unlimited conversations, every day.',
+            'You’ve reached today’s free chat limit. Upgrade to Premium to keep talking with Resora today.',
             style: textTheme.bodyMedium?.copyWith(
               color: AppColors.warmDark,
               height: 1.5,
@@ -372,7 +374,7 @@ class _DailyLimitCard extends StatelessWidget {
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
             child: Text(
-              'EXPLORE PREMIUM',
+              'CONTINUE WITH PREMIUM',
               style: textTheme.bodySmall?.copyWith(
                 color: AppColors.terracotta,
                 letterSpacing: 1.3,
@@ -382,6 +384,22 @@ class _DailyLimitCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _GlobalChatDisclaimer extends StatelessWidget {
+  const _GlobalChatDisclaimer();
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Text(
+      'Resora provides general support and reflection tools. It is not therapy, medical care, legal advice, emergency support, or crisis care. If you may hurt yourself or someone else, or someone is in immediate danger, contact emergency services or a crisis line now.',
+      style: textTheme.bodySmall?.copyWith(
+        color: AppColors.placeholder,
+        height: 1.35,
       ),
     );
   }
@@ -480,7 +498,7 @@ class _TypingBubble extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: AppSpacing.xs),
                 child: Text(
-                  'resora',
+                  'Resora',
                   style: textTheme.bodySmall?.copyWith(
                     color: AppColors.placeholder,
                   ),

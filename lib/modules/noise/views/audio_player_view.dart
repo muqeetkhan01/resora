@@ -595,13 +595,10 @@ class _MuseumMinimalPlayer extends StatelessWidget {
                 imagePath,
                 fit: BoxFit.cover,
                 alignment: Alignment.topCenter,
+                gaplessPlayback: true,
                 loadingBuilder: (context, child, progress) => progress == null
                     ? child
-                    : Image.asset(
-                        AppAssets.archway,
-                        fit: BoxFit.cover,
-                        alignment: Alignment.topCenter,
-                      ),
+                    : const ColoredBox(color: Colors.black),
                 errorBuilder: (context, error, stackTrace) => Image.asset(
                   AppAssets.archway,
                   fit: BoxFit.cover,

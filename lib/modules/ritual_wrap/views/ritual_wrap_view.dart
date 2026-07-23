@@ -18,7 +18,7 @@ class RitualWrapView extends StatefulWidget {
 class _RitualWrapViewState extends State<RitualWrapView> {
   static const Duration _fadeInDelay = Duration(milliseconds: 150);
   static const Duration _doneAt = Duration(milliseconds: 2500);
-  static const Duration _mediaPreloadTimeout = Duration(seconds: 5);
+  static const Duration _mediaPreloadTimeout = Duration(seconds: 8);
 
   late final RitualWrapArgs _args;
   late final _WrapCopy _copy;
@@ -162,25 +162,9 @@ class _RitualWrapViewState extends State<RitualWrapView> {
   }
 
   Future<void> _precacheNetworkImage(String url) {
-    final completer = Completer<void>();
-    final stream = NetworkImage(url).resolve(ImageConfiguration.empty);
-    Timer? timeout;
-    late final ImageStreamListener listener;
-    void complete() {
-      timeout?.cancel();
-      stream.removeListener(listener);
-      if (!completer.isCompleted) completer.complete();
-    }
-
-    listener = ImageStreamListener(
-      (_, __) => complete(),
-      onError: (_, __) => complete(),
-    );
-    stream.addListener(listener);
-    if (!completer.isCompleted) {
-      timeout = Timer(_mediaPreloadTimeout, complete);
-    }
-    return completer.future;
+    return precacheImage(NetworkImage(url), context)
+        .timeout(_mediaPreloadTimeout)
+        .catchError((_) {});
   }
 
   void _continue(RitualWrapArgs args) {

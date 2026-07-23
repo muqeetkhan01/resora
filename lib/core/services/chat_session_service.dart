@@ -162,6 +162,11 @@ class ChatSessionService {
     required String sessionId,
     required bool isUser,
     required String text,
+    String? planType,
+    int? dailyMessageCount,
+    String? riskLevel,
+    bool? emergencyMode,
+    bool? unsafeRequest,
     DateTime? now,
   }) async {
     final trimmed = text.trim();
@@ -171,14 +176,30 @@ class ChatSessionService {
     final current = now ?? DateTime.now();
     final nowMs = current.millisecondsSinceEpoch;
 
-    await _messages(uid, sessionId).add(
-      <String, dynamic>{
-        'role': isUser ? 'user' : 'assistant',
-        'text': trimmed,
-        'createdAt': FieldValue.serverTimestamp(),
-        'createdAtMs': nowMs,
-      },
-    );
+    final data = <String, dynamic>{
+      'role': isUser ? 'user' : 'assistant',
+      'text': trimmed,
+      'createdAt': FieldValue.serverTimestamp(),
+      'createdAtMs': nowMs,
+    };
+
+    if (planType != null && planType.trim().isNotEmpty) {
+      data['planType'] = planType.trim();
+    }
+    if (dailyMessageCount != null) {
+      data['dailyMessageCount'] = dailyMessageCount;
+    }
+    if (riskLevel != null && riskLevel.trim().isNotEmpty) {
+      data['riskLevel'] = riskLevel.trim();
+    }
+    if (emergencyMode != null) {
+      data['emergencyMode'] = emergencyMode;
+    }
+    if (unsafeRequest != null) {
+      data['unsafeRequest'] = unsafeRequest;
+    }
+
+    await _messages(uid, sessionId).add(data);
   }
 
   Future<FreeChatAllowance> loadFreeChatAllowance(
@@ -262,7 +283,7 @@ class ChatSessionService {
   Future<List<ChatMessageModel>> loadRecentMessages({
     required String uid,
     required String sessionId,
-    int limit = 20,
+    int limit = 10,
   }) async {
     final snapshot = await _messages(uid, sessionId)
         .orderBy('createdAtMs', descending: true)
