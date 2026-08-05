@@ -140,7 +140,7 @@ class ChatController extends GetxController {
     if (safetyAssessment.emergencyMode || safetyAssessment.unsafeRequest) {
       _startSendCooldown();
       final reply = safetyAssessment.emergencyMode
-          ? _emergencyModeReply
+          ? _emergencyModeReplyFor(text)
           : _unsafeRequestReply;
       await _appendAndPersistLocalExchange(
         userText: text,
@@ -547,12 +547,15 @@ class ChatController extends GetxController {
         .reversed
         .take(10)
         .join(' ');
+    final recent = _normalizeSafetyText(recentUserText);
     final combined = _normalizeSafetyText('$recentUserText $text');
 
     final unsafeRequest = _hasUnsafeRequestMeaning(current);
-    final highRisk = _hasHighRiskMeaning(current) ||
-        _hasHighRiskMeaning(combined) ||
-        _hasEscalatedMeaning(current, combined);
+    final currentHighRisk =
+        _hasHighRiskMeaning(current) && !_isSafetyReassurance(current);
+    final highRisk = currentHighRisk ||
+        _hasEscalatedMeaning(current, combined) ||
+        _hasHighRiskFollowUpMeaning(current: current, recent: recent);
     if (highRisk) {
       return _ChatSafetyAssessment(
         riskLevel: _ChatRiskLevel.high,
@@ -610,27 +613,73 @@ class ChatController extends GetxController {
       'self harm',
       'selfharm',
       'cut myself',
+      'cut today',
+      'cut again tonight',
+      'might cut again',
+      'wound that needs care',
       'overdose',
       'i overdosed',
       'took too many pills',
+      'took too much',
+      'took a bunch of medication',
+      'mixed pills and alcohol',
+      'mixed alcohol and pills',
+      'drank poison',
+      'poisoned myself',
+      'child got into pills',
+      'child drank something poisonous',
+      'child drank cleaning spray',
+      'cannot stay safe',
+      "can't stay safe",
+      'cant stay safe',
+      'have a plan',
+      'about to do it',
       'cant breathe',
       "can't breathe",
       'cannot breathe',
       'trouble breathing',
+      'not breathing',
+      'turning blue',
+      'gasping for air',
       'choking',
       'is choking',
+      'throat is swelling',
+      'tongue is swelling',
+      'face is swelling',
+      'severe allergic reaction',
       'bleeding badly',
+      'wont stop bleeding',
+      "won't stop bleeding",
+      'unconscious',
+      'passed out and wont wake up',
+      "passed out and won't wake up",
+      'seizure',
+      'head injury',
+      'chest pain',
+      'stroke symptoms',
       'serious injury',
       'has a weapon',
       'he has a weapon',
       'she has a weapon',
       'they have a weapon',
+      'has a gun',
+      'has a knife',
       'won’t let me leave',
       "won't let me leave",
       'wont let me leave',
+      'blocks the door',
       'blocked the door',
       'trapped',
       'being trapped',
+      'being attacked',
+      'going to kill me',
+      'threatening me right now',
+      'child is not safe',
+      'baby isnt breathing',
+      "baby isn't breathing",
+      'hurting my child right now',
+      'elder is in immediate danger',
+      'disabled person is in immediate danger',
       'cannot keep myself safe',
       "can't keep myself safe",
       'cant keep myself safe',
@@ -694,6 +743,10 @@ class ChatController extends GetxController {
   }
 
   bool _hasEscalatedMeaning(String current, String combined) {
+    if (_isSafetyReassurance(current)) {
+      return false;
+    }
+
     final recentWasConcerning = _hasMediumRiskMeaning(combined);
     if (!recentWasConcerning) {
       return false;
@@ -718,6 +771,40 @@ class ChatController extends GetxController {
     ];
 
     return escalationSignals.any(current.contains);
+  }
+
+  bool _hasHighRiskFollowUpMeaning({
+    required String current,
+    required String recent,
+  }) {
+    if (_isSafetyReassurance(current) ||
+        !_hasHighRiskMeaning(recent) ||
+        current.isEmpty) {
+      return false;
+    }
+
+    const followUpSignals = <String>[
+      'i have a plan',
+      'have a plan',
+      'about to do it',
+      'tonight',
+      'right now',
+      'now',
+      'pills',
+      'medication',
+      'knife',
+      'gun',
+      'weapon',
+      'cant stay safe',
+      "can't stay safe",
+      'cannot stay safe',
+      'i took them',
+      'took them',
+      'i did it',
+      'did it',
+      'alone',
+    ];
+    return followUpSignals.any(current.contains);
   }
 
   bool _hasUnsafeRequestMeaning(String text) {
@@ -755,8 +842,231 @@ class ChatController extends GetxController {
     ).hasMatch(text);
   }
 
-  static const String _emergencyModeReply =
-      'This needs immediate support. Contact emergency services or 988 now. If pills, poison or overdose are involved, call Poison Control now. Move away from anything dangerous and stay where help can reach you. Are you physically safe right now?';
+  bool _isSafetyReassurance(String text) {
+    if (text.isEmpty || text.length > 120) {
+      return false;
+    }
+
+    final statesSafe = RegExp(
+      r"\b(i am|i'm|im|we are|we're|were|they are|they're|theyre)?\s*(physically\s+)?safe\b",
+    ).hasMatch(text);
+    final deniesImmediateDanger = text.contains('no immediate danger') ||
+        text.contains('not in immediate danger') ||
+        text.contains('i can stay safe');
+    final deniesLifeEnding = text.contains('i dont want to die') ||
+        text.contains("i don't want to die") ||
+        text.contains('not suicidal');
+    final deniesSelfInjury = text.contains('not going to hurt myself') ||
+        text.contains("i won't hurt myself") ||
+        text.contains('i wont hurt myself') ||
+        text.contains('not going to harm myself') ||
+        text.contains("i won't harm myself") ||
+        text.contains('i wont harm myself');
+    final hasSafeSignal = statesSafe ||
+        deniesImmediateDanger ||
+        deniesLifeEnding ||
+        deniesSelfInjury;
+    if (!hasSafeSignal) {
+      return false;
+    }
+
+    const urgentSignals = <String>[
+      'but i want to die',
+      'but i might',
+      'but i may',
+      'but i took',
+      'but someone',
+      'gun',
+      'knife',
+      'weapon',
+      'poison',
+      'overdose',
+      'pills',
+      'cannot breathe',
+      "can't breathe",
+      'cant breathe',
+      'choking',
+      'bleeding',
+      'swelling',
+      'trapped',
+      'wont let me leave',
+      "won't let me leave",
+      'kill me',
+    ];
+    return !urgentSignals.any(text.contains);
+  }
+
+  String _emergencyModeReplyFor(String text) {
+    final normalized = _normalizeSafetyText(text);
+
+    if (_mentionsChildPoisoning(normalized)) {
+      return 'Call emergency services or Poison Control now. Do not wait to see if it passes. Keep the container nearby so responders can see what was swallowed. Is the child breathing and physically safe right now?';
+    }
+    if (_mentionsPoisoningOrOverdose(normalized)) {
+      return 'Call emergency services or Poison Control now. Do not wait to see if it passes. Move away from anything else you could take and stay where help can reach you. Are you physically safe right now?';
+    }
+    if (_mentionsSubstanceEmergency(normalized)) {
+      return 'This needs immediate support. Contact 988 now for substance use crisis support. If you used too much, mixed substances, cannot stay awake, cannot breathe, feel out of control, or might drive, call emergency services now. Move somewhere safer if you can. Are you physically safe right now?';
+    }
+    if (_mentionsChokingOrBreathing(normalized)) {
+      return 'Call emergency services now. If the person cannot breathe, cough, cry, or make sound, get emergency help immediately and start first aid if you know how. Is the person breathing right now?';
+    }
+    if (_mentionsAllergicReaction(normalized)) {
+      return 'Call emergency services now. Throat, tongue, or face swelling can become dangerous quickly. Sit upright and do not wait to see if it passes. Are you breathing okay right now?';
+    }
+    if (_mentionsWeaponTrapOrViolence(normalized)) {
+      return 'Call emergency services now if you can do that safely. If calling could make things worse, move toward a safer or more public place if possible. Are you physically safe right now?';
+    }
+    if (_mentionsSeriousInjury(normalized)) {
+      return 'Call emergency services now. Keep pressure on heavy bleeding if you can do that safely and avoid moving someone with a serious head, neck, or spine injury unless staying there is more dangerous. Is the person awake and breathing?';
+    }
+    if (_mentionsDependentDanger(normalized)) {
+      return 'Call emergency services or Poison Control now, depending on what happened. Keep the child, elder, or dependent away from the danger if you can do that safely. Are they breathing and physically safe right now?';
+    }
+    if (_mentionsCuttingOrCannotStaySafe(normalized)) {
+      return 'This needs immediate support. Contact 988, emergency services or their crisis care team now. Move sharp objects, medications and anything dangerous away if you can do that safely. Stay nearby without arguing or escalating. Are they physically safe right now?';
+    }
+
+    return 'This needs immediate support. Contact 988 now. If there is immediate danger, call emergency services now. Move away from anything dangerous and go somewhere more visible or populated if you can. Are you physically safe right now?';
+  }
+
+  bool _mentionsChildPoisoning(String text) {
+    return text.contains('child got into pills') ||
+        text.contains('child drank something poisonous') ||
+        text.contains('child drank cleaning spray') ||
+        text.contains('baby drank') ||
+        text.contains('kid drank poison');
+  }
+
+  bool _mentionsPoisoningOrOverdose(String text) {
+    const phrases = <String>[
+      'took too many pills',
+      'took too much',
+      'overdose',
+      'overdosed',
+      'drank poison',
+      'mixed pills and alcohol',
+      'mixed alcohol and pills',
+      'took a bunch of medication',
+      'poisoned myself',
+      'feel sick after taking',
+    ];
+    return phrases.any(text.contains);
+  }
+
+  bool _mentionsSubstanceEmergency(String text) {
+    const phrases = <String>[
+      'used too much',
+      'drank too much and cant stay awake',
+      "drank too much and can't stay awake",
+      'used and cant breathe',
+      "used and can't breathe",
+      'mixed drugs',
+      'might overdose',
+      'cant stop using tonight',
+      "can't stop using tonight",
+      'high and driving',
+      'drunk and driving',
+      'someone passed out after using',
+      'wont wake up after drinking',
+      "won't wake up after drinking",
+      'wont wake up after using',
+      "won't wake up after using",
+    ];
+    return phrases.any(text.contains);
+  }
+
+  bool _mentionsChokingOrBreathing(String text) {
+    const phrases = <String>[
+      'cant breathe',
+      "can't breathe",
+      'cannot breathe',
+      'not breathing',
+      'choking',
+      'turning blue',
+      'gasping for air',
+    ];
+    return phrases.any(text.contains);
+  }
+
+  bool _mentionsAllergicReaction(String text) {
+    const phrases = <String>[
+      'throat is swelling',
+      'tongue is swelling',
+      'face is swelling',
+      'severe allergic reaction',
+    ];
+    return phrases.any(text.contains);
+  }
+
+  bool _mentionsWeaponTrapOrViolence(String text) {
+    const phrases = <String>[
+      'has a gun',
+      'has a knife',
+      'has a weapon',
+      'wont let me leave',
+      "won't let me leave",
+      'blocks the door',
+      'blocked the door',
+      'trapped',
+      'being attacked',
+      'going to kill me',
+      'threatening me right now',
+    ];
+    return phrases.any(text.contains) ||
+        RegExp(r'\b(gun|knife|weapon|weapons)\b').hasMatch(text);
+  }
+
+  bool _mentionsSeriousInjury(String text) {
+    const phrases = <String>[
+      'bleeding badly',
+      'wont stop bleeding',
+      "won't stop bleeding",
+      'unconscious',
+      'passed out and wont wake up',
+      "passed out and won't wake up",
+      'seizure',
+      'head injury',
+      'chest pain',
+      'stroke symptoms',
+    ];
+    return phrases.any(text.contains);
+  }
+
+  bool _mentionsDependentDanger(String text) {
+    const phrases = <String>[
+      'child is not safe',
+      'cant keep my child safe',
+      "can't keep my child safe",
+      'cannot keep my child safe',
+      'baby isnt breathing',
+      "baby isn't breathing",
+      'hurting my child right now',
+      'elder is in immediate danger',
+      'disabled person is in immediate danger',
+    ];
+    return phrases.any(text.contains);
+  }
+
+  bool _mentionsCuttingOrCannotStaySafe(String text) {
+    const phrases = <String>[
+      'cut today',
+      'cut again tonight',
+      'might cut again',
+      'cut myself',
+      'cannot stay safe',
+      "can't stay safe",
+      'cant stay safe',
+      'cannot keep myself safe',
+      "can't keep myself safe",
+      'cant keep myself safe',
+      'cannot keep them safe',
+      "can't keep them safe",
+      'cant keep them safe',
+      'wound that needs care',
+    ];
+    return phrases.any(text.contains);
+  }
 
   static const String _unsafeRequestReply =
       'I can’t help with that part. I can help you take a safer next step right now.';
