@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../routes/app_routes.dart';
 import '../controllers/edit_profile_controller.dart';
 import 'widgets/settings_flow_widgets.dart';
 
@@ -66,7 +67,7 @@ class EditProfileView extends GetView<EditProfileController> {
                     SettingsUnderlineButton(
                       label: 'Delete Account',
                       color: SettingsFlowColors.terracotta,
-                      onTap: () => _confirmDelete(context),
+                      onTap: () => Get.toNamed(AppRoutes.deleteAccount),
                     ),
                     SettingsUnderlineButton(
                       label: controller.isSaving.value
@@ -84,17 +85,6 @@ class EditProfileView extends GetView<EditProfileController> {
           ),
         ),
       ),
-    );
-  }
-
-  Future<void> _confirmDelete(BuildContext context) async {
-    await showSettingsConfirm(
-      context,
-      title: 'Delete your account?',
-      message:
-          'This is permanent. All your journal entries, resets, and progress will be removed and cannot be recovered.',
-      confirmLabel: 'Delete Account',
-      destructive: true,
     );
   }
 }

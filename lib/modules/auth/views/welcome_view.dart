@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/constants/app_assets.dart';
+import '../../../routes/app_routes.dart';
 import '../controllers/auth_entry_controller.dart';
 import '../widgets/resora_loading_overlay.dart';
 
@@ -172,18 +173,7 @@ class WelcomeView extends GetView<AuthEntryController> {
                         ),
                       ),
                       const SizedBox(height: 22),
-                      Center(
-                        child: Text(
-                          'By continuing, you agree to our Terms and Privacy Policy.',
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.jost(
-                            color: Colors.white.withOpacity(0.52),
-                            fontSize: 10,
-                            fontWeight: FontWeight.w400,
-                            height: 1.35,
-                          ),
-                        ),
-                      ),
+                      const _LegalLinks(),
                     ],
                   ),
                 ),
@@ -201,6 +191,72 @@ class WelcomeView extends GetView<AuthEntryController> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _LegalLinks extends StatelessWidget {
+  const _LegalLinks();
+
+  @override
+  Widget build(BuildContext context) {
+    final baseStyle = GoogleFonts.jost(
+      color: Colors.white.withValues(alpha: 0.52),
+      fontSize: 10,
+      fontWeight: FontWeight.w400,
+      height: 1.35,
+    );
+    final linkStyle = baseStyle.copyWith(
+      color: Colors.white.withValues(alpha: 0.74),
+      decoration: TextDecoration.underline,
+      decorationColor: Colors.white.withValues(alpha: 0.74),
+      decorationThickness: 1,
+    );
+
+    return Center(
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Text('By continuing, you agree to our ', style: baseStyle),
+          _InlineLegalButton(
+            label: 'Terms',
+            style: linkStyle,
+            onTap: () => Get.toNamed(AppRoutes.termsOfUse),
+          ),
+          Text(' and ', style: baseStyle),
+          _InlineLegalButton(
+            label: 'Privacy Policy',
+            style: linkStyle,
+            onTap: () => Get.toNamed(AppRoutes.privacyPolicy),
+          ),
+          Text('.', style: baseStyle),
+        ],
+      ),
+    );
+  }
+}
+
+class _InlineLegalButton extends StatelessWidget {
+  const _InlineLegalButton({
+    required this.label,
+    required this.style,
+    required this.onTap,
+  });
+
+  final String label;
+  final TextStyle style;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 4),
+        child: Text(label, style: style),
       ),
     );
   }

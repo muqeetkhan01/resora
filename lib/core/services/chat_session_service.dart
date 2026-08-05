@@ -39,6 +39,13 @@ class ChatSessionService {
   ) =>
       _sessions(uid).doc(sessionId).collection('messages');
 
+  Future<String?> loadActiveSessionId(String uid) async {
+    final snapshot = await _userDoc(uid).get();
+    final activeSessionId =
+        (snapshot.data()?['activeChatSessionId'] as String? ?? '').trim();
+    return activeSessionId.isEmpty ? null : activeSessionId;
+  }
+
   Future<String> ensureActiveSession(
     String uid, {
     DateTime? now,

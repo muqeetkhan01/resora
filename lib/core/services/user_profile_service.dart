@@ -122,6 +122,21 @@ class UserProfileService {
     );
   }
 
+  Future<void> requestAccountDeletion({required User user}) async {
+    final requestedAt = FieldValue.serverTimestamp();
+
+    await _users.doc(user.uid).set(
+      <String, dynamic>{
+        'accountDeletionStatus': 'requested',
+        'accountDeletionRequestedAt': requestedAt,
+        'accountDeletionRequestSource': 'in_app',
+        'accountDeletionContactEmail': user.email,
+        'updatedAt': requestedAt,
+      },
+      SetOptions(merge: true),
+    );
+  }
+
   static String _firstNonEmpty(List<String?> values) {
     for (final value in values) {
       final trimmed = value?.trim();

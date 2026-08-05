@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 
 import '../../../theme/app_colors.dart';
 import '../../../widgets/app_close_button.dart';
-import '../../../widgets/expanded_category_selector.dart';
 import '../controllers/terms_controller.dart';
 
 class TermsView extends StatefulWidget {
@@ -16,18 +15,7 @@ class TermsView extends StatefulWidget {
 class _TermsViewState extends State<TermsView> {
   late final PageController _pageController;
   int _active = 0;
-  int _tabIndex = 0;
   int? _expandedIndex;
-  bool _categoriesExpanded = false;
-
-  static const _tabs = <String>[
-    'all',
-    'ground',
-    'release',
-    'clarity',
-    'connect',
-    'restore',
-  ];
 
   @override
   void initState() {
@@ -97,19 +85,6 @@ class _TermsViewState extends State<TermsView> {
                 ),
               ),
               const SizedBox(height: 8),
-              ExpandedCategorySelector(
-                categories: _tabs,
-                selectedCategory: _tabs[_tabIndex],
-                expanded: _categoriesExpanded,
-                onExpandedChanged: (expanded) =>
-                    setState(() => _categoriesExpanded = expanded),
-                onSelect: (category) => setState(() {
-                  _tabIndex = _tabs.indexOf(category);
-                  _expandedIndex = null;
-                  _categoriesExpanded = false;
-                }),
-              ),
-              const Divider(height: 1, color: AppColors.line),
               Expanded(
                 child: Stack(
                   children: [
@@ -171,7 +146,7 @@ class _TermSlide extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 104, 42, 12),
+      padding: const EdgeInsets.fromLTRB(24, 92, 42, 12),
       child: Align(
         alignment: Alignment.topLeft,
         child: ConstrainedBox(
@@ -181,16 +156,6 @@ class _TermSlide extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'GROUND',
-                  style: textTheme.labelMedium?.copyWith(
-                    color: AppColors.primary,
-                    letterSpacing: 1.5,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 24),
                 Text(
                   item.term.toString(),
                   style: textTheme.displayLarge?.copyWith(

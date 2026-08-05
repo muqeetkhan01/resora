@@ -6,6 +6,7 @@ import '../../../theme/app_colors.dart';
 import '../../../widgets/app_background.dart';
 import '../../../widgets/app_button.dart';
 import '../../../widgets/centered_back_header.dart';
+import '../../../routes/app_routes.dart';
 import '../controllers/email_auth_controller.dart';
 import '../widgets/resora_loading_overlay.dart';
 
@@ -103,6 +104,10 @@ class EmailAuthView extends GetView<EmailAuthController> {
                           ? null
                           : controller.submit,
                     ),
+                    if (!controller.isSignIn.value) ...[
+                      const SizedBox(height: AppSpacing.md),
+                      const _EmailLegalLinks(),
+                    ],
                     if (controller.isSignIn.value) ...[
                       const SizedBox(height: AppSpacing.md),
                       TextButton(
@@ -133,6 +138,69 @@ class EmailAuthView extends GetView<EmailAuthController> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _EmailLegalLinks extends StatelessWidget {
+  const _EmailLegalLinks();
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final baseStyle = textTheme.bodySmall?.copyWith(
+      color: AppColors.muted,
+      height: 1.45,
+    );
+    final linkStyle = baseStyle?.copyWith(
+      color: AppColors.terracotta,
+      decoration: TextDecoration.underline,
+      decorationColor: AppColors.terracotta,
+      decorationThickness: 1,
+    );
+
+    return Wrap(
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        Text('By creating an account, you agree to our ', style: baseStyle),
+        _EmailLegalButton(
+          label: 'Terms',
+          style: linkStyle,
+          onTap: () => Get.toNamed(AppRoutes.termsOfUse),
+        ),
+        Text(' and ', style: baseStyle),
+        _EmailLegalButton(
+          label: 'Privacy Policy',
+          style: linkStyle,
+          onTap: () => Get.toNamed(AppRoutes.privacyPolicy),
+        ),
+        Text('.', style: baseStyle),
+      ],
+    );
+  }
+}
+
+class _EmailLegalButton extends StatelessWidget {
+  const _EmailLegalButton({
+    required this.label,
+    required this.style,
+    required this.onTap,
+  });
+
+  final String label;
+  final TextStyle? style;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 4),
+        child: Text(label, style: style),
       ),
     );
   }

@@ -34,13 +34,13 @@ class _PrivacyPolicyViewState extends State<PrivacyPolicyView> {
             children: [
               const _PolicyParagraph('Your privacy matters to us.'),
               const _PolicyParagraph(
-                'Resora collects information needed to provide your experience, manage your membership, improve the app, and respond to support requests.',
+                'Resora collects information needed to create and secure your account, provide your experience, manage membership access, improve reliability, and respond to support requests.',
               ),
               const _PolicyParagraph(
                 'When you use features like Talk to Resora, Journal, Guided Resets, Rehearse the Moment, Quiet the Noise, and Key Terms, your activity may be stored so the app can work properly.',
               ),
               const _PolicyParagraph(
-                'Talk to Resora may use AI technology to generate responses. Messages you send may be processed by trusted service providers to provide this feature.',
+                'Talk to Resora uses AI technology to generate responses. Messages you send may be processed by trusted AI service providers to provide this feature.',
               ),
               const _PolicyParagraph(
                 'Resora is not a medical, therapy, crisis, or emergency service.',
@@ -66,27 +66,32 @@ class _PrivacyPolicyViewState extends State<PrivacyPolicyView> {
                 _section(
                   context,
                   'Effective date',
-                  '07/01/2026',
+                  '08/02/2026',
                 ),
                 _section(
                   context,
                   'Overview',
-                  'Resora respects your privacy. This Privacy Policy explains what information we collect, how we use it, how we protect it, and the choices you have. By using Resora, you agree to this Privacy Policy.',
+                  'Resora respects your privacy. This Privacy Policy explains what information Resora collects, how it is collected, how it is used and shared, how it is protected, and the choices you have.',
                 ),
                 _section(
                   context,
                   'Information We Collect',
-                  'Resora may collect account information, app content you create, app activity, device/app information, feedback, support requests, and subscription status. App content may include journal entries, reflections, Talk to Resora messages, saved preferences, and feature activity.',
+                  'Resora may collect account information such as your name, email address, user ID, sign-in provider, and profile details; app content you create such as journal entries, reflections, community questions, Talk to Resora messages, saved preferences, and feature activity; app activity such as chat session state and usage limits; device and app information needed for security, diagnostics, and reliability; feedback and support requests; and subscription status or purchase-related identifiers needed to manage access.',
+                ),
+                _section(
+                  context,
+                  'How We Collect Information',
+                  'We collect information when you create or sign in to an account, enter content in the app, use Talk to Resora, save preferences, contact support, make or restore a purchase, or when the app and its service providers process technical information needed to operate the service.',
                 ),
                 _section(
                   context,
                   'How We Use Information',
-                  'We use information to provide and improve Resora, save your content, provide Talk to Resora responses, manage membership access, respond to support requests, improve app performance, maintain safety and security, and comply with legal or App Store requirements.',
+                  'We use information to provide and improve Resora, authenticate your account, save and sync your content, generate Talk to Resora responses, personalize your experience, manage membership access, restore purchases, respond to support requests, improve app performance, maintain safety and security, prevent misuse, and comply with legal, Apple App Store, and Google Play requirements.',
                 ),
                 _section(
                   context,
                   'Talk to Resora and AI Processing',
-                  'Talk to Resora may use artificial intelligence to generate responses. Messages you send may be processed by trusted technology providers to provide this feature. Avoid entering highly sensitive personal, medical, financial, legal, or child-identifying information unless necessary for your own use of the app.',
+                  'Talk to Resora uses artificial intelligence to generate responses. Messages you send, recent conversation context, and limited memory or profile context may be transmitted to trusted AI technology providers, including OpenAI, to provide and improve this feature. Avoid entering highly sensitive personal, medical, financial, legal, or child-identifying information unless necessary for your own use of the app.',
                 ),
                 _section(
                   context,
@@ -96,7 +101,12 @@ class _PrivacyPolicyViewState extends State<PrivacyPolicyView> {
                 _section(
                   context,
                   'How We Share Information',
-                  'Resora does not sell your personal information. We may share limited information with trusted service providers that help us operate the app, including cloud storage, AI processing, analytics, crash reporting, subscription management, customer support, and legal or safety compliance.',
+                  'Resora does not sell your personal information. We may share limited information with trusted service providers that help us operate the app, including Firebase and Google services for authentication, database, storage, and sign-in; Apple for Sign in with Apple and app store purchases; RevenueCat for subscription management; OpenAI or other AI providers for Talk to Resora; and providers used for diagnostics, customer support, legal, security, or safety compliance. These providers are expected to protect user data in a manner consistent with this policy and applicable platform requirements.',
+                ),
+                _section(
+                  context,
+                  'Tracking and Advertising',
+                  'Resora does not use your journal entries, reflections, or Talk to Resora messages for third-party advertising. Resora does not sell personal information or knowingly share personal information with data brokers.',
                 ),
                 _section(
                   context,
@@ -116,27 +126,27 @@ class _PrivacyPolicyViewState extends State<PrivacyPolicyView> {
                 _section(
                   context,
                   'Data Retention',
-                  'We keep information for as long as needed to provide Resora, maintain your account, comply with legal obligations, resolve disputes, improve app safety, and operate the app. Some information may be retained if required for legal, security, fraud prevention, accounting, or compliance reasons.',
+                  'We keep account information and saved app content while your account is active or as needed to provide Resora. If you request deletion, we will delete or de-identify account data and saved content associated with your account unless retention is required or permitted for legal, security, fraud prevention, accounting, dispute, backup, or compliance reasons. Most deletion requests are reviewed and completed within 30 days, although backups and legally retained records may take longer to expire.',
                 ),
                 _section(
                   context,
                   'Your Choices and Rights',
-                  'You may request access to, correction of, or deletion of your personal information by emailing hello@resoraco.com or using the account deletion option inside the app when available.',
+                  'You may request access to, correction of, or deletion of your personal information inside the app, from https://resoraco.com/account-deletion, or by emailing hello@resoraco.com. You can update account details in your profile where supported, manage notifications in device settings if notifications are offered, and manage app store subscriptions through your Apple or Google account settings.',
                 ),
                 _section(
                   context,
                   'Account Deletion',
-                  'If you create an account, you may request deletion of your account and saved data inside the app or by emailing hello@resoraco.com. Deleting your account may remove saved content, journal entries, Talk to Resora history, preferences, and membership-related app data, except information we are required or permitted to keep.',
+                  'If you create an account, you may request deletion of your account and saved data inside Profile > Delete Account or from https://resoraco.com/account-deletion. Deleting your account is intended to remove your account profile, saved content, journal entries, Talk to Resora history, preferences, and app data associated with your account, except information we are required or permitted to keep. Deleting your Resora account does not automatically cancel an active app store subscription.',
                 ),
                 _section(
                   context,
                   'Subscriptions and Purchases',
-                  'Resora may offer paid memberships, including monthly, yearly, or lifetime access. Purchases are processed through Apple or the applicable app store provider. Subscription billing, cancellation, refunds, and payment settings are managed through your app store account.',
+                  'Resora may offer paid memberships, including monthly, yearly, or lifetime access. Purchases are processed through Apple, Google, RevenueCat, or the applicable app store provider. Subscription billing, cancellation, refunds, and payment settings are managed through your app store account.',
                 ),
                 _section(
                   context,
-                  'Push Notifications',
-                  'If Resora offers notifications, you may choose whether to allow them. You can turn notifications on or off in your device settings at any time.',
+                  'Device Permissions',
+                  'Resora only requests device permissions when they are needed for app features. If a future feature requests access to photos, camera, microphone, notifications, or another protected resource, the app will show the system permission prompt and you can manage access in device settings.',
                 ),
                 _section(
                   context,

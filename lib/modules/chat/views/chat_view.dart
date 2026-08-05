@@ -139,8 +139,6 @@ class _ChatContent extends GetView<ChatController> {
         // }),
         SizedBox(height: keyboardVisible ? AppSpacing.sm : AppSpacing.lg),
         const _ChatInputBar(),
-        SizedBox(height: keyboardVisible ? AppSpacing.xs : AppSpacing.sm),
-        const _GlobalChatDisclaimer(),
         if (rootTab) ...[
           SizedBox(height: keyboardVisible ? AppSpacing.xs : AppSpacing.sm),
           // const Divider(height: 1, color: AppColors.line),
@@ -384,22 +382,6 @@ class _DailyLimitCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _GlobalChatDisclaimer extends StatelessWidget {
-  const _GlobalChatDisclaimer();
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Text(
-      'Resora provides general support and reflection tools. It is not therapy, medical care, legal advice, emergency support, or crisis care. If you may hurt yourself or someone else, or someone is in immediate danger, contact emergency services or a crisis line now.',
-      style: textTheme.bodySmall?.copyWith(
-        color: AppColors.placeholder,
-        height: 1.35,
       ),
     );
   }

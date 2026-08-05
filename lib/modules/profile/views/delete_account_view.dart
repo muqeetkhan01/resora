@@ -1,10 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../core/controllers/app_session_controller.dart';
+import '../../../core/services/user_profile_service.dart';
+import '../../../routes/app_routes.dart';
+import '../../../widgets/app_snackbar.dart';
 import 'widgets/settings_flow_widgets.dart';
 
-class DeleteAccountView extends StatelessWidget {
+class DeleteAccountView extends StatefulWidget {
   const DeleteAccountView({super.key});
+
+  @override
+  State<DeleteAccountView> createState() => _DeleteAccountViewState();
+}
+
+class _DeleteAccountViewState extends State<DeleteAccountView> {
+  final _profileService = UserProfileService();
+  var _isSubmitting = false;
 
   @override
   Widget build(BuildContext context) {
@@ -25,15 +37,23 @@ class DeleteAccountView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const _DeleteParagraph(
-                'You can request deletion of your Resora account and saved data.',
+                'You can request deletion of your Resora account and saved data from inside the app.',
               ),
               const _DeleteSection(
                 'Before Deleting',
-                'Deleting your account may remove saved content, journal entries, Talk to Resora history, preferences, and membership-related app data.',
+                'Deletion covers your account profile, saved content, journal entries, Talk to Resora history, preferences, and app data associated with your account.',
               ),
               const _DeleteSection(
-                'Important Note',
-                'Some information may be retained if required for legal, security, fraud prevention, accounting, or compliance reasons.',
+                'Subscriptions',
+                'Deleting your Resora account does not automatically cancel an active app store subscription. Manage billing or cancellation in your Apple or Google account settings.',
+              ),
+              const _DeleteSection(
+                'What May Be Kept',
+                'Some records may be retained only when required for legal, security, fraud prevention, accounting, dispute, or compliance reasons.',
+              ),
+              const _DeleteSection(
+                'Timing',
+                'Most deletion requests are reviewed and completed within 30 days. We will confirm completion using the email connected to your account.',
               ),
               const SizedBox(height: 18),
               Row(
@@ -45,9 +65,12 @@ class DeleteAccountView extends StatelessWidget {
                     onTap: Get.back,
                   ),
                   SettingsUnderlineButton(
-                    label: 'Request Account Deletion',
+                    label: _isSubmitting
+                        ? 'Submitting...'
+                        : 'Request Account Deletion',
                     color: SettingsFlowColors.destructiveRed,
-                    onTap: () => _showRequestInfo(context),
+                    onTap:
+                        _isSubmitting ? () {} : () => _submitRequest(context),
                   ),
                 ],
               ),
@@ -55,7 +78,7 @@ class DeleteAccountView extends StatelessWidget {
               const SettingsRule(horizontal: 0),
               const SizedBox(height: 24),
               const _DeleteParagraph(
-                'Need help? Email hello@resoraco.com.',
+                'You can also request deletion from the web at https://resoraco.com/account-deletion or email hello@resoraco.com for help.',
               ),
             ],
           ),
@@ -64,15 +87,48 @@ class DeleteAccountView extends StatelessWidget {
     );
   }
 
-  Future<void> _showRequestInfo(BuildContext context) async {
-    await showSettingsConfirm(
+  Future<void> _submitRequest(BuildContext context) async {
+    final confirmed = await showSettingsConfirm(
       context,
       title: 'Request Account Deletion',
       message:
-          'Email hello@resoraco.com from the email connected to your Resora account. The Resora team will help delete your account and saved data.',
-      confirmLabel: 'Got It',
+          'This will submit a deletion request for your Resora account and saved data. You will be signed out after the request is recorded.',
+      confirmLabel: 'Submit Request',
       destructive: true,
     );
+    if (!confirmed || _isSubmitting) {
+      return;
+    }
+
+    final session = Get.find<AppSessionController>();
+    final user = session.firebaseUser;
+    if (user == null) {
+      showAppSnackbar(
+        'Sign in required',
+        'Please sign in before requesting account deletion.',
+      );
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
+    try {
+      await _profileService.requestAccountDeletion(user: user);
+      await session.signOut();
+      Get.offAllNamed(AppRoutes.welcome);
+      showAppSnackbar(
+        'Deletion requested',
+        'Your request was recorded. We will confirm completion by email.',
+      );
+    } catch (_) {
+      showAppSnackbar(
+        'Request failed',
+        'We could not submit the request. Please try again or email hello@resoraco.com.',
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
+    }
   }
 }
 

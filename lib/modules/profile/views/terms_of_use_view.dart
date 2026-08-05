@@ -18,11 +18,11 @@ class TermsOfUseView extends StatelessWidget {
             style: SettingsFlowText.display(context, size: 32),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               _TermsParagraph(
                   'By using Resora, you agree to these Terms of Use.'),
               _TermsSection(
@@ -43,7 +43,7 @@ class TermsOfUseView extends StatelessWidget {
               ),
               _TermsSection(
                 'Subscriptions',
-                'Purchases, cancellations, refunds, and billing are handled through Apple or the applicable app store provider. Subscriptions renew automatically unless canceled in your Apple account settings.',
+                'Purchases, cancellations, refunds, and billing are handled through Apple, Google, or the applicable app store provider. Subscriptions renew automatically unless canceled in your app store account settings.',
               ),
               _TermsSection(
                 'Contact',

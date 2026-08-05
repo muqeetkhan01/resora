@@ -61,11 +61,13 @@ class ChatController extends GetxController {
 
   int _pendingReplies = 0;
   String? _activeSessionId;
+  Future<void>? _bootstrapFuture;
   Timer? _sendCooldownTimer;
   Timer? _sessionInactivityTimer;
   Timer? _dailyLimitResetTimer;
   Worker? _premiumWorker;
   bool _isClosingSession = false;
+  bool _isUpdatingMemory = false;
   int _guestFreeSendCount = 0;
   DateTime? _guestWindowStartedAt;
 
@@ -121,7 +123,7 @@ class ChatController extends GetxController {
       );
     }
     _refreshDailyAllowance();
-    _bootstrapSessionHistory();
+    _bootstrapFuture = _bootstrapSessionHistory();
   }
 
   Future<void> sendMessage([String? preset]) async {
@@ -155,6 +157,7 @@ class ChatController extends GetxController {
     }
 
     _startSendCooldown();
+    await _bootstrapFuture;
     FreeChatAllowance? allowance;
     if (!hasPremiumAccess) {
       try {
@@ -240,6 +243,7 @@ class ChatController extends GetxController {
         );
         await _chatSessionService.touchSession(uid, _activeSessionId!);
         _restartSessionInactivityTimer();
+        unawaited(_updateMemoryFromCurrentSession());
       }
     } catch (error) {
       messages.add(
@@ -390,6 +394,7 @@ class ChatController extends GetxController {
       );
       await _chatSessionService.touchSession(uid, sessionId);
       _restartSessionInactivityTimer();
+      unawaited(_updateMemoryFromCurrentSession());
     } catch (_) {
       // Local safety responses should still display even if logging fails.
     }
@@ -415,19 +420,19 @@ class ChatController extends GetxController {
     }
 
     try {
-      final sessionId = await _chatSessionService.ensureActiveSession(uid);
-      _activeSessionId = sessionId;
-      final recent = await _chatSessionService.loadRecentMessages(
-        uid: uid,
-        sessionId: sessionId,
-        limit: 10,
-      );
+      final previousSessionId =
+          await _chatSessionService.loadActiveSessionId(uid);
       if (isClosed) {
         return;
       }
-      messages.assignAll(recent);
-      _scrollToBottom();
-      _restartSessionInactivityTimer();
+      messages.clear();
+
+      if (previousSessionId == null) {
+        return;
+      }
+
+      _activeSessionId = previousSessionId;
+      await _closeSessionAndUpdateMemory(reason: 'app_reopened');
     } catch (_) {
       // Keep chat available even if persistence fails.
     }
@@ -469,16 +474,7 @@ class ChatController extends GetxController {
 
     _isClosingSession = true;
     try {
-      final transcript = await _chatSessionService.loadSessionTranscript(
-        uid: uid,
-        sessionId: sessionId,
-      );
-      final existingMemory = await _chatSessionService.loadMemoryProfile(uid);
-      final updates = await _aiService.updateMemoryFromTranscript(
-        existingMemory: existingMemory,
-        transcript: transcript,
-      );
-      await _chatSessionService.updateMemoryProfile(uid: uid, updates: updates);
+      await _updateMemoryFromCurrentSession();
       await _chatSessionService.closeSession(
         uid: uid,
         sessionId: sessionId,
@@ -489,6 +485,39 @@ class ChatController extends GetxController {
       // Session close and memory update are best effort.
     } finally {
       _isClosingSession = false;
+    }
+  }
+
+  Future<void> _updateMemoryFromCurrentSession() async {
+    if (_isUpdatingMemory) {
+      return;
+    }
+
+    final uid = _session.firebaseUser?.uid;
+    final sessionId = _activeSessionId;
+    if (uid == null || sessionId == null || sessionId.trim().isEmpty) {
+      return;
+    }
+
+    _isUpdatingMemory = true;
+    try {
+      final transcript = await _chatSessionService.loadSessionTranscript(
+        uid: uid,
+        sessionId: sessionId,
+      );
+      if (transcript.isEmpty) {
+        return;
+      }
+      final existingMemory = await _chatSessionService.loadMemoryProfile(uid);
+      final updates = await _aiService.updateMemoryFromTranscript(
+        existingMemory: existingMemory,
+        transcript: transcript,
+      );
+      await _chatSessionService.updateMemoryProfile(uid: uid, updates: updates);
+    } catch (_) {
+      // Memory updates are best effort and should never block chat.
+    } finally {
+      _isUpdatingMemory = false;
     }
   }
 
@@ -727,10 +756,10 @@ class ChatController extends GetxController {
   }
 
   static const String _emergencyModeReply =
-      'I’m really sorry you’re in this. Please contact emergency services or a crisis line now. If you can, call or text someone you trust and tell them you need help right away. Do not stay alone with this.';
+      'This needs immediate support. Contact emergency services or 988 now. If pills, poison or overdose are involved, call Poison Control now. Move away from anything dangerous and stay where help can reach you. Are you physically safe right now?';
 
   static const String _unsafeRequestReply =
-      'I can’t help with that. But I can help you take the next safer step right now.';
+      'I can’t help with that part. I can help you take a safer next step right now.';
 
   String _friendlyError(Object error) {
     final raw = error.toString().trim();
