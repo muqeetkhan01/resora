@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/constants/app_icons.dart';
+import '../../../core/utils/responsive_layout.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/app_close_button.dart';
 import '../../../widgets/expanded_category_selector.dart';
@@ -179,12 +180,17 @@ class _ScenarioSlide extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final topPadding = ResponsiveLayout.slideTopPadding(context);
+    final titleSize = ResponsiveLayout.fontSize(context, 48);
+    final bodySize = ResponsiveLayout.fontSize(context, 16, minScale: 0.92);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 104, 42, 12),
+      padding: EdgeInsets.fromLTRB(24, topPadding, 42, 12),
       child: Align(
         alignment: Alignment.topLeft,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 320),
+          constraints: BoxConstraints(
+            maxWidth: ResponsiveLayout.slideContentWidth(context),
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -202,7 +208,7 @@ class _ScenarioSlide extends StatelessWidget {
               Text(
                 scenario.title.toString(),
                 style: textTheme.displayLarge?.copyWith(
-                  fontSize: 48,
+                  fontSize: titleSize,
                   color: const Color(0xFF3B2C24),
                   height: 1.2,
                   fontStyle: FontStyle.normal,
@@ -220,7 +226,7 @@ class _ScenarioSlide extends StatelessWidget {
                 style: textTheme.bodyMedium?.copyWith(
                   color: const Color(0xFFA3A3A3),
                   height: 1.6,
-                  fontSize: 16,
+                  fontSize: bodySize,
                   fontStyle: FontStyle.normal,
                 ),
               ),

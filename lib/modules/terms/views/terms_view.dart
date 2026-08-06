@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../theme/app_colors.dart';
+import '../../../core/utils/responsive_layout.dart';
 import '../../../widgets/app_close_button.dart';
 import '../controllers/terms_controller.dart';
 
@@ -145,12 +146,17 @@ class _TermSlide extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final topPadding = ResponsiveLayout.slideTopPadding(context, base: 92);
+    final titleSize = ResponsiveLayout.fontSize(context, 40);
+    final bodySize = ResponsiveLayout.fontSize(context, 16, minScale: 0.92);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 92, 42, 12),
+      padding: EdgeInsets.fromLTRB(24, topPadding, 42, 12),
       child: Align(
         alignment: Alignment.topLeft,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 320),
+          constraints: BoxConstraints(
+            maxWidth: ResponsiveLayout.slideContentWidth(context),
+          ),
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: Column(
@@ -159,7 +165,7 @@ class _TermSlide extends StatelessWidget {
                 Text(
                   item.term.toString(),
                   style: textTheme.displayLarge?.copyWith(
-                    fontSize: 40,
+                    fontSize: titleSize,
                     color: const Color(0xFF3B2C24),
                     height: 1.2,
                     fontStyle: FontStyle.normal,
@@ -173,7 +179,7 @@ class _TermSlide extends StatelessWidget {
                   style: textTheme.bodyMedium?.copyWith(
                     color: const Color(0xFFA3A3A3),
                     height: 1.6,
-                    fontSize: 16,
+                    fontSize: bodySize,
                     fontStyle: FontStyle.normal,
                   ),
                 ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../core/constants/app_icons.dart';
 import '../core/constants/app_spacing.dart';
+import '../core/utils/responsive_layout.dart';
 import '../theme/app_colors.dart';
 
 class AppBottomNav extends StatelessWidget {
@@ -66,7 +67,11 @@ class AppBottomNav extends StatelessWidget {
                     Text(
                       item.$3,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            fontSize: 11,
+                            fontSize: ResponsiveLayout.fontSize(
+                              context,
+                              11,
+                              minScale: 0.94,
+                            ),
                             color:
                                 selected ? AppColors.primary : AppColors.muted,
                           ),

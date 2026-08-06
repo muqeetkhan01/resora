@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_icons.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/utils/responsive_layout.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
@@ -56,10 +57,10 @@ class _SpacesViewState extends State<SpacesView> {
                       child: Text(
                         'Spaces',
                         style: textTheme.displayLarge?.copyWith(
-                          fontSize: 40,
+                          fontSize: ResponsiveLayout.fontSize(context, 40),
                           color: AppColors.primary,
                           height: 1,
-                          letterSpacing: 0.2,
+                          letterSpacing: 0,
                           fontWeight: FontWeight.w300,
                           fontStyle: FontStyle.normal,
                         ),
@@ -130,60 +131,83 @@ class _SpaceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        decoration: const BoxDecoration(
-          color: Color(0xFFFAFBF9),
-          // border: Border.all(color: const Color(0x1F145C4F), width: 0.5),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: Get.height * 0.48,
-              width: double.infinity,
-              child: _SpaceImage(imagePath: slot.imagePath),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final cardWidth = constraints.maxWidth;
+        final mediaSize = MediaQuery.sizeOf(context);
+        final horizontalPadding = cardWidth < 330 ? 14.0 : 20.0;
+        final imageHeight =
+            (mediaSize.height * 0.48).clamp(320, 500).toDouble();
+        final titleSize = ResponsiveLayout.fontSizeForWidth(cardWidth, 28);
+        final subtitleSize = ResponsiveLayout.fontSizeForWidth(
+          cardWidth,
+          13,
+          minScale: 0.92,
+        );
+
+        return GestureDetector(
+          onTap: onTap,
+          child: Container(
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              color: Color(0xFFFAFBF9),
+              // border: Border.all(color: const Color(0x1F145C4F), width: 0.5),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 10, 20, 28),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    slot.title,
-                    style: textTheme.displayMedium?.copyWith(
-                      fontSize: 28,
-                      color: const Color(0xFF4A342B),
-                      height: 1.1,
-                      fontWeight: FontWeight.w300,
-                      fontStyle: FontStyle.normal,
-                    ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: imageHeight,
+                  width: double.infinity,
+                  child: _SpaceImage(imagePath: slot.imagePath),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    horizontalPadding,
+                    10,
+                    horizontalPadding,
+                    28,
                   ),
-                  const SizedBox(height: AppSpacing.sm),
-                  // Container(
-                  //   width: 32,
-                  //   height: 0.5,
-                  //   color: AppColors.terracotta,
-                  // ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Text(
-                    slot.subtitle,
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: const Color(0x734A342B),
-                      fontSize: 13,
-                      height: 1.65,
-                      fontWeight: FontWeight.w400,
-                      fontStyle: FontStyle.normal,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        slot.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: textTheme.displayMedium?.copyWith(
+                          fontSize: titleSize,
+                          color: const Color(0xFF4A342B),
+                          height: 1.1,
+                          fontWeight: FontWeight.w300,
+                          fontStyle: FontStyle.normal,
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      // Container(
+                      //   width: 32,
+                      //   height: 0.5,
+                      //   color: AppColors.terracotta,
+                      // ),
+                      const SizedBox(height: AppSpacing.sm),
+                      Text(
+                        slot.subtitle,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: const Color(0x734A342B),
+                          fontSize: subtitleSize,
+                          height: 1.65,
+                          fontWeight: FontWeight.w400,
+                          fontStyle: FontStyle.normal,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

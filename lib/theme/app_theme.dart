@@ -8,7 +8,7 @@ abstract final class AppTheme {
     TextStyle display({
       required double size,
       double height = 1.08,
-      double letterSpacing = -0.01,
+      double letterSpacing = 0,
       FontStyle style = FontStyle.normal,
       Color color = AppColors.primary,
     }) {

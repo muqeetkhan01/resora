@@ -35,6 +35,18 @@ class ResoraApp extends StatelessWidget {
       title: 'Resora',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
+      builder: (context, child) {
+        final mediaQuery = MediaQuery.of(context);
+        return MediaQuery(
+          data: mediaQuery.copyWith(
+            textScaler: mediaQuery.textScaler.clamp(
+              minScaleFactor: 1,
+              maxScaleFactor: 1.12,
+            ),
+          ),
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
       initialRoute: AppRoutes.splash,
       getPages: AppPages.pages,
     );
