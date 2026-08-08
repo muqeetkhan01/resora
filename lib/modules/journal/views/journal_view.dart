@@ -229,15 +229,15 @@ class _JournalSlide extends StatelessWidget {
                         //   color: const Color(0xFFE6E6E6),
                         // ),
                         const SizedBox(height: 16),
-                        Text(
-                          'You do not need a perfect explanation.\nYou need a clear sentence.',
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: const Color(0xFFA3A3A3),
-                            height: 1.6,
-                            fontSize: 16,
-                            fontStyle: FontStyle.normal,
-                          ),
-                        ),
+                        // Text(
+                        //   'You do not need a perfect explanation.\nYou need a clear sentence.',
+                        //   style: textTheme.bodyMedium?.copyWith(
+                        //     color: const Color(0xFFA3A3A3),
+                        //     height: 1.6,
+                        //     fontSize: 16,
+                        //     fontStyle: FontStyle.normal,
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
