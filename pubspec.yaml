@@ -20,7 +20,6 @@ dependencies:
   sign_in_with_apple: 7.0.1
   firebase_storage:
   intl:
-  image_picker:
   just_audio: ^0.9.46
   http: ^1.2.2
   purchases_flutter: 9.9.1

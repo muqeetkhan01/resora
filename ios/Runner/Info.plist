@@ -45,20 +45,8 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-		<string>This app use the location for the Job Finding</string>
-		<key>NSLocationAlwaysUsageDescription</key>
-		<string>This app use the location for the Job Finding</string>
-		<key>NSLocationWhenInUseUsageDescription</key>
-		<string>This app use the location for the Job Finding</string>
-		<key>NSMicrophoneUsageDescription</key>
-		<string>This app needs access to Microphone for the Voice Messages</string>
-		<key>NSPhotoLibraryAddUsageDescription</key>
-		<string>This permission is required to get images for the profile and feeds.</string>
-		<key>NSPhotoLibraryUsageDescription</key>
-		<string>This permission is required to get images for the profile and feeds.</string>
-		<key>NSCameraUsageDescription</key>
-		<string>This app needs access to the camera for video calls and profile photos.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Resora may use the microphone only when you choose a voice-enabled reflection or support feature.</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
