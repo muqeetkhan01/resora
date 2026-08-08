@@ -24,8 +24,6 @@ abstract final class AppRoutes {
   static const community = '/community';
   static const premium = '/premium';
   static const subscription = '/subscription';
-  static const journalLock = '/journal-lock';
-  static const journalUnlock = '/journal-unlock';
   static const helpSupport = '/help-support';
   static const privacyPolicy = '/privacy-policy';
   static const termsOfUse = '/terms-of-use';

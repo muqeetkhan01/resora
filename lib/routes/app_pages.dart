@@ -22,6 +22,9 @@ import '../modules/mindfulness/views/mindfulness_view.dart';
 import '../modules/noise/controllers/noise_controller.dart';
 import '../modules/noise/views/audio_player_view.dart';
 import '../modules/noise/views/noise_view.dart';
+import '../modules/normal/controllers/normal_controller.dart';
+import '../modules/normal/views/normal_ask_view.dart';
+import '../modules/normal/views/normal_view.dart';
 import '../modules/onboarding/controllers/onboarding_controller.dart';
 import '../modules/onboarding/views/onboarding_view.dart';
 import '../modules/premium/controllers/premium_controller.dart';
@@ -31,8 +34,6 @@ import '../modules/profile/controllers/profile_controller.dart';
 import '../modules/profile/views/edit_profile_view.dart';
 import '../modules/profile/views/delete_account_view.dart';
 import '../modules/profile/views/help_support_view.dart';
-import '../modules/profile/views/journal_lock_view.dart';
-import '../modules/profile/views/journal_unlock_view.dart';
 import '../modules/profile/views/privacy_policy_view.dart';
 import '../modules/profile/views/profile_view.dart';
 import '../modules/profile/views/subscription_view.dart';
@@ -127,6 +128,22 @@ abstract final class AppPages {
       }),
     ),
     GetPage(
+      name: AppRoutes.normal,
+      page: NormalView.new,
+      binding: BindingsBuilder(() {
+        Get.lazyPut(NormalController.new);
+      }),
+    ),
+    GetPage(
+      name: AppRoutes.normalAsk,
+      page: NormalAskView.new,
+      binding: BindingsBuilder(() {
+        if (!Get.isRegistered<NormalController>()) {
+          Get.put(NormalController());
+        }
+      }),
+    ),
+    GetPage(
       name: AppRoutes.resets,
       page: ResetsView.new,
       binding: BindingsBuilder(() {
@@ -203,24 +220,6 @@ abstract final class AppPages {
     GetPage(
       name: AppRoutes.subscription,
       page: SubscriptionView.new,
-      binding: BindingsBuilder(() {
-        if (!Get.isRegistered<ProfileController>()) {
-          Get.put(ProfileController());
-        }
-      }),
-    ),
-    GetPage(
-      name: AppRoutes.journalLock,
-      page: JournalLockView.new,
-      binding: BindingsBuilder(() {
-        if (!Get.isRegistered<ProfileController>()) {
-          Get.put(ProfileController());
-        }
-      }),
-    ),
-    GetPage(
-      name: AppRoutes.journalUnlock,
-      page: JournalUnlockView.new,
       binding: BindingsBuilder(() {
         if (!Get.isRegistered<ProfileController>()) {
           Get.put(ProfileController());

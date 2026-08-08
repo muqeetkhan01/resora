@@ -8,7 +8,6 @@ import '../../../core/services/user_generated_content_service.dart';
 import '../../../data/models/app_models.dart';
 import '../../../routes/app_routes.dart';
 import '../../../widgets/app_snackbar.dart';
-import '../../profile/controllers/profile_controller.dart';
 
 class JournalHistoryController extends GetxController {
   JournalHistoryController({
@@ -31,16 +30,6 @@ class JournalHistoryController extends GetxController {
   }
 
   Future<void> _startSync() async {
-    final profile = Get.isRegistered<ProfileController>()
-        ? Get.find<ProfileController>()
-        : Get.put(ProfileController());
-    final unlocked = await profile.ensureJournalUnlocked();
-    if (!unlocked) {
-      isLoading.value = false;
-      errorMessage.value = 'Unlock journal to view your history.';
-      return;
-    }
-
     final uid = _session.firebaseUser?.uid;
     if (uid == null) {
       isLoading.value = false;
@@ -68,14 +57,6 @@ class JournalHistoryController extends GetxController {
         Get.find<SubscriptionService>().isPremium.value;
     if (!hasPremium) {
       Get.toNamed(AppRoutes.subscription);
-      return;
-    }
-
-    final profile = Get.isRegistered<ProfileController>()
-        ? Get.find<ProfileController>()
-        : Get.put(ProfileController());
-    final unlocked = await profile.ensureJournalUnlocked();
-    if (!unlocked) {
       return;
     }
 
