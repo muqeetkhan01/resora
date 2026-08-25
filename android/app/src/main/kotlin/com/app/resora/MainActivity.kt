@@ -1,4 +1,4 @@
-package com.example.resora
+package com.app.resora
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "643534621490",
+    "project_id": "calmacare-b6d6c",
+    "storage_bucket": "calmacare-b6d6c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:643534621490:android:76cf3e6ac8323d2e07252b",
+        "android_client_info": {
+          "package_name": "com.app.resora"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "643534621490-4i72ncqq5vvvrsskl9cen736774i7455.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.app.resora",
+            "certificate_hash": "4df2e24b0172eb0a1a6c5d18b084b809699873e0"
+          }
+        },
+        {
+          "client_id": "643534621490-22frstd9km5v1n4h116ivf282boo6vn0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPKMkE6TOQFfvKZAwWWd8Ohse9yf5JjF8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "643534621490-22frstd9km5v1n4h116ivf282boo6vn0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "643534621490-71snu7t7f6vdt34e3tafu347hbhe84fn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.guidedgrowth.app"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:643534621490:android:b506b071b03cf81c07252b",
+        "android_client_info": {
+          "package_name": "com.resoraparenting.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "643534621490-lknha8bk9fabspcvht6bdr923hgdj2k0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.resoraparenting.app",
+            "certificate_hash": "9bbb3186b2189ef16d8f272bdab59362c395cbb4"
+          }
+        },
+        {
+          "client_id": "643534621490-22frstd9km5v1n4h116ivf282boo6vn0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPKMkE6TOQFfvKZAwWWd8Ohse9yf5JjF8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "643534621490-22frstd9km5v1n4h116ivf282boo6vn0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "643534621490-71snu7t7f6vdt34e3tafu347hbhe84fn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.guidedgrowth.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
