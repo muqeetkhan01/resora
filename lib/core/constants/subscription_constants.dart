@@ -5,6 +5,7 @@ abstract final class SubscriptionConstants {
   );
   static const revenueCatAndroidApiKey = String.fromEnvironment(
     'REVENUECAT_ANDROID_API_KEY',
+    defaultValue: 'goog_uErrurDufwEfdLLrUinjFBOBKhu',
   );
 
   static const currentOfferingId = 'default';
