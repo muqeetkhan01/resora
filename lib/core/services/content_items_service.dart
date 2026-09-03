@@ -191,7 +191,7 @@ class ContentItemsService {
       return _firstTwoJournalPromptsFree(MockContent.journalPrompts);
     }
 
-    return _firstTwoJournalPromptsFree(items);
+    return items;
   }
 
   Future<List<ResetOption>> loadResetOptions() async {
