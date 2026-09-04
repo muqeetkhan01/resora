@@ -12,6 +12,8 @@ class WelcomeView extends GetView<AuthEntryController> {
 
   @override
   Widget build(BuildContext context) {
+    final showAppleSignIn = GetPlatform.isIOS || GetPlatform.isMacOS;
+
     return Scaffold(
       body: Obx(
         () => Stack(
@@ -85,18 +87,21 @@ class WelcomeView extends GetView<AuthEntryController> {
                       const Spacer(),
                       Row(
                         children: [
-                          Expanded(
-                            child: _AuthImageButton(
-                              icon: Icons.apple,
-                              label: controller.activeProvider.value == 'apple'
-                                  ? 'Connecting...'
-                                  : 'Continue with Apple',
-                              onTap: controller.isSubmitting.value
-                                  ? null
-                                  : controller.continueWithApple,
+                          if (showAppleSignIn) ...[
+                            Expanded(
+                              child: _AuthImageButton(
+                                icon: Icons.apple,
+                                label:
+                                    controller.activeProvider.value == 'apple'
+                                        ? 'Connecting...'
+                                        : 'Continue with Apple',
+                                onTap: controller.isSubmitting.value
+                                    ? null
+                                    : controller.continueWithApple,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 12),
+                            const SizedBox(width: 12),
+                          ],
                           Expanded(
                             child: _AuthImageButton(
                               google: true,
